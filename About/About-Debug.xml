@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>JobInBar - Dev Build</name>
+	<author>MySteamUsername</author>
+	<targetVersion>1.0.0</targetVersion>
+	<description>A short mod description. 
+(This is the dev version of JobInBar. The release version of About.xml is available for editing at About/About-Release.xml. Edits made on this file or on the temporary About/About.xml won't show up on the release version. Use VisualStudio to build a "Release" version of this mod when ready to upload your mod!)</description>
+	<url>https://steamcommunity.com/id/MySteamUsername/myworkshopfiles/?appid=294100</url>
+</ModMetaData>
