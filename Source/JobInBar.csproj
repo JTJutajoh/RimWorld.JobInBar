@@ -60,11 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialog_NamePawn_Patch.cs" />
-    <Compile Include="JobInBarUtils.cs" />
-    <Compile Include="ColonistBarColonistDrawer_DrawColonist_Patch.cs" />
+    <Compile Include="LabelUtils.cs" />
+    <Compile Include="Patches\ColonistBarColonistDrawer_DrawColonist_Patch.cs" />
     <Compile Include="JobInBarMod.cs" />
     <Compile Include="LabelDrawer.cs" />
-    <Compile Include="PawnLabelColors_WorldComponent.cs" />
+    <Compile Include="Patches\PawnLabelColors_WorldComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>

@@ -15,13 +15,13 @@ namespace JobInBar
             Text.Font = GameFont.Tiny;
             //Text.Font = font2;
 
-            labelToDraw = JobInBarUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
+            labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
 
             float pawnLabelNameWidth = Text.CalcSize(labelToDraw).x;
 
             // calculate the sizes
-            Rect rect = JobInBarUtils.GetLabelRect(pos, pawnLabelNameWidth);
-            Rect bgRect = JobInBarUtils.GetLabelBGRect(pos, pawnLabelNameWidth);
+            Rect rect = LabelUtils.GetLabelRect(pos, pawnLabelNameWidth);
+            Rect bgRect = LabelUtils.GetLabelBGRect(pos, pawnLabelNameWidth);
 
             if (Settings.DrawBG)
                 GUI.DrawTexture(bgRect, TexUI.GrayTextBG);
@@ -40,19 +40,19 @@ namespace JobInBar
 
         public static void DrawJobLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
         {
-            string jobLabel = JobInBarUtils.GetJobLabel(colonist);
+            string jobLabel = LabelUtils.GetJobLabel(colonist);
 
-            DrawCustomLabel(pos, jobLabel, JobInBarUtils.GetJobLabelColorForPawn(colonist), truncateToWidth);
+            DrawCustomLabel(pos, jobLabel, LabelUtils.GetJobLabelColorForPawn(colonist), truncateToWidth);
         }
         public static void DrawIdeoRoleLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
         {
-            string roleLabel = JobInBarUtils.GetIdeoRoleLabel(colonist);
+            string roleLabel = LabelUtils.GetIdeoRoleLabel(colonist);
 
-            DrawCustomLabel(pos, roleLabel, JobInBarUtils.GetIdeoLabelColorForPawn(colonist), truncateToWidth);
+            DrawCustomLabel(pos, roleLabel, LabelUtils.GetIdeoLabelColorForPawn(colonist), truncateToWidth);
         }
         public static void DrawRoyalTitleLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
         {
-            string titleLabel = JobInBarUtils.GetRoyalTitleLabel(colonist);
+            string titleLabel = LabelUtils.GetRoyalTitleLabel(colonist);
 
             Color imperialColor = new Color(0.85f, 0.85f, 0.75f);
 
@@ -63,21 +63,21 @@ namespace JobInBar
         {
             Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3 only
             // first check if any of the labels should be drawn at all (eg disabled in settings)
-            if (JobInBarUtils.GetShouldDrawLabel(colonist))
+            if (LabelUtils.GetShouldDrawLabel(colonist))
             {
-                if (JobInBarUtils.GetShouldDrawJobLabel(colonist))
+                if (LabelUtils.GetShouldDrawJobLabel(colonist))
                 {
                     LabelDrawer.DrawJobLabel(pos, colonist, truncateToWidth);
                     pos += lineOffset;
                 }
 
-                if (JobInBarUtils.GetShouldDrawRoyalTitleLabel(colonist))
+                if (LabelUtils.GetShouldDrawRoyalTitleLabel(colonist))
                 {
                     LabelDrawer.DrawRoyalTitleLabel(pos, colonist, truncateToWidth);
                     pos += lineOffset;
                 }
 
-                if (JobInBarUtils.GetShouldDrawIdeoRoleLabel(colonist))
+                if (LabelUtils.GetShouldDrawIdeoRoleLabel(colonist))
                 {
                     LabelDrawer.DrawIdeoRoleLabel(pos, colonist, truncateToWidth);
                     pos += lineOffset;

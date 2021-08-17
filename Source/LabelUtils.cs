@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace JobInBar
 {
-    public class JobInBarUtils
+    public class LabelUtils
     {
         //private static PawnLabelCustomColors_WorldComponent labelsComp;
 
