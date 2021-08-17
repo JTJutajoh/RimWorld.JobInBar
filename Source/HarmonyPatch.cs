@@ -13,7 +13,7 @@ using System;
 
 namespace JobInBar
 {
-    [StaticConstructorOnStartup]
+    /*[StaticConstructorOnStartup]
     public class Main
     {
         static Main()
@@ -30,22 +30,13 @@ namespace JobInBar
         {
             Log.Message("[JobInBar] " + text);
         }
-    }
+    }*/
 
 
     [HarmonyPatch(typeof(ColonistBarColonistDrawer))] // Type containing the method
     [HarmonyPatch("DrawColonist")] // Method to patch
     public class LabelPatch
     {
-        Settings settings;
-        
-      
-        public LabelPatch()
-        {
-            settings = LoadedModManager.GetMod<JobInBarMod>().GetSettings<Settings>();
-        }
-
-
         public static void Postfix(
             ColonistBarColonistDrawer __instance,
             Dictionary<string, string> ___pawnLabelsCache,
@@ -72,7 +63,7 @@ namespace JobInBar
             // Prevent broken game state if param is null somehow
             if (colonist == null)
             {
-                Main.LogMessage("'colonist' passed to ColonistBarColonistDrawer was null. This should never happen. This indicates something may be very wrong with a mod incompatibility. Skipping this pawn for job labels");
+                Log.Message("'colonist' passed to ColonistBarColonistDrawer was null. This should never happen. This indicates something may be very wrong with a mod incompatibility. Skipping this pawn for job labels");
                 return;
             }
 
@@ -225,7 +216,7 @@ namespace JobInBar
         // Fetches the label color setting for the job label (And others in certain situations)
         public static Color GetLabelColorForPawn(Pawn pawn)
         {
-            Color LabelColor = new Color(Settings.color_r, Settings.color_g, Settings.color_b);
+            Color LabelColor = Settings.jobLabelColor;
 
             //pawn.thingIDNumber;
             // TODO add individual pawn label colors
@@ -315,121 +306,4 @@ namespace JobInBar
             return titleLabel;
         }
     }
-
-
-
-    public class Settings : ModSettings
-    {
-        public static int JobLabelVerticalOffset = 14;
-        public static int ExtraOffsetPerLine = 4;
-        public static float JobLabelAlpha = 0.8f;
-        public static bool ModEnabled = true;
-        public static bool DrawBG = true;
-        public static bool TruncateJobs = true;
-        public static bool HideWhenDrafted = false;
-        public static bool DrawJob = true;
-        public static bool DrawIdeoRoles = true;
-        public static bool UseIdeoColorForRole = true;
-        public static bool DrawRoyalTitles = true;
-
-        // Color
-        public static float color_r = 0.9f;
-        public static float color_g = 0.9f;
-        public static float color_b = 0.9f;
-
-
-        public override void ExposeData()
-        {
-            Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
-            Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", 4);
-            Scribe_Values.Look(ref DrawBG, "DrawBG", true);
-            Scribe_Values.Look(ref TruncateJobs, "TruncateJobs", true);
-            Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", true);
-            Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
-            Scribe_Values.Look(ref DrawJob, "DrawJob", true);
-            Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
-            Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
-            Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
-            Scribe_Values.Look(ref color_r, "color_r", 0.9f);
-            Scribe_Values.Look(ref color_g, "color_g", 0.9f);
-            Scribe_Values.Look(ref color_b, "color_b", 0.9f);
-            Scribe_Values.Look(ref JobLabelAlpha, "JobLabelAlpha", 0.8f);
-
-            base.ExposeData();
-        }
-    }
-
-    public class JobInBarMod : Mod
-    {
-        Settings settings;
-
-        public JobInBarMod(ModContentPack content) : base(content)
-        {
-            this.settings = GetSettings<Settings>();
-        }
-
-        public override void DoSettingsWindowContents(Rect inRect)
-        {
-            Listing_Standard listingStandard = new Listing_Standard();
-
-            listingStandard.Begin(inRect);
-            //////////////////////////////
-            /// listing
-            //////////////////////////////
-            /// begin left column
-            listingStandard.ColumnWidth = inRect.width / 2.4f;
-
-            listingStandard.CheckboxLabeled("Enabled:", ref Settings.ModEnabled, "Use this to disable the mod entirely if things are behaving strangely.");
-
-            listingStandard.Gap();
-            listingStandard.GapLine();
-
-            listingStandard.Label("Vertical offset: " + Settings.JobLabelVerticalOffset);
-            Settings.JobLabelVerticalOffset = (int)listingStandard.Slider(Settings.JobLabelVerticalOffset, -70f, 70f);
-            listingStandard.Label("Vertical offset between labels: " + Settings.ExtraOffsetPerLine);
-            Settings.ExtraOffsetPerLine = (int)listingStandard.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
-            listingStandard.CheckboxLabeled("Draw Background:", ref Settings.DrawBG, "Draw a black box behind the job title, just like the name label.");
-            listingStandard.CheckboxLabeled("Truncate long job titles:", ref Settings.TruncateJobs, "If turned off, long job titles will overflow. Looks ugly but might be the behavior you want.");
-            listingStandard.CheckboxLabeled("Hide job titles when drafted:", ref Settings.HideWhenDrafted, "Hides the job title label when the colonist is drafted. Helpful when using other colonist bar mods like Show Draftees Weapon.");
-            listingStandard.Gap();
-            listingStandard.CheckboxLabeled("Draw job titles:", ref Settings.DrawJob, "Draws a colonist's current job. The main function of the mod.");
-            listingStandard.CheckboxLabeled("Draw Royalty titles (If available):", ref Settings.DrawRoyalTitles, "If Royalty is installed, draws the royal titles owned by a pawn below the job label."); 
-            listingStandard.CheckboxLabeled("Draw Ideology specialist roles (If available):", ref Settings.DrawIdeoRoles, "If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.");
-            listingStandard.Indent(8);
-            listingStandard.CheckboxLabeled("Use Ideology color for roles:", ref Settings.UseIdeoColorForRole, "Turn this off if the ideology color makes it hard to read the specialist role color or you find it distracting.");
-            /// end left column
-            //////////////////////////////
-            /// spacer
-            listingStandard.NewColumn();
-            listingStandard.ColumnWidth = inRect.width / 4.2f;
-            /// end spacer
-            //////////////////////////////
-            /// begin right column
-            listingStandard.NewColumn();
-            listingStandard.ColumnWidth = inRect.width / 3.5f;
-
-            listingStandard.Gap();
-            listingStandard.Gap();
-            listingStandard.Label("Label Color");
-            Settings.color_r = listingStandard.Slider(Settings.color_r, 0f, 1f);
-            Settings.color_g = listingStandard.Slider(Settings.color_g, 0f, 1f);
-            Settings.color_b = listingStandard.Slider(Settings.color_b, 0f, 1f);
-            listingStandard.Label("Opacity: " + Settings.JobLabelAlpha);
-            Settings.JobLabelAlpha = listingStandard.Slider(Settings.JobLabelAlpha, 0f, 1f);
-
-            listingStandard.End();
-            /// end right column
-            //////////////////////////////
-            /// end listing
-            //////////////////////////////
-
-            base.DoSettingsWindowContents(inRect);
-        }
-
-        public override string SettingsCategory()
-        {
-            return "Job In Bar";
-        }
-    }
-
 }
