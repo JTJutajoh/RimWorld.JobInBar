@@ -59,8 +59,10 @@
     <None Include="..\About\About.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatch.cs" />
+    <Compile Include="JobInBarUtils.cs" />
+    <Compile Include="ColonistBarColonistDrawer_DrawColonist_Patch.cs" />
     <Compile Include="JobInBarMod.cs" />
+    <Compile Include="LabelDrawer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>

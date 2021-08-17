@@ -3,6 +3,7 @@
 <LanguageData>
   <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
   <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
+  <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
   <JobInBar_Settings_Ypos>Vertical offset: </JobInBar_Settings_Ypos>
   <JobInBar_Settings_Ydist>Vertical offset between labels: </JobInBar_Settings_Ydist>
   <JobInBar_Settings_DrawBG>Draw Background:</JobInBar_Settings_DrawBG>
@@ -19,6 +20,7 @@
   <JobInBar_Settings_RoleColor_desc>Turn this off if the ideology color makes it hard to read the specialist role color or you find it distracting.</JobInBar_Settings_RoleColor_desc>
   <JobInBar_Settings_Title>Draw Royalty titles (If available):</JobInBar_Settings_Title>
   <JobInBar_Settings_Title_desc>If Royalty is installed, draws the royal titles owned by a pawn below the job label.</JobInBar_Settings_Title_desc>
+  <JobInBar_Settings_Alpha>Opacity for all labels:</JobInBar_Settings_Alpha>
   <JobInBar_Settings_JobLabelColor>Job Label Color:</JobInBar_Settings_JobLabelColor>
   <JobInBar_SettingsCategory>Job Label In Colonist Bar</JobInBar_SettingsCategory>
 </LanguageData>
