@@ -22,37 +22,11 @@ namespace JobInBar
             // Prevent broken game state if param is null somehow
             if (colonist == null)
             {
-                Log.Message("(Job in bar) 'colonist' passed to ColonistBarColonistDrawer was null. This should never happen. This indicates something may be very wrong with a mod incompatibility. Skipping this pawn for job labels");
+                Log.Error("(Job in bar) 'colonist' passed to ColonistBarColonistDrawer was null. This should never happen. This indicates something may be very wrong with a mod incompatibility. Skipping this pawn for job labels");
                 return;
             }
 
-            DrawLabels(colonist, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
-        }
-
-        public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect, float truncateToWidth=9999f)
-        {
-            Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3 only
-            // first check if any of the labels should be drawn at all (eg disabled in settings)
-            if (JobInBarUtils.GetShouldDrawLabel(colonist))
-            {
-                if (JobInBarUtils.GetShouldDrawJobLabel(colonist))
-                {
-                    LabelDrawer.DrawJobLabel(pos, colonist, truncateToWidth);
-                    pos += lineOffset;
-                }
-
-                if (JobInBarUtils.GetShouldDrawRoyalTitleLabel(colonist))
-                {
-                    LabelDrawer.DrawRoyalTitleLabel(pos, colonist, truncateToWidth);
-                    pos += lineOffset;
-                }
-
-                if (JobInBarUtils.GetShouldDrawIdeoRoleLabel(colonist))
-                {
-                    LabelDrawer.DrawIdeoRoleLabel(pos, colonist, truncateToWidth);
-                    pos += lineOffset;
-                }
-            }
+            LabelDrawer.DrawLabels(colonist, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
         }
     }
 }

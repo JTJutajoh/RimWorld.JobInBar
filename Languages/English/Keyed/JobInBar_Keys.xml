@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <LanguageData>
+  <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
+  <JobInBar_JobColorButton>Job Color</JobInBar_JobColorButton>
+  <JobInBar_ShowJobLabelFor>Show job label</JobInBar_ShowJobLabelFor>
   <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
   <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
   <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
@@ -18,6 +21,8 @@
   <JobInBar_Settings_Role_desc>If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.</JobInBar_Settings_Role_desc>
   <JobInBar_Settings_RoleColor>Use Ideology color for roles:</JobInBar_Settings_RoleColor>
   <JobInBar_Settings_RoleColor_desc>Turn this off if the ideology color makes it hard to read the specialist role color or you find it distracting.</JobInBar_Settings_RoleColor_desc>
+  <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready:</JobInBar_Settings_RoleColorAbility>
+  <JobInBar_Settings_RoleColorAbility_desc>If enabled, the ideology role color will only be used if the role's ability cooldown is complete and the ability can be used. Otherwise will be the same color as the name label.</JobInBar_Settings_RoleColorAbility_desc>
   <JobInBar_Settings_Title>Draw Royalty titles (If available):</JobInBar_Settings_Title>
   <JobInBar_Settings_Title_desc>If Royalty is installed, draws the royal titles owned by a pawn below the job label.</JobInBar_Settings_Title_desc>
   <JobInBar_Settings_Alpha>Opacity for all labels:</JobInBar_Settings_Alpha>

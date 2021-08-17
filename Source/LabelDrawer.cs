@@ -8,7 +8,6 @@ namespace JobInBar
 {
     public class LabelDrawer
     {
-
         // Method used to draw all custom labels
         public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f)
         {
@@ -43,7 +42,7 @@ namespace JobInBar
         {
             string jobLabel = JobInBarUtils.GetJobLabel(colonist);
 
-            DrawCustomLabel(pos, jobLabel, JobInBarUtils.GetLabelColorForPawn(colonist), truncateToWidth);
+            DrawCustomLabel(pos, jobLabel, JobInBarUtils.GetJobLabelColorForPawn(colonist), truncateToWidth);
         }
         public static void DrawIdeoRoleLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
         {
@@ -58,6 +57,32 @@ namespace JobInBar
             Color imperialColor = new Color(0.85f, 0.85f, 0.75f);
 
             DrawCustomLabel(pos, titleLabel, imperialColor, truncateToWidth);
+        }
+
+        public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect, float truncateToWidth = 9999f)
+        {
+            Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3 only
+            // first check if any of the labels should be drawn at all (eg disabled in settings)
+            if (JobInBarUtils.GetShouldDrawLabel(colonist))
+            {
+                if (JobInBarUtils.GetShouldDrawJobLabel(colonist))
+                {
+                    LabelDrawer.DrawJobLabel(pos, colonist, truncateToWidth);
+                    pos += lineOffset;
+                }
+
+                if (JobInBarUtils.GetShouldDrawRoyalTitleLabel(colonist))
+                {
+                    LabelDrawer.DrawRoyalTitleLabel(pos, colonist, truncateToWidth);
+                    pos += lineOffset;
+                }
+
+                if (JobInBarUtils.GetShouldDrawIdeoRoleLabel(colonist))
+                {
+                    LabelDrawer.DrawIdeoRoleLabel(pos, colonist, truncateToWidth);
+                    pos += lineOffset;
+                }
+            }
         }
     }
 }

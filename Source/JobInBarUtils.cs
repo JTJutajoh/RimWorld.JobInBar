@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Verse;
 using RimWorld;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace JobInBar
 {
     public class JobInBarUtils
     {
+        //private static PawnLabelCustomColors_WorldComponent labelsComp;
+
         public static bool GetShouldDrawLabel(Pawn colonist)
         {
             if (Settings.ModEnabled == false)
@@ -25,7 +28,16 @@ namespace JobInBar
 
         public static bool GetShouldDrawJobLabel(Pawn colonist)
         {
-            return Settings.DrawJob;
+            PawnLabelCustomColors_WorldComponent labelsComp = PawnLabelCustomColors_WorldComponent.instance;
+            
+            if (labelsComp.GetDrawJobLabelFor(colonist)) // Check if this particular colonist has their job label enabled or not
+            {
+                return Settings.DrawJob;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public static bool GetShouldDrawIdeoRoleLabel(Pawn colonist)
@@ -86,13 +98,13 @@ namespace JobInBar
         }
 
         // Fetches the label color setting for the job label (And others in certain situations)
-        public static Color GetLabelColorForPawn(Pawn pawn)
+        public static Color GetJobLabelColorForPawn(Pawn pawn)
         {
-            Color LabelColor = Settings.jobLabelColor;
+            Color LabelColor = Settings.defaultJobLabelColor;
 
-            //pawn.thingIDNumber;
-            // TODO add individual pawn label colors
-            // Compare the pawn's id to a dictionary of ids with colors and return that color or a default.
+            PawnLabelCustomColors_WorldComponent labelsComp = PawnLabelCustomColors_WorldComponent.instance;
+
+            labelsComp.GetJobLabelColorFor(pawn, out LabelColor);
 
             return LabelColor;
         }
@@ -100,6 +112,14 @@ namespace JobInBar
         public static Color GetIdeoLabelColorForPawn(Pawn pawn)
         {
             Color LabelColor = new Color(1f, 1f, 1f);
+
+            if (Settings.RoleColorOnlyIfAbilityAvailable)
+            {
+                if (pawn.ideo.Ideo.GetRole(pawn).AbilitiesFor(pawn)[0].CanCast == false)
+                {
+                    return PawnNameColorUtility.PawnNameColorOf(pawn);
+                }
+            }
 
             if (Settings.UseIdeoColorForRole)
             {
@@ -119,11 +139,12 @@ namespace JobInBar
                 ////TODO make this magic number a setting? Adjust the Lerp value based on the gamma of the original color so that light colors are unchanged?
                 LabelColor = Color.Lerp(LabelColor, Color.white, 0.35f);
 
+
                 return LabelColor;
             }
 
             // Fall back to using the same method we use for the job label (rgb set in settings)
-            LabelColor = GetLabelColorForPawn(pawn);
+            LabelColor = GetJobLabelColorForPawn(pawn);
             return LabelColor;
         }
         public static string TruncateLabel(string labelString, float truncateToWidth, GameFont font)

@@ -17,10 +17,11 @@ namespace JobInBar
         public static bool DrawJob = true;
         public static bool DrawIdeoRoles = true;
         public static bool UseIdeoColorForRole = true;
+        public static bool RoleColorOnlyIfAbilityAvailable = false;
         public static bool DrawRoyalTitles = true;
 
         // Color
-        public static Color jobLabelColor;
+        public static Color defaultJobLabelColor;
         public static float labelAlpha = 0.8f;
 
 
@@ -59,6 +60,10 @@ namespace JobInBar
                 if (Settings.DrawIdeoRoles)
                 {
                     listingStandard.CheckboxLabeled("JobInBar_Settings_RoleColor".Translate(), ref Settings.UseIdeoColorForRole, "JobInBar_Settings_RoleColor_desc".Translate());
+                    if (Settings.UseIdeoColorForRole)
+                    {
+                        listingStandard.CheckboxLabeled("JobInBar_Settings_RoleColorAbility".Translate(), ref Settings.RoleColorOnlyIfAbilityAvailable, "JobInBar_Settings_RoleColorAbility_desc".Translate());
+                    }
                 }
                 /// end left column
                 //////////////////////////////
@@ -74,21 +79,21 @@ namespace JobInBar
                 colSettingRect.x += 32f * 4;
                 colSettingRect.y -= 6f;
                 colSettingRect.size = new Vector2(32f, 32f);
-                Widgets.DrawBoxSolid(colSettingRect, Settings.jobLabelColor);
+                Widgets.DrawBoxSolid(colSettingRect, Settings.defaultJobLabelColor);
                 if (Widgets.ButtonInvisible(colSettingRect, true))
                 {
-                    Find.WindowStack.Add(new Dialog_ColourPicker(Settings.jobLabelColor,
+                    Find.WindowStack.Add(new Dialog_ColourPicker(Settings.defaultJobLabelColor,
                     (newColor) =>
                     {
-                        Settings.jobLabelColor = newColor;
-                        Settings.jobLabelColor.a = labelAlpha;
+                        Settings.defaultJobLabelColor = newColor;
+                        Settings.defaultJobLabelColor.a = labelAlpha;
                     }
                     ));
                 }
                 listingStandard.Gap();
                 listingStandard.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
                 Settings.labelAlpha = listingStandard.Slider(Settings.labelAlpha, 0f, 1f);
-                Settings.jobLabelColor.a = labelAlpha;
+                Settings.defaultJobLabelColor.a = labelAlpha;
             }
 
             listingStandard.End();
@@ -104,14 +109,15 @@ namespace JobInBar
             Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
             Scribe_Values.Look(ref DrawBG, "DrawBG", true);
             Scribe_Values.Look(ref TruncateJobs, "TruncateJobs", true);
-            Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", true);
+            Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", false);
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
             Scribe_Values.Look(ref DrawJob, "DrawJob", true);
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
+            Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable", false);
             Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
 
-            Scribe_Values.Look(ref jobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
+            Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
             Scribe_Values.Look(ref labelAlpha, "labelAlpha", 0.8f);
 
             base.ExposeData();
