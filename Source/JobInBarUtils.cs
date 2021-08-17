@@ -128,26 +128,25 @@ namespace JobInBar
         }
         public static string TruncateLabel(string labelString, float truncateToWidth, GameFont font)
         {
+            if (Settings.TruncateJobs == false)
+                return labelString;
             GameFont font2 = Text.Font;
             Text.Font = font;
-            if (Settings.TruncateJobs)
-                labelString = labelString.Truncate(truncateToWidth);
+            labelString = labelString.Truncate(truncateToWidth);
             Text.Font = font2; // reset font
 
             return labelString;
         }
 
-        public static string GetJobLabel(Pawn colonist, float truncateToWidth, GameFont font)
+        public static string GetJobLabel(Pawn colonist)
         {
             string jobLabel = "Job";
             jobLabel = colonist.story.TitleShortCap;
 
-            TruncateLabel(jobLabel, truncateToWidth, font);
-
             return jobLabel;
         }
 
-        public static string GetIdeoRoleLabel(Pawn colonist, float truncateToWidth, GameFont font)
+        public static string GetIdeoRoleLabel(Pawn colonist)
         {
             Precept_Role myRole = colonist.ideo.Ideo.GetRole(colonist);
             string roleLabel = "";
@@ -155,13 +154,12 @@ namespace JobInBar
             if (myRole != null)
             {
                 roleLabel = myRole.LabelForPawn(colonist);
-                TruncateLabel(roleLabel, truncateToWidth, font);
             }
 
             return roleLabel;
         }
 
-        public static string GetRoyalTitleLabel(Pawn colonist, float truncateToWidth, GameFont font)
+        public static string GetRoyalTitleLabel(Pawn colonist)
         {
             RoyalTitleDef myTitle = colonist.royalty.MainTitle();
             string titleLabel = "";
@@ -169,7 +167,6 @@ namespace JobInBar
             if (myTitle != null)
             {
                 titleLabel = myTitle.GetLabelCapFor(colonist);
-                TruncateLabel(titleLabel, truncateToWidth, font);
             }
 
             return titleLabel;

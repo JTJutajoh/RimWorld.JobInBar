@@ -1,38 +1,10 @@
-﻿using System.Reflection;
-using RimWorld;
-using RimWorld.Planet;
+﻿using RimWorld;
 using HarmonyLib;
 using Verse;
 using UnityEngine;
-using System.Collections.Generic;
-using System;
-
-
-
-
 
 namespace JobInBar
 {
-    /*[StaticConstructorOnStartup]
-    public class Main
-    {
-        static Main()
-        {
-            var harmony = new Harmony("Dark.JobInBar");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-
-
-            LogMessage("Job In Bar loaded.");
-        }
-
-        public static void LogMessage(string text)
-        {
-            Log.Message("[JobInBar] " + text);
-        }
-    }*/
-
-
     [HarmonyPatch(typeof(ColonistBarColonistDrawer))] // Type containing the method
     [HarmonyPatch("DrawColonist")] // Method to patch
     public class ColonistBarColonistDrawer_DrawColonist_Patch
