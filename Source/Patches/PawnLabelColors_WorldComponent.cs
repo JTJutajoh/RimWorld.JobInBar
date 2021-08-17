@@ -40,7 +40,7 @@ namespace JobInBar
             else
             {
                 // If there's nothing stored, assume it should be shown until hidden
-                return true;
+                return Settings.DefaultShowSetting;
             }
         }
 

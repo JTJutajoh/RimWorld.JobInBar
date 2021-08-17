@@ -11,21 +11,24 @@
   <JobInBar_Settings_Ydist>Vertical offset between labels: </JobInBar_Settings_Ydist>
   <JobInBar_Settings_DrawBG>Draw Background:</JobInBar_Settings_DrawBG>
   <JobInBar_Settings_DrawBG_desc>Draw a black box behind the job title, just like the name label.</JobInBar_Settings_DrawBG_desc>
-  <JobInBar_Settings_Truncate>Truncate long job titles:</JobInBar_Settings_Truncate>
+  <JobInBar_Settings_Truncate>Truncate long labels</JobInBar_Settings_Truncate>
   <JobInBar_Settings_Truncate_desc>If turned off, long job titles will overflow. Looks ugly but might be the behavior you want.</JobInBar_Settings_Truncate_desc>
-  <JobInBar_Settings_HideDrafted>Hide when drafted:</JobInBar_Settings_HideDrafted>
+  <JobInBar_Settings_HideDrafted>Hide when drafted</JobInBar_Settings_HideDrafted>
   <JobInBar_Settings_HideDrafted_desc>Hides the job title label when the colonist is drafted. Helpful when using other colonist bar mods like Show Draftees Weapon.</JobInBar_Settings_HideDrafted_desc>
-  <JobInBar_Settings_Job>Draw job titles:</JobInBar_Settings_Job>
+  <JobInBar_Settings_Job>Draw job titles</JobInBar_Settings_Job>
   <JobInBar_Settings_Job_desc>Draws a colonist's current job. The main function of the mod.</JobInBar_Settings_Job_desc>
-  <JobInBar_Settings_Role>Draw Ideology specialist roles (If available):</JobInBar_Settings_Role>
+  <JobInBar_Settings_Role>Draw Ideology specialist roles (If available)</JobInBar_Settings_Role>
   <JobInBar_Settings_Role_desc>If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.</JobInBar_Settings_Role_desc>
-  <JobInBar_Settings_RoleColor>Use Ideology color for roles:</JobInBar_Settings_RoleColor>
+  <JobInBar_Settings_RoleColor>Use Ideology color for roles</JobInBar_Settings_RoleColor>
   <JobInBar_Settings_RoleColor_desc>Turn this off if the ideology color makes it hard to read the specialist role color or you find it distracting.</JobInBar_Settings_RoleColor_desc>
-  <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready:</JobInBar_Settings_RoleColorAbility>
+  <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready</JobInBar_Settings_RoleColorAbility>
   <JobInBar_Settings_RoleColorAbility_desc>If enabled, the ideology role color will only be used if the role's ability cooldown is complete and the ability can be used. Otherwise will be the same color as the name label.</JobInBar_Settings_RoleColorAbility_desc>
-  <JobInBar_Settings_Title>Draw Royalty titles (If available):</JobInBar_Settings_Title>
+  <JobInBar_Settings_Title>Draw Royalty titles (If available)</JobInBar_Settings_Title>
   <JobInBar_Settings_Title_desc>If Royalty is installed, draws the royal titles owned by a pawn below the job label.</JobInBar_Settings_Title_desc>
-  <JobInBar_Settings_Alpha>Opacity for all labels:</JobInBar_Settings_Alpha>
-  <JobInBar_Settings_JobLabelColor>Job Label Color:</JobInBar_Settings_JobLabelColor>
+  <JobInBar_Settings_Alpha>Opacity for all labels</JobInBar_Settings_Alpha>
+  <JobInBar_Settings_JobLabelColor>Job Label Default Color</JobInBar_Settings_JobLabelColor>
+  <JobInBar_Settings_DefaultShow>Show job label by default</JobInBar_Settings_DefaultShow>
+  <JobInBar_Settings_DisplaySettingsLabel>Display Settings</JobInBar_Settings_DisplaySettingsLabel>
   <JobInBar_SettingsCategory>Job Label In Colonist Bar</JobInBar_SettingsCategory>
+
 </LanguageData>

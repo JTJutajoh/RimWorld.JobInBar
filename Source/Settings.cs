@@ -15,6 +15,7 @@ namespace JobInBar
         public static bool TruncateJobs = true;
         public static bool HideWhenDrafted = false;
         public static bool DrawJob = true;
+        public static bool DefaultShowSetting = true;
         public static bool DrawIdeoRoles = true;
         public static bool UseIdeoColorForRole = true;
         public static bool RoleColorOnlyIfAbilityAvailable = false;
@@ -25,58 +26,84 @@ namespace JobInBar
         public static float labelAlpha = 0.8f;
 
 
+        private void DoIndent(Listing_Standard listing, float amount = 12f)
+        {
+            listing.ColumnWidth -= amount;
+            listing.Indent(amount);
+        }
+        private void DoOutdent(Listing_Standard listing, float amount = 12f)
+        {
+            listing.ColumnWidth += amount;
+            listing.Outdent(amount);
+        }
+
+
         public void DoWindowContents(Rect inRect)
         {
-            Listing_Standard listingStandard = new Listing_Standard();
+            Listing_Standard listing = new Listing_Standard();
 
-            listingStandard.Begin(inRect);
+            listing.Begin(inRect);
             //////////////////////////////
             /// listing
             //////////////////////////////
             /// begin left column
-            listingStandard.ColumnWidth = inRect.width / 2.2f;
+            listing.ColumnWidth = inRect.width / 2f;
 
-            listingStandard.CheckboxLabeled("JobInBar_Settings_Enabled".Translate(), ref Settings.ModEnabled, "JobInBar_Settings_Enabled_desc".Translate());
+            listing.CheckboxLabeled("JobInBar_Settings_Enabled".Translate(), ref Settings.ModEnabled, "JobInBar_Settings_Enabled_desc".Translate());
+            listing.GapLine();
+            listing.Gap(24f);
 
             if (Settings.ModEnabled)
             {
-                listingStandard.Gap();
-                listingStandard.GapLine();
+                listing.CheckboxLabeled("JobInBar_Settings_Truncate".Translate(), ref Settings.TruncateJobs, "JobInBar_Settings_Truncate_desc".Translate());
+                listing.CheckboxLabeled("JobInBar_Settings_HideDrafted".Translate(), ref Settings.HideWhenDrafted, "JobInBar_Settings_HideDrafted_desc".Translate());
+                listing.Gap();
+                listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJob, "JobInBar_Settings_Job_desc".Translate());
+                if (Settings.DrawJob)
+                {
+                    DoIndent(listing);
+                    listing.CheckboxLabeled("JobInBar_Settings_DefaultShow".Translate(), ref Settings.DefaultShowSetting, "JobInBar_Settings_DefaultShow_desc".Translate());
+                    DoOutdent(listing);
+                }
+                listing.Gap();
 
-                listingStandard.Label("JobInBar_Settings_Positioning".Translate());
-                listingStandard.Label("JobInBar_Settings_Ypos".Translate() + Settings.JobLabelVerticalOffset);
-                Settings.JobLabelVerticalOffset = (int)listingStandard.Slider(Settings.JobLabelVerticalOffset, -70f, 70f);
-                listingStandard.Label("JobInBar_Settings_Ydist".Translate() + Settings.ExtraOffsetPerLine);
-                Settings.ExtraOffsetPerLine = (int)listingStandard.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
-
-                listingStandard.GapLine();
-
-                listingStandard.CheckboxLabeled("JobInBar_Settings_Truncate".Translate(), ref Settings.TruncateJobs, "JobInBar_Settings_Truncate_desc".Translate());
-                listingStandard.CheckboxLabeled("JobInBar_Settings_HideDrafted".Translate(), ref Settings.HideWhenDrafted, "JobInBar_Settings_HideDrafted_desc".Translate());
-                listingStandard.Gap();
-                listingStandard.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJob, "JobInBar_Settings_Job_desc".Translate());
-                listingStandard.CheckboxLabeled("JobInBar_Settings_Title".Translate(), ref Settings.DrawRoyalTitles, "JobInBar_Settings_Title_desc".Translate());
-                listingStandard.CheckboxLabeled("JobInBar_Settings_Role".Translate(), ref Settings.DrawIdeoRoles, "JobInBar_Settings_Role_desc".Translate());
+                listing.CheckboxLabeled("JobInBar_Settings_Title".Translate(), ref Settings.DrawRoyalTitles, "JobInBar_Settings_Title_desc".Translate());
+                listing.Gap();
+                listing.CheckboxLabeled("JobInBar_Settings_Role".Translate(), ref Settings.DrawIdeoRoles, "JobInBar_Settings_Role_desc".Translate());
                 if (Settings.DrawIdeoRoles)
                 {
-                    listingStandard.CheckboxLabeled("JobInBar_Settings_RoleColor".Translate(), ref Settings.UseIdeoColorForRole, "JobInBar_Settings_RoleColor_desc".Translate());
+                    DoIndent(listing);
+                    listing.CheckboxLabeled("JobInBar_Settings_RoleColor".Translate(), ref Settings.UseIdeoColorForRole, "JobInBar_Settings_RoleColor_desc".Translate());
                     if (Settings.UseIdeoColorForRole)
                     {
-                        listingStandard.CheckboxLabeled("JobInBar_Settings_RoleColorAbility".Translate(), ref Settings.RoleColorOnlyIfAbilityAvailable, "JobInBar_Settings_RoleColorAbility_desc".Translate());
+                        DoIndent(listing);
+                        listing.CheckboxLabeled("JobInBar_Settings_RoleColorAbility".Translate(), ref Settings.RoleColorOnlyIfAbilityAvailable, "JobInBar_Settings_RoleColorAbility_desc".Translate());
+                        DoOutdent(listing);
                     }
+                    DoOutdent(listing);
                 }
+                listing.Gap();
+
+
                 /// end left column
                 //////////////////////////////
+                //listing.NewColumn();
+                //listing.ColumnWidth = 32f;
                 //////////////////////////////
                 /// begin right column
-                listingStandard.NewColumn();
-                listingStandard.ColumnWidth = inRect.width / 2.2f;
+                listing.NewColumn();
+                listing.ColumnWidth = inRect.width / 2f;
 
-                listingStandard.CheckboxLabeled("JobInBar_Settings_DrawBG".Translate(), ref Settings.DrawBG, "JobInBar_Settings_DrawBG_desc".Translate());
+                listing.Label("JobInBar_Settings_DisplaySettingsLabel".Translate());
+                listing.GapLine();
+                listing.Gap(24f);
 
-                listingStandard.Gap();
-                Rect colSettingRect = listingStandard.Label("JobInBar_Settings_JobLabelColor".Translate());
-                colSettingRect.x += 32f * 4;
+                listing.CheckboxLabeled("JobInBar_Settings_DrawBG".Translate(), ref Settings.DrawBG, "JobInBar_Settings_DrawBG_desc".Translate());
+
+                listing.Gap();
+                Rect colSettingRect = listing.Label("JobInBar_Settings_JobLabelColor".Translate());
+                //colSettingRect.x += 32f * 6;
+                colSettingRect.x += colSettingRect.width - 32f;
                 colSettingRect.y -= 6f;
                 colSettingRect.size = new Vector2(32f, 32f);
                 Widgets.DrawBoxSolid(colSettingRect, Settings.defaultJobLabelColor);
@@ -90,13 +117,21 @@ namespace JobInBar
                     }
                     ));
                 }
-                listingStandard.Gap();
-                listingStandard.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
-                Settings.labelAlpha = listingStandard.Slider(Settings.labelAlpha, 0f, 1f);
+                listing.Gap();
+                listing.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
+                Settings.labelAlpha = listing.Slider(Settings.labelAlpha, 0f, 1f);
                 Settings.defaultJobLabelColor.a = labelAlpha;
+
+                listing.GapLine();
+
+                listing.Label("JobInBar_Settings_Positioning".Translate());
+                listing.Label("JobInBar_Settings_Ypos".Translate() + Settings.JobLabelVerticalOffset);
+                Settings.JobLabelVerticalOffset = (int)listing.Slider(Settings.JobLabelVerticalOffset, -70f, 70f);
+                listing.Label("JobInBar_Settings_Ydist".Translate() + Settings.ExtraOffsetPerLine);
+                Settings.ExtraOffsetPerLine = (int)listing.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
             }
 
-            listingStandard.End();
+            listing.End();
             /// end right column
             //////////////////////////////
             /// end listing
@@ -112,6 +147,7 @@ namespace JobInBar
             Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", false);
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
             Scribe_Values.Look(ref DrawJob, "DrawJob", true);
+            Scribe_Values.Look(ref DefaultShowSetting, "DefaultShowSetting", true);
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
             Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable", false);
