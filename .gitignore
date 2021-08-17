@@ -260,3 +260,4 @@ Source/.vs/
 .vs/
 *.psd
 !*.dll
+Source/Art/
