@@ -9,9 +9,8 @@ namespace JobInBar
     [HarmonyPatch("DrawColonist")] // Method to patch
     public class ColonistBarColonistDrawer_DrawColonist_Patch
     {
-        public static void Postfix(Rect rect, Pawn colonist, bool highlight)
+        public static void Postfix(Rect rect, Pawn colonist, Map pawnMap, bool highlight, bool reordering)
         {
-
             ColonistBar bar = Find.ColonistBar;
             float num3 =  4f * bar.Scale;
 
