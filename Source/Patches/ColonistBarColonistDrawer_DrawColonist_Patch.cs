@@ -12,11 +12,9 @@ namespace JobInBar
         public static void Postfix(Rect rect, Pawn colonist, Map pawnMap, bool highlight, bool reordering)
         {
             ColonistBar bar = Find.ColonistBar;
-            float num3 =  4f * bar.Scale;
+            float barHeight =  4f * bar.Scale; // from Core
 
-            float verticalOffset = Settings.JobLabelVerticalOffset;
-
-            Vector2 pos = new Vector2(rect.center.x, rect.yMax - num3 + verticalOffset);
+            Vector2 pos = new Vector2(rect.center.x, rect.yMax - barHeight + Settings.JobLabelVerticalOffset);
             
             // Prevent broken game state if param is null somehow
             if (colonist == null)
