@@ -126,7 +126,7 @@ namespace JobInBar
 
                 listing.Label("JobInBar_Settings_Positioning".Translate());
                 listing.Label("JobInBar_Settings_Ypos".Translate() + Settings.JobLabelVerticalOffset);
-                Settings.JobLabelVerticalOffset = (int)listing.Slider(Settings.JobLabelVerticalOffset, -70f, 70f);
+                Settings.JobLabelVerticalOffset = (int)listing.Slider(Settings.JobLabelVerticalOffset, -150f, 150f);
                 listing.Label("JobInBar_Settings_Ydist".Translate() + Settings.ExtraOffsetPerLine);
                 Settings.ExtraOffsetPerLine = (int)listing.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
             }
