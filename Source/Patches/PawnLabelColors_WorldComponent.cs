@@ -33,6 +33,11 @@ namespace JobInBar
 
         public bool GetDrawJobLabelFor(Pawn pawn)
         {
+            if (pawn == null)
+            {
+                return Settings.DefaultShowSetting;
+                Log.Error("(Job in Bar) pawn passed to GetDrawJobLabelFor() was null. Returning default setting.");
+            }
             if (PawnShowJobLabels.ContainsKey(pawn))
             {
                 return PawnShowJobLabels[pawn];
