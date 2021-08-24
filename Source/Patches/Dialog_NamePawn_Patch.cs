@@ -8,6 +8,7 @@ using ColourPicker;
 
 namespace JobInBar
 {
+
     [HarmonyPatch(typeof(Dialog_NamePawn))]
     [HarmonyPatch("get_InitialSize")]
     // Expand the dialog to make room for new buttons
@@ -37,16 +38,17 @@ namespace JobInBar
             float swatchSize = 24f;
 
             PawnLabelCustomColors_WorldComponent labelsComp;
-            labelsComp = Find.World.components.OfType<PawnLabelCustomColors_WorldComponent>().First();
+            //labelsComp = Find.World.components.OfType<PawnLabelCustomColors_WorldComponent>().First();
+            labelsComp = PawnLabelCustomColors_WorldComponent.instance;
             if (labelsComp == null)
             {
-                Log.Error("Could not find PawnLabelCustomColors_WorldComponent");
+                Log.Error("Could not find PawnLabelCustomColors_WorldComponent. Colors and show settings won't work.");
             }
 
             //Color nameCol;
-            Color jobCol;
+            //Color jobCol;
 
-            labelsComp.GetJobLabelColorFor(pawn, out jobCol);
+            labelsComp.GetJobLabelColorFor(pawn, out Color jobCol);
 
             Rect leftRect = new Rect(15f, 88f, inRect.width / 2f - 20f, 36f);
             // Name recoloring disabled for now
