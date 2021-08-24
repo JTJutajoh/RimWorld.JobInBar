@@ -151,10 +151,11 @@ namespace JobInBar
         {
             if (Settings.TruncateJobs == false)
                 return labelString;
-            GameFont font2 = Text.Font;
+
+            GameFont oldFont = Text.Font;
             Text.Font = font;
             labelString = labelString.Truncate(truncateToWidth);
-            Text.Font = font2; // reset font
+            Text.Font = oldFont; // reset font
 
             return labelString;
         }

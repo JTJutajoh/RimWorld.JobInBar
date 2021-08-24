@@ -26,6 +26,8 @@ namespace JobInBar
         public static float labelAlpha = 0.8f;
 
 
+        // Pair of functions to have indents that don't go into the next column over
+        // Utility to copy to other mods maybe
         private void DoIndent(Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth -= amount;
