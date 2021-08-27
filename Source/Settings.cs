@@ -2,7 +2,7 @@
 using Verse;
 using RimWorld;
 using UnityEngine;
-using ColourPicker;
+using DarkColourPicker_Forked;
 
 namespace JobInBar
 {
@@ -49,7 +49,7 @@ namespace JobInBar
             /// listing
             //////////////////////////////
             /// begin left column
-            listing.ColumnWidth = inRect.width / 2f;
+            listing.ColumnWidth = inRect.width / 2.2f;
 
             listing.CheckboxLabeled("JobInBar_Settings_Enabled".Translate(), ref Settings.ModEnabled, "JobInBar_Settings_Enabled_desc".Translate());
             listing.GapLine();
@@ -94,7 +94,7 @@ namespace JobInBar
                 //////////////////////////////
                 /// begin right column
                 listing.NewColumn();
-                listing.ColumnWidth = inRect.width / 2f;
+                listing.ColumnWidth = inRect.width / 2.2f;
 
                 listing.Label("JobInBar_Settings_DisplaySettingsLabel".Translate());
                 listing.GapLine();

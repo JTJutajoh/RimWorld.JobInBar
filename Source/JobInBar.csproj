@@ -33,10 +33,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0ColourPicker, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\1.3\Assemblies\0ColourPicker.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="0DarkColourPicker_Forked">
+      <HintPath>E:\GameDev\Modding\RimworldMods\ColourPicker-master\ColourPicker-master\net472\0DarkColourPicker_Forked.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <EmbedInteropTypes>False</EmbedInteropTypes>

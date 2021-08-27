@@ -104,6 +104,10 @@ namespace JobInBar
 
             PawnLabelCustomColors_WorldComponent labelsComp = PawnLabelCustomColors_WorldComponent.instance;
 
+            if (labelsComp == null)
+            {
+                return Settings.defaultJobLabelColor;
+            }
             labelsComp.GetJobLabelColorFor(pawn, out LabelColor);
 
             return LabelColor;

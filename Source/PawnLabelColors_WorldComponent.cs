@@ -4,7 +4,7 @@ using Verse;
 using RimWorld;
 using RimWorld.Planet;
 using HarmonyLib;
-using ColourPicker;
+using DarkColourPicker_Forked;
 using UnityEngine;
 
 namespace JobInBar
