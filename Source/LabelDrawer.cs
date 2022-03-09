@@ -9,13 +9,14 @@ namespace JobInBar
     public class LabelDrawer
     {
         // Method used to draw all custom labels
-        public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f)
+        public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f, bool truncate = true)
         {
             //GameFont font2 = Text.Font;
             Text.Font = GameFont.Tiny;
             //Text.Font = font2;
 
-            labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
+            if (truncate)
+                labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
 
             float pawnLabelNameWidth = Text.CalcSize(labelToDraw).x;
 
@@ -59,12 +60,23 @@ namespace JobInBar
             DrawCustomLabel(pos, titleLabel, imperialColor, truncateToWidth);
         }
 
+        public static void DrawCurrentJobLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
+        {
+            string currentJob = colonist.GetJobDescription();
+
+            DrawCustomLabel(pos, currentJob, Settings.currentJobLabelColor, truncate:false);
+        }
+
         public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect, float truncateToWidth = 9999f)
         {
             Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3 only
             // first check if any of the labels should be drawn at all (eg disabled in settings)
-            if (LabelUtils.GetShouldDrawLabel(colonist))
+            
+
+            if (LabelUtils.GetShouldDrawLabel(colonist, rect))
             {
+                // Apply position offsets
+                pos = new Vector2(pos.x, pos.y + LabelUtils.GetLabelPositionOffsetFor(colonist));
                 if (LabelUtils.GetShouldDrawJobLabel(colonist))
                 {
                     LabelDrawer.DrawJobLabel(pos, colonist, truncateToWidth);
@@ -82,6 +94,12 @@ namespace JobInBar
                     LabelDrawer.DrawIdeoRoleLabel(pos, colonist, truncateToWidth);
                     pos += lineOffset;
                 }
+            }
+            if (Settings.DrawCurrentJob && Mouse.IsOver(rect))
+            {
+                pos += lineOffset;
+                LabelDrawer.DrawCurrentJobLabel(pos, colonist);
+                pos += lineOffset;
             }
         }
     }

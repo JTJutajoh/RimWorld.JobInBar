@@ -2,16 +2,18 @@
 using System.Linq;
 using Verse;
 using RimWorld;
+using RimWorld.Planet;
+using Verse.AI;
 using UnityEngine;
 using HarmonyLib;
 
 namespace JobInBar
 {
-    public class LabelUtils
+    public static class LabelUtils
     {
         //private static PawnLabelCustomColors_WorldComponent labelsComp;
 
-        public static bool GetShouldDrawLabel(Pawn colonist)
+        public static bool GetShouldDrawLabel(Pawn colonist, Rect rect)
         {
             if (Settings.ModEnabled == false)
             {
@@ -23,6 +25,10 @@ namespace JobInBar
                 return false;
             }
 
+            if (Settings.DrawLabelOnlyOnHover && !Mouse.IsOver(rect))
+            {
+                return false;
+            }
             return true;
         }
 
@@ -196,6 +202,45 @@ namespace JobInBar
             }
 
             return titleLabel;
+        }
+
+        public static float GetLabelPositionOffsetFor(Pawn colonist)
+        {
+            if (Settings.OffsetWhenWeaponEquipped && colonist.equipment.Primary != null)
+                return Settings.EquippedOffsetAmount;
+            else
+                return 0f;
+        }
+
+        // Below functions shamelessly taken from the excellent Moody mod
+        public static Caravan GetCaravan(this Pawn pawn)
+        {
+            return pawn.ParentHolder as Caravan;
+        }
+
+        public static string GetJobDescription(this Pawn pawn)
+        {
+            string text = "";
+            Pawn_JobTracker jobs = pawn.jobs;
+            bool flag = ( ( jobs != null ) ? jobs.curDriver : null ) != null;
+            if (flag)
+            {
+                text = pawn.jobs.curDriver.GetReport();
+            }
+            else
+            {
+                bool flag2 = pawn.GetCaravan() != null;
+                if (flag2)
+                {
+                    text = pawn.GetCaravan().LabelCap + ": " + pawn.GetCaravan().GetInspectString();
+                    bool flag3 = text.Contains('\n');
+                    if (flag3)
+                    {
+                        text = text.Substring(0, text.IndexOf('\n'));
+                    }
+                }
+            }
+            return text.CapitalizeFirst();
         }
     }
 }

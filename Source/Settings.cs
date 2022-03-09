@@ -14,7 +14,11 @@ namespace JobInBar
         public static bool DrawBG = true;
         public static bool TruncateJobs = true;
         public static bool HideWhenDrafted = false;
+        public static bool OffsetWhenWeaponEquipped = false; // For nicer compatibility with Show Draftees Weapon
+        public static float EquippedOffsetAmount = 32f;
         public static bool DrawJob = true;
+        public static bool DrawLabelOnlyOnHover = false;
+        public static bool DrawCurrentJob = true;
         public static bool DefaultShowSetting = true;
         public static bool DrawIdeoRoles = true;
         public static bool UseIdeoColorForRole = true;
@@ -23,6 +27,7 @@ namespace JobInBar
 
         // Color
         public static Color defaultJobLabelColor;
+        public static Color currentJobLabelColor;
         public static float labelAlpha = 0.8f;
 
 
@@ -59,7 +64,15 @@ namespace JobInBar
             {
                 listing.CheckboxLabeled("JobInBar_Settings_Truncate".Translate(), ref Settings.TruncateJobs, "JobInBar_Settings_Truncate_desc".Translate());
                 listing.CheckboxLabeled("JobInBar_Settings_HideDrafted".Translate(), ref Settings.HideWhenDrafted, "JobInBar_Settings_HideDrafted_desc".Translate());
+                listing.CheckboxLabeled("JobInBar_Settings_OffsetWhenWeaponEquipped".Translate(), ref Settings.OffsetWhenWeaponEquipped, "JobInBar_Settings_OffsetWhenWeaponEquipped_desc".Translate());
+                if (Settings.OffsetWhenWeaponEquipped)
+                {
+                    DoIndent(listing);
+                    Settings.EquippedOffsetAmount = (int)listing.Slider(Settings.EquippedOffsetAmount, -150f, 150f);
+                    DoOutdent(listing);
+                }
                 listing.Gap();
+                listing.CheckboxLabeled("JobInBar_Settings_DrawOnlyOnHover".Translate(), ref Settings.DrawLabelOnlyOnHover, "JobInBar_Settings_DrawOnlyOnHover_desc".Translate());
                 listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJob, "JobInBar_Settings_Job_desc".Translate());
                 if (Settings.DrawJob)
                 {
@@ -85,6 +98,30 @@ namespace JobInBar
                     DoOutdent(listing);
                 }
                 listing.Gap();
+                listing.GapLine();
+                listing.Label("JobInBar_Settings_CurrentJobHeader".Translate());
+                listing.CheckboxLabeled("JobInBar_Settings_DrawCurrentJob".Translate(), ref Settings.DrawCurrentJob, "JobInBar_Settings_DrawCurrentJob_desc".Translate());
+                if (Settings.DrawCurrentJob)
+                {
+                    listing.Gap();
+                    DoIndent(listing);
+                    Rect colSettingRect_CurJob = listing.Label("JobInBar_Settings_CurrentJobLabelColor".Translate());
+                    //colSettingRect.x += 32f * 6;
+                    colSettingRect_CurJob.x += colSettingRect_CurJob.width - 32f;
+                    colSettingRect_CurJob.y -= 6f;
+                    colSettingRect_CurJob.size = new Vector2(32f, 32f);
+                    Widgets.DrawBoxSolid(colSettingRect_CurJob, Settings.currentJobLabelColor);
+                    if (Widgets.ButtonInvisible(colSettingRect_CurJob, true))
+                    {
+                        Find.WindowStack.Add(new Dialog_ColourPicker(Settings.currentJobLabelColor,
+                        (newColor) =>
+                        {
+                            Settings.currentJobLabelColor = newColor;
+                        }
+                        ));
+                    }
+                    DoOutdent(listing);
+                }
 
 
                 /// end left column
@@ -147,8 +184,11 @@ namespace JobInBar
             Scribe_Values.Look(ref DrawBG, "DrawBG", true);
             Scribe_Values.Look(ref TruncateJobs, "TruncateJobs", true);
             Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", false);
+            Scribe_Values.Look(ref OffsetWhenWeaponEquipped, "OffsetWhenWeaponEquipped", false);
+            Scribe_Values.Look(ref EquippedOffsetAmount, "EquippedOffsetAmount", 32f);
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
             Scribe_Values.Look(ref DrawJob, "DrawJob", true);
+            Scribe_Values.Look(ref DrawLabelOnlyOnHover, "DrawLabelOnlyOnHover", false);
             Scribe_Values.Look(ref DefaultShowSetting, "DefaultShowSetting", true);
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
@@ -156,6 +196,7 @@ namespace JobInBar
             Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
 
             Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
+            Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
             Scribe_Values.Look(ref labelAlpha, "labelAlpha", 0.8f);
 
             base.ExposeData();
