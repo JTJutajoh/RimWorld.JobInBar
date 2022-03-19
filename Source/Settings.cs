@@ -27,7 +27,7 @@ namespace JobInBar
 
         // Color
         public static Color defaultJobLabelColor;
-        public static Color currentJobLabelColor;
+        public static Color currentJobLabelColor = Color.yellow;
         public static float labelAlpha = 0.8f;
 
 
@@ -110,6 +110,8 @@ namespace JobInBar
                     colSettingRect_CurJob.x += colSettingRect_CurJob.width - 32f;
                     colSettingRect_CurJob.y -= 6f;
                     colSettingRect_CurJob.size = new Vector2(32f, 32f);
+                    Widgets.DrawBoxSolid(colSettingRect_CurJob.ExpandedBy(2f, 2f), Color.white);
+                    Widgets.DrawBoxSolid(colSettingRect_CurJob.ExpandedBy(1f, 1f), Color.black);
                     Widgets.DrawBoxSolid(colSettingRect_CurJob, Settings.currentJobLabelColor);
                     if (Widgets.ButtonInvisible(colSettingRect_CurJob, true))
                     {
@@ -117,6 +119,7 @@ namespace JobInBar
                         (newColor) =>
                         {
                             Settings.currentJobLabelColor = newColor;
+                            Settings.currentJobLabelColor.a = labelAlpha;
                         }
                         ));
                     }
@@ -145,6 +148,8 @@ namespace JobInBar
                 colSettingRect.x += colSettingRect.width - 32f;
                 colSettingRect.y -= 6f;
                 colSettingRect.size = new Vector2(32f, 32f);
+                Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(2f,2f), Color.white);
+                Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(1f,1f), Color.black);
                 Widgets.DrawBoxSolid(colSettingRect, Settings.defaultJobLabelColor);
                 if (Widgets.ButtonInvisible(colSettingRect, true))
                 {
@@ -158,8 +163,9 @@ namespace JobInBar
                 }
                 listing.Gap();
                 listing.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
-                Settings.labelAlpha = listing.Slider(Settings.labelAlpha, 0f, 1f);
+                Settings.labelAlpha = listing.Slider(Settings.labelAlpha, 0.25f, 1f);
                 Settings.defaultJobLabelColor.a = labelAlpha;
+                Settings.currentJobLabelColor.a = labelAlpha;
 
                 listing.GapLine();
 
