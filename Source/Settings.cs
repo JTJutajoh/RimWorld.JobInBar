@@ -200,6 +200,7 @@ namespace JobInBar
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
             Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable", false);
             Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
+            Scribe_Values.Look(ref DrawCurrentJob, "DrawCurrentJob", true);
 
             Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
             Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
