@@ -3,7 +3,7 @@
 <LanguageData>
   <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
   <JobInBar_JobColorButton>Job Color</JobInBar_JobColorButton>
-  <JobInBar_ShowJobLabelFor>Show job label</JobInBar_ShowJobLabelFor>
+  <JobInBar_ShowJobLabelFor>Show</JobInBar_ShowJobLabelFor>
   <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
   <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
   <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
