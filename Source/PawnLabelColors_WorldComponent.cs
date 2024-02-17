@@ -53,7 +53,7 @@ namespace JobInBar
         {
             Color ColorColony = new Color(0.9f, 0.9f, 0.9f); // This is from PawnNameColorUtility.ColorColony
             //nameColor = PawnNameColorUtility.PawnNameColorOf(pawn);
-            jobColor = Settings.defaultJobLabelColor;
+            jobColor = Settings.DefaultJobLabelColor;
 
             if (!HasCustomColor(pawn))
             {

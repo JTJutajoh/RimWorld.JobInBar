@@ -26,7 +26,10 @@ namespace JobInBar
         public static bool DrawRoyalTitles = true;
 
         // Color
-        public static Color defaultJobLabelColor;
+        public readonly static Color defaultDefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
+        private static Color defaultJobLabelColor = defaultDefaultJobLabelColor;
+        public static bool useCustomJobLabelColor = false;
+        public static Color DefaultJobLabelColor { get { return Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : Settings.defaultDefaultJobLabelColor; } }
         public static Color currentJobLabelColor = Color.yellow;
         public static float labelAlpha = 0.8f;
 
@@ -150,16 +153,26 @@ namespace JobInBar
                 colSettingRect.size = new Vector2(32f, 32f);
                 Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(2f,2f), Color.white);
                 Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(1f,1f), Color.black);
-                Widgets.DrawBoxSolid(colSettingRect, Settings.defaultJobLabelColor);
+                Widgets.DrawBoxSolid(colSettingRect, Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : GenMapUI.DefaultThingLabelColor);
                 if (Widgets.ButtonInvisible(colSettingRect, true))
                 {
-                    Find.WindowStack.Add(new Dialog_ColourPicker(Settings.defaultJobLabelColor,
+                    Find.WindowStack.Add(new Dialog_ColourPicker(Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : GenMapUI.DefaultThingLabelColor,
                     (newColor) =>
                     {
                         Settings.defaultJobLabelColor = newColor;
                         Settings.defaultJobLabelColor.a = labelAlpha;
+                        Settings.useCustomJobLabelColor = true;
                     }
                     ));
+                }
+                Rect colResetRect = colSettingRect;
+                colResetRect.x += colSettingRect.width + 8;
+                colResetRect.width = 100;
+                if (Widgets.ButtonText(colResetRect, "JobInBar_Settings_ResetColor".Translate()))
+                {
+                    Settings.useCustomJobLabelColor = false;
+                    Settings.defaultJobLabelColor = Settings.defaultDefaultJobLabelColor;
+                    Settings.labelAlpha = 0.8f;
                 }
                 listing.Gap();
                 listing.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
@@ -202,9 +215,21 @@ namespace JobInBar
             Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
             Scribe_Values.Look(ref DrawCurrentJob, "DrawCurrentJob", true);
 
-            Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
-            Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
             Scribe_Values.Look(ref labelAlpha, "labelAlpha", 0.8f);
+
+            Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
+            if (useCustomJobLabelColor && defaultJobLabelColor.IndistinguishableFrom(new Color(0,0,0, labelAlpha)))
+            {
+                Log.Warning($"[Dark.JobInBar] Found default job label color with broken value. Setting 'useCustomJobLabelColor' to false to ignore the config value (set the color in mod options again to override if it was the color you wanted).");
+                useCustomJobLabelColor = false;
+            }
+            else
+            {
+                useCustomJobLabelColor = true;
+            }
+            Log.Message($"ExposeData() Found color {defaultJobLabelColor}");
+            Scribe_Values.Look(ref useCustomJobLabelColor, "useCustomJobLabelColor", false);
+            Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
 
             base.ExposeData();
         }

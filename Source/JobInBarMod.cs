@@ -15,6 +15,8 @@ namespace JobInBar
             Harmony harmony = new Harmony("Dark.JobInBar");
 
             harmony.PatchAll();
+
+            Log.Message($"[Dark.JobInBar] loaded");
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

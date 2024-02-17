@@ -40,5 +40,6 @@
   <JobInBar_Settings_DefaultShow_desc>Sets the default for if job labels should be shown. Can be toggled individually per-colonist.</JobInBar_Settings_DefaultShow_desc>
   <JobInBar_Settings_DisplaySettingsLabel>Display Settings</JobInBar_Settings_DisplaySettingsLabel>
   <JobInBar_SettingsCategory>Job Label In Colonist Bar</JobInBar_SettingsCategory>
+  <JobInBar_Settings_ResetColor>Reset</JobInBar_Settings_ResetColor>
 
 </LanguageData>

@@ -106,13 +106,13 @@ namespace JobInBar
         // Fetches the label color setting for the job label (And others in certain situations)
         public static Color GetJobLabelColorForPawn(Pawn pawn)
         {
-            Color LabelColor = Settings.defaultJobLabelColor;
+            Color LabelColor = Settings.DefaultJobLabelColor;
 
             PawnLabelCustomColors_WorldComponent labelsComp = PawnLabelCustomColors_WorldComponent.instance;
 
             if (labelsComp == null)
             {
-                return Settings.defaultJobLabelColor;
+                return Settings.DefaultJobLabelColor;
             }
             labelsComp.GetJobLabelColorFor(pawn, out LabelColor);
 
