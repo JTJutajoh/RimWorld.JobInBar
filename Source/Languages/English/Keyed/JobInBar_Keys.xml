@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<LanguageData>
+  <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
+  <JobInBar_JobColorButton>Job Color</JobInBar_JobColorButton>
+  <JobInBar_ShowJobLabelFor>Show</JobInBar_ShowJobLabelFor>
+  <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
+  <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
+  <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
+  <JobInBar_Settings_Ypos>Vertical offset: </JobInBar_Settings_Ypos>
+  <JobInBar_Settings_Ydist>Vertical offset between labels: </JobInBar_Settings_Ydist>
+  <JobInBar_Settings_DrawBG>Draw Background:</JobInBar_Settings_DrawBG>
+  <JobInBar_Settings_DrawBG_desc>Draw a black box behind the job title, just like the name label.</JobInBar_Settings_DrawBG_desc>
+  <JobInBar_Settings_Truncate>Truncate long labels</JobInBar_Settings_Truncate>
+  <JobInBar_Settings_Truncate_desc>If turned off, long job titles will overflow. Looks ugly but might be the behavior you want.</JobInBar_Settings_Truncate_desc>
+  <JobInBar_Settings_HideDrafted>Hide when drafted</JobInBar_Settings_HideDrafted>
+  <JobInBar_Settings_HideDrafted_desc>Hides the job title label when the colonist is drafted. Helpful when using other colonist bar mods like Show Draftees Weapon.</JobInBar_Settings_HideDrafted_desc>
+  <JobInBar_Settings_OffsetWhenWeaponEquipped>Label offset when weapon equipped</JobInBar_Settings_OffsetWhenWeaponEquipped>
+  <JobInBar_Settings_OffsetWhenWeaponEquipped_desc>Offset to move the labels by when the pawn in question has a weapon equipped. Looks better with the mod Show Draftees Weapon to move labels out of the way of the weapon display.</JobInBar_Settings_OffsetWhenWeaponEquipped_desc>
+  <JobInBar_Settings_Job>Draw job titles</JobInBar_Settings_Job>
+  <JobInBar_Settings_Job_desc>Draws a colonist's current job. The main function of the mod.</JobInBar_Settings_Job_desc>
+  <JobInBar_Settings_CurrentJobHeader>Turn on the below setting to have a label on mouse hover that shows you what task a pawn is currently performing.
+  Note that this can potentially have a negative impact on performance.</JobInBar_Settings_CurrentJobHeader>
+  <JobInBar_Settings_DrawCurrentJob>Draw label for pawn's current task</JobInBar_Settings_DrawCurrentJob>
+  <JobInBar_Settings_DrawCurrentJob_desc>If enabled, a label will be drawn for the job that a pawn is currently performing (ie cleaning/crafting/building). Note that the label will only be drawn for a pawn the mouse is hovering over for performance and visual clutter reasons.</JobInBar_Settings_DrawCurrentJob_desc>
+  <JobInBar_Settings_CurrentJobLabelColor>Current job label color</JobInBar_Settings_CurrentJobLabelColor>
+  <JobInBar_Settings_DrawOnlyOnHover>Only show labels on mouse hover</JobInBar_Settings_DrawOnlyOnHover>
+  <JobInBar_Settings_DrawOnlyOnHover_desc>Only draws labels for pawns the mouse is currently hovering over in the colonist bar.</JobInBar_Settings_DrawOnlyOnHover_desc>
+  <JobInBar_Settings_Role>Draw Ideology specialist roles (If available)</JobInBar_Settings_Role>
+  <JobInBar_Settings_Role_desc>If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.</JobInBar_Settings_Role_desc>
+  <JobInBar_Settings_RoleColor>Use Ideology color for roles</JobInBar_Settings_RoleColor>
+  <JobInBar_Settings_RoleColor_desc>Turn this off if the ideology color makes it hard to read the specialist role color or you find it distracting.</JobInBar_Settings_RoleColor_desc>
+  <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready</JobInBar_Settings_RoleColorAbility>
+  <JobInBar_Settings_RoleColorAbility_desc>If enabled, the ideology role color will only be used if the role's ability cooldown is complete and the ability can be used. Otherwise will be the same color as the name label.</JobInBar_Settings_RoleColorAbility_desc>
+  <JobInBar_Settings_Title>Draw Royalty titles (If available)</JobInBar_Settings_Title>
+  <JobInBar_Settings_Title_desc>If Royalty is installed, draws the royal titles owned by a pawn below the job label.</JobInBar_Settings_Title_desc>
+  <JobInBar_Settings_Alpha>Opacity for all labels</JobInBar_Settings_Alpha>
+  <JobInBar_Settings_JobLabelColor>Job Label Default Color</JobInBar_Settings_JobLabelColor>
+  <JobInBar_Settings_DefaultShow>Show job label by default</JobInBar_Settings_DefaultShow>
+  <JobInBar_Settings_DefaultShow_desc>Sets the default for if job labels should be shown. Can be toggled individually per-colonist.</JobInBar_Settings_DefaultShow_desc>
+  <JobInBar_Settings_DisplaySettingsLabel>Display Settings</JobInBar_Settings_DisplaySettingsLabel>
+  <JobInBar_SettingsCategory>Job Label In Colonist Bar</JobInBar_SettingsCategory>
+  <JobInBar_Settings_ResetColor>Reset</JobInBar_Settings_ResetColor>
+
+</LanguageData>

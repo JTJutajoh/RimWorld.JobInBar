@@ -227,7 +227,6 @@ namespace JobInBar
             {
                 useCustomJobLabelColor = true;
             }
-            Log.Message($"ExposeData() Found color {defaultJobLabelColor}");
             Scribe_Values.Look(ref useCustomJobLabelColor, "useCustomJobLabelColor", false);
             Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
 

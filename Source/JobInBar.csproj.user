@@ -25,4 +25,9 @@
     <StartProgram>C:\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\Job In Bar\Source\..\..\RimWorldWin.exe</StartProgram>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5|AnyCPU'">
+    <StartProgram>D:\Games\Steam\steamapps\common\RimWorld\RimWorldWin64.exe</StartProgram>
+    <StartArguments>-quicktest -popupwindow</StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>
