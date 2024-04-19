@@ -11,8 +11,6 @@
   <JobInBar_Settings_Ydist>Vertical offset between labels: </JobInBar_Settings_Ydist>
   <JobInBar_Settings_DrawBG>Draw Background:</JobInBar_Settings_DrawBG>
   <JobInBar_Settings_DrawBG_desc>Draw a black box behind the job title, just like the name label.</JobInBar_Settings_DrawBG_desc>
-  <JobInBar_Settings_Truncate>Truncate long labels</JobInBar_Settings_Truncate>
-  <JobInBar_Settings_Truncate_desc>If turned off, long job titles will overflow. Looks ugly but might be the behavior you want.</JobInBar_Settings_Truncate_desc>
   <JobInBar_Settings_HideDrafted>Hide when drafted</JobInBar_Settings_HideDrafted>
   <JobInBar_Settings_HideDrafted_desc>Hides the job title label when the colonist is drafted. Helpful when using other colonist bar mods like Show Draftees Weapon.</JobInBar_Settings_HideDrafted_desc>
   <JobInBar_Settings_OffsetWhenWeaponEquipped>Label offset when weapon equipped</JobInBar_Settings_OffsetWhenWeaponEquipped>

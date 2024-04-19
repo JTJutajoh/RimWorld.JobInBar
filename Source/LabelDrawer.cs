@@ -8,7 +8,7 @@ namespace JobInBar
 {
     public class LabelDrawer
     {
-        // Method used to draw all custom labels
+        // Generic method used to draw all custom labels
         public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f, bool truncate = true)
         {
             //GameFont font2 = Text.Font;
@@ -34,71 +34,39 @@ namespace JobInBar
             Text.Font = GameFont.Tiny;
             Widgets.Label(rect, labelToDraw);
 
-            // Reset the gui drawing settings
+            // Reset the gui drawing settings to what they were before
             GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
-        public static void DrawJobLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
-        {
-            string jobLabel = LabelUtils.GetJobLabel(colonist);
-
-            DrawCustomLabel(pos, jobLabel, LabelUtils.GetJobLabelColorForPawn(colonist), truncateToWidth);
-        }
-        public static void DrawIdeoRoleLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
-        {
-            string roleLabel = LabelUtils.GetIdeoRoleLabel(colonist);
-
-            DrawCustomLabel(pos, roleLabel, LabelUtils.GetIdeoLabelColorForPawn(colonist), truncateToWidth);
-        }
-        public static void DrawRoyalTitleLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
-        {
-            string titleLabel = LabelUtils.GetRoyalTitleLabel(colonist);
-
-            Color imperialColor = new Color(0.85f, 0.85f, 0.75f);
-
-            DrawCustomLabel(pos, titleLabel, imperialColor, truncateToWidth);
-        }
-
-        public static void DrawCurrentJobLabel(Vector2 pos, Pawn colonist, float truncateToWidth = 9999f)
-        {
-            string currentJob = colonist.GetJobDescription();
-
-            DrawCustomLabel(pos, currentJob, Settings.currentJobLabelColor, truncate:false);
-        }
-
         public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect, float truncateToWidth = 9999f)
         {
-            Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3 only
-            // first check if any of the labels should be drawn at all (eg disabled in settings)
-            
+            Vector2 lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
-            if (LabelUtils.GetShouldDrawLabel(colonist, rect))
+            // Apply position offsets
+            pos = new Vector2(pos.x, pos.y + colonist.GetLabelPositionOffset());
+            if (colonist.GetShouldDrawPermanentLabels(rect))
             {
-                // Apply position offsets
-                pos = new Vector2(pos.x, pos.y + LabelUtils.GetLabelPositionOffsetFor(colonist));
-                if (LabelUtils.GetShouldDrawJobLabel(colonist))
+                if (colonist.GetShouldDrawJobLabel())
                 {
-                    LabelDrawer.DrawJobLabel(pos, colonist, truncateToWidth);
+                    DrawCustomLabel(pos, colonist.GetJobLabel(), colonist.GetJobLabelColorForPawn(), truncateToWidth);
                     pos += lineOffset;
                 }
-
-                if (LabelUtils.GetShouldDrawRoyalTitleLabel(colonist))
+                if (colonist.GetShouldDrawRoyalTitleLabel())
                 {
-                    LabelDrawer.DrawRoyalTitleLabel(pos, colonist, truncateToWidth);
+                    Color imperialColor = new Color(0.85f, 0.85f, 0.75f);
+                    DrawCustomLabel(pos, colonist.GetRoyalTitleLabel(), imperialColor, truncateToWidth);
                     pos += lineOffset;
                 }
-
-                if (LabelUtils.GetShouldDrawIdeoRoleLabel(colonist))
+                if (colonist.GetShouldDrawIdeoRoleLabel())
                 {
-                    LabelDrawer.DrawIdeoRoleLabel(pos, colonist, truncateToWidth);
+                    DrawCustomLabel(pos, colonist.GetIdeoRoleLabel(), colonist.GetIdeoLabelColorForPawn(), truncateToWidth);
                     pos += lineOffset;
                 }
             }
             if (Settings.DrawCurrentJob && Mouse.IsOver(rect))
             {
-                pos += lineOffset;
-                LabelDrawer.DrawCurrentJobLabel(pos, colonist);
+                DrawCustomLabel(pos, colonist.GetJobDescription(), Settings.currentJobLabelColor, truncate: false);
                 pos += lineOffset;
             }
         }

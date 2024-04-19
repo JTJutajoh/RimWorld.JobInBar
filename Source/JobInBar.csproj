@@ -110,12 +110,15 @@
     <None Include="..\About\About.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogPrefixed.cs" />
     <Compile Include="Patches\Dialog_NamePawn_Patch.cs" />
     <Compile Include="LabelUtils.cs" />
     <Compile Include="Patches\ColonistBarColonistDrawer_DrawColonist_Patch.cs" />
     <Compile Include="JobInBarMod.cs" />
     <Compile Include="LabelDrawer.cs" />
+    <Compile Include="Patches\DoPlaySettingsGlobalControls_ShowLabelsToggle.cs" />
     <Compile Include="PawnLabelColors_WorldComponent.cs" />
+    <Compile Include="PawnLabelExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>

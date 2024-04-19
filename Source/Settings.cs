@@ -3,6 +3,7 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 using DarkColourPicker_Forked;
+using DarkLog;
 
 namespace JobInBar
 {
@@ -12,14 +13,11 @@ namespace JobInBar
         public static int ExtraOffsetPerLine = -4;
         public static bool ModEnabled = true;
         public static bool DrawBG = true;
-        public static bool TruncateJobs = true;
         public static bool HideWhenDrafted = false;
-        public static bool OffsetWhenWeaponEquipped = false; // For nicer compatibility with Show Draftees Weapon
-        public static float EquippedOffsetAmount = 32f;
         public static bool DrawJob = true;
+        public static bool OnlyDrawJobIfCustom = false;
         public static bool DrawLabelOnlyOnHover = false;
         public static bool DrawCurrentJob = true;
-        public static bool DefaultShowSetting = true;
         public static bool DrawIdeoRoles = true;
         public static bool UseIdeoColorForRole = true;
         public static bool RoleColorOnlyIfAbilityAvailable = false;
@@ -61,26 +59,17 @@ namespace JobInBar
 
             listing.CheckboxLabeled("JobInBar_Settings_Enabled".Translate(), ref Settings.ModEnabled, "JobInBar_Settings_Enabled_desc".Translate());
             listing.GapLine();
-            listing.Gap(24f);
+            listing.Label("JobInBar_Settings_PerformanceWarning".Translate());
+            listing.GapLine();
 
             if (Settings.ModEnabled)
-            {
-                listing.CheckboxLabeled("JobInBar_Settings_Truncate".Translate(), ref Settings.TruncateJobs, "JobInBar_Settings_Truncate_desc".Translate());
-                listing.CheckboxLabeled("JobInBar_Settings_HideDrafted".Translate(), ref Settings.HideWhenDrafted, "JobInBar_Settings_HideDrafted_desc".Translate());
-                listing.CheckboxLabeled("JobInBar_Settings_OffsetWhenWeaponEquipped".Translate(), ref Settings.OffsetWhenWeaponEquipped, "JobInBar_Settings_OffsetWhenWeaponEquipped_desc".Translate());
-                if (Settings.OffsetWhenWeaponEquipped)
-                {
-                    DoIndent(listing);
-                    Settings.EquippedOffsetAmount = (int)listing.Slider(Settings.EquippedOffsetAmount, -150f, 150f);
-                    DoOutdent(listing);
-                }
-                listing.Gap();
+            {   
                 listing.CheckboxLabeled("JobInBar_Settings_DrawOnlyOnHover".Translate(), ref Settings.DrawLabelOnlyOnHover, "JobInBar_Settings_DrawOnlyOnHover_desc".Translate());
                 listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJob, "JobInBar_Settings_Job_desc".Translate());
                 if (Settings.DrawJob)
                 {
                     DoIndent(listing);
-                    listing.CheckboxLabeled("JobInBar_Settings_DefaultShow".Translate(), ref Settings.DefaultShowSetting, "JobInBar_Settings_DefaultShow_desc".Translate());
+                    listing.CheckboxLabeled("JobInBar_Settings_OnlyDrawJobIfCustom".Translate(), ref Settings.OnlyDrawJobIfCustom, "JobInBar_Settings_OnlyDrawJobIfCustom_desc".Translate());
                     DoOutdent(listing);
                 }
                 listing.Gap();
@@ -102,12 +91,12 @@ namespace JobInBar
                 }
                 listing.Gap();
                 listing.GapLine();
-                listing.Label("JobInBar_Settings_CurrentJobHeader".Translate());
                 listing.CheckboxLabeled("JobInBar_Settings_DrawCurrentJob".Translate(), ref Settings.DrawCurrentJob, "JobInBar_Settings_DrawCurrentJob_desc".Translate());
                 if (Settings.DrawCurrentJob)
                 {
                     listing.Gap();
                     DoIndent(listing);
+                    listing.Label("JobInBar_Settings_CurrentJobHeader".Translate());
                     Rect colSettingRect_CurJob = listing.Label("JobInBar_Settings_CurrentJobLabelColor".Translate());
                     //colSettingRect.x += 32f * 6;
                     colSettingRect_CurJob.x += colSettingRect_CurJob.width - 32f;
@@ -201,14 +190,11 @@ namespace JobInBar
             Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
             Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
             Scribe_Values.Look(ref DrawBG, "DrawBG", true);
-            Scribe_Values.Look(ref TruncateJobs, "TruncateJobs", true);
             Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", false);
-            Scribe_Values.Look(ref OffsetWhenWeaponEquipped, "OffsetWhenWeaponEquipped", false);
-            Scribe_Values.Look(ref EquippedOffsetAmount, "EquippedOffsetAmount", 32f);
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
             Scribe_Values.Look(ref DrawJob, "DrawJob", true);
+            Scribe_Values.Look(ref OnlyDrawJobIfCustom, "OnlyDrawJobIfCustom", false);
             Scribe_Values.Look(ref DrawLabelOnlyOnHover, "DrawLabelOnlyOnHover", false);
-            Scribe_Values.Look(ref DefaultShowSetting, "DefaultShowSetting", true);
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
             Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable", false);
@@ -220,7 +206,7 @@ namespace JobInBar
             Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
             if (useCustomJobLabelColor && defaultJobLabelColor.IndistinguishableFrom(new Color(0,0,0, labelAlpha)))
             {
-                Log.Warning($"[Dark.JobInBar] Found default job label color with broken value. Setting 'useCustomJobLabelColor' to false to ignore the config value (set the color in mod options again to override if it was the color you wanted).");
+                LogPrefixed.Warning($"[Dark.JobInBar] Found default job label color with broken value. Setting 'useCustomJobLabelColor' to false to ignore the config value (set the color in mod options again to override if it was the color you wanted).");
                 useCustomJobLabelColor = false;
             }
             else
