@@ -8,7 +8,6 @@ namespace JobInBar
 {
     public class LabelDrawer
     {
-        // Generic method used to draw all custom labels
         public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f, bool truncate = true)
         {
             //GameFont font2 = Text.Font;

@@ -9,23 +9,31 @@ namespace JobInBar
 {
     class Settings : Verse.ModSettings
     {
+        public static bool ModEnabled = true;
+
         public static int JobLabelVerticalOffset = 14;
         public static int ExtraOffsetPerLine = -4;
-        public static bool ModEnabled = true;
+
         public static bool DrawBG = true;
-        public static bool HideWhenDrafted = false;
-        public static bool DrawJob = true;
+
+        public static bool DrawJobTitle = true;
         public static bool OnlyDrawJobIfCustom = false;
         public static bool DrawLabelOnlyOnHover = false;
+
         public static bool DrawCurrentJob = true;
+
         public static bool DrawIdeoRoles = true;
         public static bool UseIdeoColorForRole = true;
         public static bool RoleColorOnlyIfAbilityAvailable = false;
+
         public static bool DrawRoyalTitles = true;
 
         // Color
+        [Obsolete("This was just a quick fix for an old bug. Going to be replaced by the new presets system.")]
         public readonly static Color defaultDefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
+        [Obsolete("PROBABLY going to be replaced by the new presets system.")]
         private static Color defaultJobLabelColor = defaultDefaultJobLabelColor;
+        [Obsolete("This was just a quick fix for an old bug. Will be irrelevant once the new presets system is implemented.")]
         public static bool useCustomJobLabelColor = false;
         public static Color DefaultJobLabelColor { get { return Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : Settings.defaultDefaultJobLabelColor; } }
         public static Color currentJobLabelColor = Color.yellow;
@@ -65,8 +73,8 @@ namespace JobInBar
             if (Settings.ModEnabled)
             {   
                 listing.CheckboxLabeled("JobInBar_Settings_DrawOnlyOnHover".Translate(), ref Settings.DrawLabelOnlyOnHover, "JobInBar_Settings_DrawOnlyOnHover_desc".Translate());
-                listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJob, "JobInBar_Settings_Job_desc".Translate());
-                if (Settings.DrawJob)
+                listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJobTitle, "JobInBar_Settings_Job_desc".Translate());
+                if (Settings.DrawJobTitle)
                 {
                     DoIndent(listing);
                     listing.CheckboxLabeled("JobInBar_Settings_OnlyDrawJobIfCustom".Translate(), ref Settings.OnlyDrawJobIfCustom, "JobInBar_Settings_OnlyDrawJobIfCustom_desc".Translate());
@@ -190,9 +198,8 @@ namespace JobInBar
             Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
             Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
             Scribe_Values.Look(ref DrawBG, "DrawBG", true);
-            Scribe_Values.Look(ref HideWhenDrafted, "HideWhenDrafted", false);
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
-            Scribe_Values.Look(ref DrawJob, "DrawJob", true);
+            Scribe_Values.Look(ref DrawJobTitle, "DrawJob", true);
             Scribe_Values.Look(ref OnlyDrawJobIfCustom, "OnlyDrawJobIfCustom", false);
             Scribe_Values.Look(ref DrawLabelOnlyOnHover, "DrawLabelOnlyOnHover", false);
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);

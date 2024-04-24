@@ -19,9 +19,6 @@ namespace JobInBar
             if (Settings.ModEnabled == false || DoPlaySettingsGlobalControls_ShowLabelsToggle.drawLabels == false)
                 return false;
 
-            if ((colonist.Drafted && Settings.HideWhenDrafted))
-                return false;
-
             if (Settings.DrawLabelOnlyOnHover && !Mouse.IsOver(rect))
                 return false;
 
@@ -30,7 +27,7 @@ namespace JobInBar
 
         public static bool GetShouldDrawJobLabel(this Pawn colonist)
         {
-            if (!Settings.DrawJob)
+            if (!Settings.DrawJobTitle)
                 return false;
 
             if (!Settings.OnlyDrawJobIfCustom)
