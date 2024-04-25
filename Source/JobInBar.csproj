@@ -116,8 +116,8 @@
     <Compile Include="HarmonyPatches\ColonistBarColonistDrawer_DrawColonist_Patch.cs" />
     <Compile Include="JobInBarMod.cs" />
     <Compile Include="LabelDrawer.cs" />
-    <Compile Include="PawnLabelColors_WorldComponent.cs" />
     <Compile Include="HarmonyPatches\DoPlaySettingsGlobalControls_ShowLabelsToggle.cs" />
+    <Compile Include="LabelsTracker_WorldComponent.cs" />
     <Compile Include="PawnLabelExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
