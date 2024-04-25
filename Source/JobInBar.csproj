@@ -110,6 +110,8 @@
     <None Include="..\About\About.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ITab_Pawn_Labels.cs" />
+    <Compile Include="LabelsCardUtility.cs" />
     <Compile Include="LogPrefixed.cs" />
     <Compile Include="HarmonyPatches\Dialog_NamePawn_Patch.cs" />
     <Compile Include="LabelUtils.cs" />

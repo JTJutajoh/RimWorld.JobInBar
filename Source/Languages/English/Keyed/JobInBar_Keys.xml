@@ -45,5 +45,8 @@
   <JobInBar_Settings_PerformanceWarning>Note on Performance:
 For large colonies, it is recommended to tweak these settings so that fewer labels are drawn overall. Unity's text rendering code is not the most optimized, so if there are a ton of labels being drawn all the time you might notice a slight performance dip (the more labels the worse it will be).</JobInBar_Settings_PerformanceWarning>
   <JobInBar_PlaySettingsToggle>Show/hide job labels in the colonist bar. Disabling this can slightly improve performance in large colonies.</JobInBar_PlaySettingsToggle>
+  <TabLabels>Labels</TabLabels>
+  <Presets>Presets</Presets>
+  <JobInBar_ShowAnyLabels>Show/hide all</JobInBar_ShowAnyLabels>
 
 </LanguageData>

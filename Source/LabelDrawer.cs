@@ -8,8 +8,17 @@ namespace JobInBar
 {
     public class LabelDrawer
     {
+        /// <summary>
+        /// Draws a custom label at the specified position with the specified text, color, and truncation options.
+        /// </summary>
+        /// <param name="pos">The position at which to draw the label.</param>
+        /// <param name="labelToDraw">The text of the label to draw.</param>
+        /// <param name="labelColor">The color of the label to draw.</param>
+        /// <param name="truncateToWidth">The maximum width, in pixels, of the label after truncation.</param>
+        /// <param name="truncate">A value indicating whether to truncate the label if it exceeds the specified width.</param>
         public static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f, bool truncate = true)
         {
+            // Save the current font and restore it after drawing the label
             //GameFont font2 = Text.Font;
             Text.Font = GameFont.Tiny;
             //Text.Font = font2;
@@ -19,7 +28,6 @@ namespace JobInBar
 
             float pawnLabelNameWidth = Text.CalcSize(labelToDraw).x;
 
-            // calculate the sizes
             Rect rect = LabelUtils.GetLabelRect(pos, pawnLabelNameWidth);
             Rect bgRect = LabelUtils.GetLabelBGRect(pos, pawnLabelNameWidth);
 
@@ -33,7 +41,7 @@ namespace JobInBar
             Text.Font = GameFont.Tiny;
             Widgets.Label(rect, labelToDraw);
 
-            // Reset the gui drawing settings to what they were before
+            // Reset the GUI color to white
             GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
         }
@@ -53,8 +61,7 @@ namespace JobInBar
                 }
                 if (colonist.GetShouldDrawRoyalTitleLabel())
                 {
-                    Color imperialColor = new Color(0.85f, 0.85f, 0.75f);
-                    DrawCustomLabel(pos, colonist.GetRoyalTitleLabel(), imperialColor, truncateToWidth);
+                    DrawCustomLabel(pos, colonist.GetRoyalTitleLabel(), LabelUtils.imperialColor, truncateToWidth);
                     pos += lineOffset;
                 }
                 if (colonist.GetShouldDrawIdeoRoleLabel())
