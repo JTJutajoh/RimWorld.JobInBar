@@ -29,7 +29,6 @@
     <DefineConstants>v1_2</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -38,7 +37,6 @@
     <DefineConstants>v1_4</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -47,7 +45,6 @@
     <DefineConstants>v1_4</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -56,7 +53,6 @@
     <DefineConstants>v1_2</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -65,7 +61,6 @@
     <DefineConstants>v1_5</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
