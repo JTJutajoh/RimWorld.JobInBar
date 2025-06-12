@@ -130,6 +130,7 @@ namespace JobInBar
             );
             curY += lineHeight + 4f;
 
+#if v1_4 || v1_5 || v1_6
             // Color picker
             if (checkOn && color != null && onColorApply != null)
             {
@@ -153,6 +154,7 @@ namespace JobInBar
                 
                 curY += lineHeight;
             }
+#endif
         }
     }
 }

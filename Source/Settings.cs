@@ -27,6 +27,7 @@ namespace JobInBar
 
         public static bool DrawRoyalTitles = true;
 
+#if v1_4 || v1_5 || v1_6
         // Color
         //TODO: Create some way to modify this list in settings.
         public static List<Color> AllColors = new List<Color>()
@@ -60,6 +61,9 @@ namespace JobInBar
             new Color(0.8f, 0.4f, 0.6f), // Rose
         };
         public static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
+#elif v1_3 || v1_2 || v1_1
+        public static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor;
+#endif
         public static Color CurrentJobLabelColor = new Color(1f, 0.8f, 0.4f);
         public static float LabelAlpha = 0.6f;
 
@@ -128,6 +132,7 @@ namespace JobInBar
                 
                 var buttonWidth = 80f;
                 listing.CheckboxLabeled("JobInBar_Settings_DrawCurrentJob".Translate(), ref Settings.DrawCurrentJob, "JobInBar_Settings_DrawCurrentJob_desc".Translate());
+#if v1_4 || v1_5 || v1_6
                 if (Settings.DrawCurrentJob)
                 {
                     listing.Gap();
@@ -151,6 +156,7 @@ namespace JobInBar
                     Widgets.DrawBoxSolid(new Rect(colSettingRect_CurJob.xMax - 32f, colSettingRect_CurJob.yMin, 32f, 32f), Settings.CurrentJobLabelColor);
                     DoOutdent(listing);
                 }
+#endif
                 // end left column
                 //////////////////////////////
 
@@ -167,6 +173,7 @@ namespace JobInBar
 
                 listing.Gap();
                 
+#if v1_4 || v1_5 || v1_6
                 var colSettingRect = listing.Label("JobInBar_Settings_JobLabelColor".Translate());
                 if (Widgets.ButtonTextSubtle(new Rect(colSettingRect.xMax - buttonWidth - 32f - 8f, colSettingRect.yMin, buttonWidth, 32f), "JobInBar_Change".Translate()))
                 {
@@ -182,6 +189,7 @@ namespace JobInBar
                     ));
                 }
                 Widgets.DrawBoxSolid(new Rect(colSettingRect.xMax - 32f, colSettingRect.yMin, 32f, 32f), Settings.DefaultJobLabelColor);
+#endif
                 
                 listing.Gap();
                 

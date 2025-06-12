@@ -66,6 +66,7 @@ namespace JobInBar
 
         public static float LabelYOffset(this Pawn colonist) 
         {
+#if v1_4 || v1_5 || v1_6 
             var equipment = colonist.equipment;
 
             var showWeaponMode = Prefs.ShowWeaponsUnderPortraitMode;
@@ -77,6 +78,7 @@ namespace JobInBar
             {
                 return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f * Settings.ExtraOffsetWeapon;
             }
+#endif
 
             return 0f;
         }
