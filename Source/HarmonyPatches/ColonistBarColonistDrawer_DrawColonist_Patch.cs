@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using System;
+using RimWorld;
 using HarmonyLib;
 using Verse;
 using UnityEngine;
@@ -17,7 +18,14 @@ namespace JobInBar
 
             var pos = new Vector2(rect.center.x, rect.yMax - barHeight + Settings.JobLabelVerticalOffset);
 
-            LabelDrawer.DrawLabels(colonist, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
+            try
+            {
+                LabelDrawer.DrawLabels(colonist, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, extraMessage: "Top-level uncaught exception", once: true);
+            }
         }
     }
 }

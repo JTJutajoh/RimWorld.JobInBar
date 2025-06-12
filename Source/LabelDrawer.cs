@@ -1,4 +1,5 @@
 ﻿using System;
+using DarkLog;
 using Verse;
 using RimWorld;
 using UnityEngine;
@@ -54,26 +55,57 @@ namespace JobInBar
             pos = new Vector2(pos.x, pos.y + colonist.LabelYOffset());
             if (colonist.DrawAnyPermanentLabels(rect))
             {
-                if (colonist.ShouldDrawJobLabel())
+                try
                 {
-                    DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth);
-                    pos += lineOffset;
+                    if (colonist.ShouldDrawJobLabel())
+                    {
+                        DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth);
+                        pos += lineOffset;
+                    }
                 }
-                if (colonist.ShouldDrawRoyaltyLabel())
+                catch (Exception e)
                 {
-                    DrawCustomLabel(pos, colonist.RoyaltyLabel(), LabelUtils.ImperialColor, truncateToWidth);
-                    pos += lineOffset;
+                    LogPrefixed.Exception(e, extraMessage: "Job label", once: true);
                 }
-                if (colonist.ShouldDrawIdeoLabel())
+
+                try
                 {
-                    DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth);
+                    if (colonist.ShouldDrawRoyaltyLabel())
+                    {
+                        DrawCustomLabel(pos, colonist.RoyaltyLabel(), LabelUtils.ImperialColor, truncateToWidth);
+                        pos += lineOffset;
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogPrefixed.Exception(e, extraMessage: "Royalty label", once: true);
+                }
+
+                try
+                {
+                    if (colonist.ShouldDrawIdeoLabel())
+                    {
+                        DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth);
+                        pos += lineOffset;
+                    }
+                }
+                catch (Exception e)
+                {
+                    LogPrefixed.Exception(e, extraMessage: "Ideology role label", once: true);
+                }
+            }
+
+            try
+            {
+                if (Settings.DrawCurrentJob && Mouse.IsOver(rect))
+                {
+                    DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentJobLabelColor, truncate: false);
                     pos += lineOffset;
                 }
             }
-            if (Settings.DrawCurrentJob && Mouse.IsOver(rect))
+            catch (Exception e)
             {
-                DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentJobLabelColor, truncate: false);
-                pos += lineOffset;
+                LogPrefixed.Exception(e, extraMessage: "Current job label", once: false);
             }
         }
     }
