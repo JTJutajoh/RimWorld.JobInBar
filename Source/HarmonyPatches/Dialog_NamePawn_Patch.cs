@@ -1,67 +1,160 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using DarkLog;
 using Verse;
 using RimWorld;
 using HarmonyLib;
 using UnityEngine;
-//using DarkColourPicker_Forked;
 
 namespace JobInBar
 {
-    // Disabled for now because it broke the UI and the features it was relevant to are being overhauled.
+    [HarmonyPatch(typeof(Dialog_NamePawn))]
+    [HarmonyPatch("DoWindowContents")]
+    public class Dialog_NamePawn_DoWindowContents_Patch
+    {
+        private static float DialogAdditionalHeight => 80f;
 
-    //[HarmonyPatch(typeof(Dialog_NamePawn))]
-    //[HarmonyPatch("get_InitialSize")]
-    //// Expand the dialog to make room for new buttons
-    //public class Dialog_NamePawn_get_InitialSize_Patch
-    //{
-    //    public static void Postfix(ref Vector2 __result)
-    //    {
-    //        __result.y += 36f;
-    //    }
-    //}
+        private static float _startY = DialogAdditionalHeight;
 
-    //[HarmonyPatch(typeof(Dialog_NamePawn))]
-    //[HarmonyPatch("DoWindowContents")]
-    //public class Dialog_NamePawn_DoWindowContents_Patch
-    //{
-    //    public static void Postfix(ref Pawn ___pawn, Rect inRect)
-    //    {
-    //        Pawn pawn = ___pawn;
+        /// <summary>
+        /// Used to ignore non-colonist pawns and pets.
+        /// </summary>
+        private static bool IsValidPawn(Pawn pawn)
+        {
+            return (pawn.RaceProps?.Humanlike ?? false) && pawn.IsColonist;
+        }
+        
+        /// <summary>
+        /// Patch that the rename dialog before anything is added to it.
+        /// </summary>
+        public static void Prefix(ref Vector2 ___size, ref Pawn? ___pawn)
+        {
+            if (___pawn == null || !IsValidPawn(___pawn)) return;
 
-    //        Rect regionRect = inRect;
-    //        regionRect.width -= 64f;
-    //        regionRect.x += 32f;
-    //        regionRect.height = 36f;
-    //        regionRect.y += 90f;
+            var additionalY = DialogAdditionalHeight;
 
-    //        PawnLabelCustomColors_WorldComponent labelsComp = PawnLabelCustomColors_WorldComponent.instance;
-    //        if (labelsComp == null)
-    //        {
-    //            Log.Error("Could not find PawnLabelCustomColors_WorldComponent. Colors and show settings won't work.");
-    //        }
+            if (Verse.ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && ___pawn.royalty?.MainTitle() is not null)
+            {
+                additionalY += 32f;
+            }
+            if (Verse.ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && ___pawn.ideo?.Ideo?.GetRole(___pawn) is not null)
+            {
+                additionalY += 32f;
+            }
 
-    //        // Disabled for now because the old color system sucked and this button was being drawn on top of things it shouldn't be.
-    //        /*labelsComp.GetJobLabelColorFor(pawn, out Color jobCol);
+            _startY = additionalY - 8f;
 
-    //        Rect rectColorPicker = new Rect(inRect.width - 42f, inRect.height - 90f, 36f, 36f);
+            ___size = new Vector2(___size.x, ___size.y + additionalY);
+        }
+        
+        /// <summary>
+        /// Patch that adds the custom GUI to the rename dialog
+        /// </summary>
+        public static void Postfix(ref Pawn? ___pawn, Rect inRect)
+        {
+            if (___pawn == null || !IsValidPawn(___pawn)) return;
+            
+            DoExtraWindowContents(___pawn, inRect);
+        }
 
-    //        if (Widgets.ButtonInvisible(rectColorPicker, true))
-    //        {
-    //            Find.WindowStack.Add(
-    //                new Dialog_ColourPicker(
-    //                    jobCol.ToOpaque(),
-    //                    (newColor) => labelsComp.SetJobLabelColorFor(pawn, newColor)
-    //                )
-    //            );
-    //        }
+        private static void DoExtraWindowContents(Pawn  pawn, Rect inRect)
+        {
+            var labelsComp = LabelsTracker_WorldComponent.Instance;
+            if (labelsComp is null)
+            {
+                LogPrefixed.Error("Error while trying to add to rename dialog");
+                return;
+            }
+            
+            var containerRect = inRect.BottomPartPixels(_startY);
+            containerRect.ContractedBy(0f, 8f);
+            var curY = containerRect.yMin;
 
-    //        Widgets.DrawBoxSolid(rectColorPicker, jobCol);*/
+            Widgets.DrawLineHorizontal(containerRect.xMin, containerRect.yMin, containerRect.width);
+            curY += 8f;
+            
+            // Job title toggle
+            DoLabelRow(
+                containerRect, 
+                ref curY,
+                "JobInBar_ShowJobLabelFor".Translate(),
+                ref labelsComp[pawn].ShowBackstory,
+                labelsComp[pawn].BackstoryColor,
+                color => labelsComp[pawn].BackstoryColor = color
+            );
+            
+            if (Verse.ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && pawn.royalty?.MainTitle() is not null)
+            {
+                DoLabelRow(
+                    containerRect,
+                    ref curY,
+                    "JobInBar_ShowRoyaltyLabelFor".Translate(),
+                    ref labelsComp[pawn].ShowRoyalTitle
+                );
+            }
+            if (Verse.ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && pawn.ideo?.Ideo?.GetRole(pawn) is not null)
+            {
+                DoLabelRow(
+                    containerRect,
+                    ref curY,
+                    "JobInBar_ShowIdeoLabelFor".Translate(),
+                    ref labelsComp[pawn].ShowIdeoRole
+                );
+            }
+        }
 
-    //        bool shouldDraw = labelsComp.GetDrawJobLabelFor(pawn);
-    //        Rect rectToggle = new Rect(inRect.width - 112f, inRect.height - 90f, 64f, 36f);
-    //        Widgets.CheckboxLabeled(rectToggle, "JobInBar_ShowJobLabelFor".Translate(), ref shouldDraw, placeCheckboxNearText: true);
-    //        labelsComp.SetDrawJobLabelFor(pawn, shouldDraw);
-    //    }
-    //}
+        private static void DoLabelRow(
+            Rect containerRect,
+            ref float curY,
+            string label,
+            ref bool checkOn,
+            Color? color = null,
+            Action<Color>? onColorApply = null
+        )
+        {
+            var labelsComp = LabelsTracker_WorldComponent.Instance;
+            if (labelsComp is null)
+            {
+                LogPrefixed.Error("Error while trying to add to rename dialog");
+                return;
+            }
+            var lineHeight = Text.LineHeightOf(GameFont.Medium);
+            
+            var rectToggle = new Rect(containerRect.xMin, curY, containerRect.width, lineHeight);
+            Widgets.CheckboxLabeled(
+                rectToggle,
+                label,
+                ref checkOn,
+                placeCheckboxNearText: false
+            );
+            curY += lineHeight + 4f;
+
+#if v1_4 || v1_5 || v1_6
+            // Color picker
+            if (checkOn && color != null && onColorApply != null)
+            {
+                var rectColorPick = new Rect(containerRect.xMin, curY, containerRect.width, lineHeight);
+                Widgets.Label(rectColorPick, "JobInBar_JobLabelColor".Translate());
+                var buttonWidth = 80f;
+                var rectColor = new Rect(rectColorPick.xMax - lineHeight - buttonWidth - 8f, rectColorPick.yMin, buttonWidth, lineHeight);
+                
+                if (Widgets.ButtonTextSubtle(rectColor, "JobInBar_Change".Translate()))
+                {
+                    Find.WindowStack.Add(
+                        new Dialog_ChooseColor(
+                            "JobInBar_LabelColorPickerHeading".Translate(),
+                            color.Value,
+                            Settings.AllColors,
+                            onColorApply
+                        )
+                    );
+                }
+                Widgets.DrawBoxSolid(new Rect(rectColor.xMax + 8f, rectColor.yMin, lineHeight, lineHeight), color.Value);
+                
+                curY += lineHeight;
+            }
+#endif
+        }
+    }
 }

@@ -14,9 +14,9 @@ namespace JobInBar
 {
     public static class PawnLabelExtensions
     {
-        public static bool GetShouldDrawPermanentLabels(this Pawn colonist, Rect rect)
+        public static bool DrawAnyPermanentLabels(this Pawn colonist, Rect rect)
         {
-            if (Settings.ModEnabled == false || DoPlaySettingsGlobalControls_ShowLabelsToggle.drawLabels == false)
+            if (Settings.ModEnabled == false || DoPlaySettingsGlobalControls_ShowLabelsToggle.DrawLabels == false)
                 return false;
 
             if (Settings.DrawLabelOnlyOnHover && !Mouse.IsOver(rect))
@@ -25,25 +25,23 @@ namespace JobInBar
             return true;
         }
 
-        public static bool GetShouldDrawJobLabel(this Pawn colonist)
-        {
-            if (!Settings.DrawJobTitle)
-                return false;
+        public static bool ShouldDrawJobLabel(this Pawn colonist) => colonist.story?.Title != null &&
+                (LabelsTracker_WorldComponent.Instance?[colonist].ShowBackstory ?? false);
 
-            if (!Settings.OnlyDrawJobIfCustom)
-                return true;
+        public static bool ShouldDrawIdeoLabel(this Pawn colonist) =>
+            Settings.DrawIdeoRoles &&
+            (colonist.ideo?.Ideo?.GetRole(colonist) is not null) &&
+            (LabelsTracker_WorldComponent.Instance?[colonist].ShowIdeoRole ?? false);
 
-            return colonist.story.title != null;
-        }
+        public static bool ShouldDrawRoyaltyLabel(this Pawn colonist) =>
+            Settings.DrawRoyalTitles && 
+            (colonist.royalty?.MainTitle() is not null) &&
+            (LabelsTracker_WorldComponent.Instance?[colonist].ShowRoyalTitle ?? false);
 
-        public static bool GetShouldDrawIdeoRoleLabel(this Pawn colonist) => Settings.DrawIdeoRoles ? (colonist?.ideo?.Ideo?.GetRole(colonist) is Precept_Role role) : false;
-
-        public static bool GetShouldDrawRoyalTitleLabel(this Pawn colonist) => Settings.DrawRoyalTitles ? (colonist?.royalty?.MainTitle() is RoyalTitleDef) : false;
-
-        public static Color GetJobLabelColorForPawn(this Pawn pawn) => Settings.DefaultJobLabelColor;
+        public static Color JobLabelColor(this Pawn pawn) => LabelsTracker_WorldComponent.Instance?[pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
 
         // Looks up the pawn's ideology and returns the rgb color associated with that ideology, adjusting it for readability
-        public static Color GetIdeoLabelColorForPawn(this Pawn pawn)
+        public static Color IdeoLabelColor(this Pawn pawn)
         {
             if (Settings.UseIdeoColorForRole && pawn?.ideo?.Ideo?.GetRole(pawn) is Precept_Role role)
             {
@@ -60,46 +58,47 @@ namespace JobInBar
             return PawnNameColorUtility.PawnNameColorOf(pawn);
         }
 
-        public static string GetJobLabel(this Pawn colonist) => colonist?.story?.TitleShortCap;
+        public static string JobLabel(this Pawn colonist) => colonist.story?.TitleShortCap ?? "";
 
-        public static string GetIdeoRoleLabel(this Pawn colonist) => colonist?.ideo?.Ideo?.GetRole(colonist)?.LabelForPawn(colonist);
+        public static string IdeoLabel(this Pawn colonist) => colonist.ideo?.Ideo?.GetRole(colonist)?.LabelForPawn(colonist) ?? "";
 
-        public static string GetRoyalTitleLabel(this Pawn colonist) => colonist?.royalty?.MainTitle()?.GetLabelCapFor(colonist);
+        public static string RoyaltyLabel(this Pawn colonist) => colonist.royalty?.MainTitle()?.GetLabelCapFor(colonist) ?? "";
 
-        //TODO: Replace this with something smarter instead of just checking settings
-        public static float GetLabelPositionOffset(this Pawn colonist)
+        public static float LabelYOffset(this Pawn colonist) 
         {
+#if v1_4 || v1_5 || v1_6 
             var equipment = colonist.equipment;
-            if (
-                    (
-                        Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.Always ||
-                        (Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.WhileDrafted && colonist.Drafted)
-                    ) &&
-                    colonist?.equipment?.Primary is ThingWithComps equipped && equipped.def.IsWeapon
-                )
+
+            var showWeaponMode = Prefs.ShowWeaponsUnderPortraitMode;
+            var isWeaponShownPref = showWeaponMode == ShowWeaponsUnderPortraitMode.Always ||
+                                    showWeaponMode == ShowWeaponsUnderPortraitMode.WhileDrafted && colonist.Drafted;
+            var hasWeaponEquipped = colonist.equipment?.Primary?.def?.IsWeapon ?? false;
+
+            if (isWeaponShownPref && hasWeaponEquipped)
             {
-                return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f;
+                return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f * Settings.ExtraOffsetWeapon;
             }
+#endif
 
             return 0f;
         }
 
-        public static Caravan GetCaravan(this Pawn pawn) => pawn.ParentHolder as Caravan;
+        public static Caravan? Caravan(this Pawn pawn) => pawn.ParentHolder as Caravan;
 
-        public static string GetJobDescription(this Pawn pawn)
+        public static string CurrentTaskDesc(this Pawn pawn)
         {
-            string text = "";
-            Pawn_JobTracker jobs = pawn.jobs;
-            if (pawn?.jobs?.curDriver is JobDriver curDriver)
+            var text = "";
+            var jobs = pawn.jobs;
+            if (pawn.jobs?.curDriver is JobDriver curDriver)
             {
                 text = curDriver.GetReport();
             }
             else
             {
-                bool inCaravan = pawn.GetCaravan() != null;
+                var inCaravan = pawn.Caravan() != null;
                 if (inCaravan)
                 {
-                    text = pawn.GetCaravan().LabelCap + ": " + pawn.GetCaravan().GetInspectString();
+                    text = pawn.Caravan()?.LabelCap + ": " + pawn.Caravan()?.GetInspectString() ?? "";
                     if (text.Contains('\n'))
                     {
                         text = text.Substring(0, text.IndexOf('\n'));
@@ -108,5 +107,7 @@ namespace JobInBar
             }
             return text.CapitalizeFirst();
         }
+
+        public static bool IsLabelTracked(this Pawn pawn) => LabelsTracker_WorldComponent.Instance?.TrackedPawns.ContainsKey(pawn) ?? false;
     }
 }

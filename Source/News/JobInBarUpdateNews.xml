@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <HugsLib.UpdateFeatureDef Abstract="true" Name="JobInBarUpdateFeatureBase">
+        <modNameReadable>Job In Bar</modNameReadable>
+        <modIdentifier>JobInBar</modIdentifier>
+        <linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2086300611</linkUrl>
+    </HugsLib.UpdateFeatureDef>
+    
+    <HugsLib.UpdateFeatureDef ParentName="JobInBarUpdateFeatureBase">
+        <defName>JobInBar_1.6.0</defName>
+        <assemblyVersion>1.6.0</assemblyVersion>
+        <content>Tentatively updated for RimWorld 1.6. Please report any issues you find.
+Previous problems with log spam and GUI elements interfering with vanilla UI should be resolved.
+I removed the dependency for Fluffy's old colour picker mod and replaced it with the vanilla color picker, but it only allows predefined colors. For now the available colors are hard-coded.
+There is also a new toggle in the bottom right buttons that hides all labels at once. Use this if you have a large colony and the number of labels is actually causing a performance problem, or if you just want to de-clutter.
+
+NOTE: New fixes/improvements are ONLY for RimWorld 1.4-1.6. If you're still playing on 1.3 or earlier (why?) you should see no change.</content>
+    </HugsLib.UpdateFeatureDef>
+</Defs>

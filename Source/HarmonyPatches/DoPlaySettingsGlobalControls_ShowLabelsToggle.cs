@@ -13,14 +13,14 @@ namespace JobInBar
     [HarmonyPatch(typeof(PlaySettings), nameof(PlaySettings.DoPlaySettingsGlobalControls))]
     public class DoPlaySettingsGlobalControls_ShowLabelsToggle
     {
-        public static bool drawLabels = true;
+        public static bool DrawLabels = true;
 
         public static void Postfix(WidgetRow row, bool worldView)
         {
             if (!Settings.ModEnabled || worldView) return;
 
             var texture = ContentFinder<Texture2D>.Get("UI/LabelToggle", true) ?? TexButton.Rename;
-            row.ToggleableIcon(ref drawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle);
+            row.ToggleableIcon(ref DrawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle);
         }
     }
 }

@@ -9,16 +9,16 @@ namespace JobInBar
 {
     public class JobInBarMod : Verse.Mod
     {
-        public static JobInBarMod instance;
-        public static JobInBarMod Instance => instance;
+        public static JobInBarMod? Instance { get; private set; }
+
         public JobInBarMod(ModContentPack content) : base(content)
         {
-            instance = this;
+            Instance = this;
             LogPrefixed.modInst = this;
 
             GetSettings<Settings>();
 
-            Harmony harmony = new Harmony("Dark.JobInBar");
+            var harmony = new Harmony("Dark.JobInBar");
 
             harmony.PatchAll();
 
