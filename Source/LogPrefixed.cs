@@ -18,12 +18,13 @@ namespace DarkLog
     [StaticConstructorOnStartup]
     static class LogPrefixed
     {
-        public static Verse.Mod modInst;
-        static string PackageId => modInst?.Content.PackageIdPlayerFacing ?? Assembly.GetEntryAssembly().GetName().Name;
+        public static Verse.Mod? modInst;
+        static string PackageId => modInst?.Content.PackageIdPlayerFacing ??
+                                   (Assembly.GetEntryAssembly()?.GetName().Name ?? "");
 
-        static string PrefixColor = "cyan";
+        static string _prefixColor = "cyan";
 
-        static string PrefixedMessage(string message) => $"<color={PrefixColor}>[{PackageId}]</color> {message}";
+        static string PrefixedMessage(string message) => $"<color={_prefixColor}>[{PackageId}]</color> {message}";
 
         static LogPrefixed()
         {
