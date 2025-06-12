@@ -73,9 +73,12 @@ namespace DarkLog
         
         public static void WarningOnce(string text, String key)
         {
+#if v1_4 || v1_5 || v1_6
             Log.WarningOnce(PrefixedMessage(text), key.GetHashCode());
-        }
+#else
+            Log.Warning(PrefixedMessage(text));
 #endif
+        }
 
         public static void Message(string text)
         {
