@@ -161,7 +161,6 @@
     <ItemGroup>
       <Assemblies Include="$(OutputPath)\*.dll" />
       <Assemblies Include="$(OutputPath)\*.pdb" />
-      <Assemblies Include="$(OutputPath)\*.mdb" />
     </ItemGroup>
 
     <Copy
