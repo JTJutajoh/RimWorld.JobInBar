@@ -54,8 +54,15 @@ namespace JobInBar
         public static void Postfix(ref Pawn? ___pawn, Rect inRect)
         {
             if (___pawn == null || !IsValidPawn(___pawn)) return;
-            
-            DoExtraWindowContents(___pawn, inRect);
+
+            try
+            {
+                DoExtraWindowContents(___pawn, inRect);
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, extraMessage: "Rename dialog", once: true);
+            }
         }
 
         private static void DoExtraWindowContents(Pawn  pawn, Rect inRect)

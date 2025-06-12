@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DarkLog;
 using RimWorld.Planet;
 using RimWorld;
 using Verse;
@@ -43,16 +44,23 @@ namespace JobInBar
         // Looks up the pawn's ideology and returns the rgb color associated with that ideology, adjusting it for readability
         public static Color IdeoLabelColor(this Pawn pawn)
         {
-            if (Settings.UseIdeoColorForRole && pawn?.ideo?.Ideo?.GetRole(pawn) is Precept_Role role)
+            try
             {
-                bool abilityReady = pawn?.ideo?.Ideo?.GetRole(pawn)?.AbilitiesFor(pawn)[0]?.CanCast ?? false;
-                if (!Settings.RoleColorOnlyIfAbilityAvailable || (Settings.RoleColorOnlyIfAbilityAvailable && abilityReady))
+                if (Settings.UseIdeoColorForRole && pawn?.ideo?.Ideo?.GetRole(pawn) is Precept_Role role)
                 {
-                    // Brighten ideo colors so dark ones are readable
-                    // Magic number: 0.35f for the lerp to white, to brighten every ideo color by a set amount. 
-                    // tested with black to assure minimum readability
-                    return Color.Lerp(role.ideo.colorDef.color, Color.white, 0.35f);
+                    bool abilityReady = pawn?.ideo?.Ideo?.GetRole(pawn)?.AbilitiesFor(pawn)[0]?.CanCast ?? false;
+                    if (!Settings.RoleColorOnlyIfAbilityAvailable || (Settings.RoleColorOnlyIfAbilityAvailable && abilityReady))
+                    {
+                        // Brighten ideo colors so dark ones are readable
+                        // Magic number: 0.35f for the lerp to white, to brighten every ideo color by a set amount. 
+                        // tested with black to assure minimum readability
+                        return Color.Lerp(role.ideo.colorDef.color, Color.white, 0.35f);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, extraMessage: "Ideo label color", once: true);
             }
 
             return PawnNameColorUtility.PawnNameColorOf(pawn);

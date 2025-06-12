@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DarkLog;
 using RimWorld;
 using Verse;
 using HarmonyLib;
@@ -17,10 +18,17 @@ namespace JobInBar
 
         public static void Postfix(WidgetRow row, bool worldView)
         {
-            if (!Settings.ModEnabled || worldView) return;
+            try
+            {
+                if (!Settings.ModEnabled || worldView) return;
 
-            var texture = ContentFinder<Texture2D>.Get("UI/LabelToggle", true) ?? TexButton.Rename;
-            row.ToggleableIcon(ref DrawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle);
+                var texture = ContentFinder<Texture2D>.Get("UI/LabelToggle", true) ?? TexButton.Rename;
+                row.ToggleableIcon(ref DrawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle);
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, extraMessage: "Show labels toggle", once: true);
+            }
         }
     }
 }

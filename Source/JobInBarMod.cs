@@ -20,7 +20,14 @@ namespace JobInBar
 
             var harmony = new Harmony("Dark.JobInBar");
 
-            harmony.PatchAll();
+            try
+            {
+                harmony.PatchAll();
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, "Harmony patching", false);
+            }
 
             LogPrefixed.Message("Patching complete");
         }
@@ -28,7 +35,15 @@ namespace JobInBar
         public override void DoSettingsWindowContents(Rect inRect)
         {
             base.DoSettingsWindowContents(inRect);
-            GetSettings<Settings>().DoWindowContents(inRect);
+            try
+            {
+                GetSettings<Settings>().DoWindowContents(inRect);
+            }
+            catch (Exception e)
+            {
+                LogPrefixed.Exception(e, "Settings window", true);
+                Widgets.Label(inRect, $"Error rendering settings window: {e.Message}, see log for stack trace. Please report this to the mod author.");
+            }
         }
 
         public override string SettingsCategory()
