@@ -57,14 +57,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6|AnyCPU'">
     <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <DefineConstants>v1_6
-DEBUG</DefineConstants>
+    <DefineConstants>v1_6</DefineConstants>
     <Optimize>true</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\1.6\Assemblies\</OutputPath>
