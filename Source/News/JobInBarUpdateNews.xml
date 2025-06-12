@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <HugsLib.UpdateFeatureDef Abstract="true" Name="JobInBarUpdateFeatureBase">
+        <modNameReadable>Job In Bar</modNameReadable>
+        <modIdentifier>JobInBar</modIdentifier>
+        <linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2086300611</linkUrl>
+    </HugsLib.UpdateFeatureDef>
+    
+    <HugsLib.UpdateFeatureDef ParentName="JobInBarUpdateFeatureBase">
+        <defName>JobInBar_1.6.0</defName>
+        <assemblyVersion>1.6.0</assemblyVersion>
+        <content>Tentatively updated for RimWorld 1.6. Please report any issues you find. Previous problems with log spam and GUI elements interfering with vanilla UI should be resolved. I removed the dependency for Fluffy's old colour picker mod and replaced it with the vanilla color picker, but it only allows predefined colors. For now the available colors are hard-coded. NOTE: Not all fixes/improvements have been backported to all older RimWorld versions!</content>
+    </HugsLib.UpdateFeatureDef>
+</Defs>
