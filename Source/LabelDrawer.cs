@@ -54,17 +54,17 @@ namespace JobInBar
             pos = new Vector2(pos.x, pos.y + colonist.LabelYOffset());
             if (colonist.DrawAnyPermanentLabels(rect))
             {
-                if (colonist.DrawJobLabel())
+                if (colonist.ShouldDrawJobLabel())
                 {
                     DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth);
                     pos += lineOffset;
                 }
-                if (colonist.DrawRoyaltyLabel())
+                if (colonist.ShouldDrawRoyaltyLabel())
                 {
                     DrawCustomLabel(pos, colonist.RoyaltyLabel(), LabelUtils.ImperialColor, truncateToWidth);
                     pos += lineOffset;
                 }
-                if (colonist.DrawIdeoLabel())
+                if (colonist.ShouldDrawIdeoLabel())
                 {
                     DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth);
                     pos += lineOffset;

@@ -12,7 +12,8 @@ namespace JobInBar
         public static bool ModEnabled = true;
 
         public static int JobLabelVerticalOffset = 14;
-        public static int ExtraOffsetPerLine = -4;
+        public static int ExtraOffsetPerLine = -4; // Legacy setting that I don't think anyone used
+        public static float ExtraOffsetWeapon = 0.85f;
 
         public static bool DrawBG = true;
         
@@ -30,34 +31,37 @@ namespace JobInBar
         //TODO: Create some way to modify this list in settings.
         public static List<Color> AllColors = new List<Color>()
         {
+            GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f)),
             Color.white,
             Color.gray,
+            new Color(0.2f, 0.2f, 0.2f), // Dark gray
             Color.black,
-            Color.blue,
-            Color.cyan,
-            Color.green,
-            Color.yellow,
-            Color.red,
-            Color.magenta,
-            new Color(0.5f,0f,0f),
-            new Color(0f,0.5f,0f),
-            new Color(0f,0f,0.5f),
-            new Color(0.8f,0.35f,0f),
-            new Color(0.2f,0.7f,0.7f),
-            new Color(0.1f,0.3f,0.9f),
-            new Color(0.8f,0.8f,0.2f),
-            new Color(0.5f,0.9f,0.4f),
-            new Color(0.8f,0.7f,0f),
-            new Color(0.7f,0.95f,0.4f),
-            new Color(0.5f,0.85f,0.7f),
-            new Color(0.1f,0.3f,0.15f),
-            new Color(0f,0.2f,0.9f),
-            new Color(0.7f,0.5f,0.6f),
-            new Color(0.75f,0.75f,0.1f),
+            new Color(0.9f, 0.2f, 0.2f), // Bright red
+            new Color(0.6f, 0.1f, 0.1f), // Dark red
+            new Color(0.8f, 0.4f, 0f), // Orange 
+            new Color(0.8f, 0.6f, 0.2f), // Bronze
+            new Color(1.0f, 0.8f, 0.4f), // Yellow
+            new Color(1.0f, 0.85f, 0f), // Golden yellow
+            new Color(0.7f, 0.7f, 0f), // Olive
+            new Color(0.6f, 0.8f, 0.2f), // Lime
+            new Color(0.2f, 0.8f, 0.2f), // Bright green
+            new Color(0.4f, 0.8f, 0.4f), // Light green
+            new Color(0.1f, 0.6f, 0.1f), // Dark green
+            new Color(0.2f, 0.6f, 0.6f), // Sea green
+            new Color(0.0f, 0.6f, 0.6f), // Teal
+            new Color(0f, 0.75f, 0.75f), // Bright cyan
+            new Color(0.6f, 0.8f, 0.8f), // Light blue
+            new Color(0f, 0.45f, 0.85f), // Strong blue
+            new Color(0.2f, 0.4f, 0.8f), // Royal blue
+            new Color(0.1f, 0.1f, 0.6f), // Dark blue
+            new Color(0.4f, 0.4f, 0.8f), // Periwinkle
+            new Color(0.4f, 0.2f, 0.6f), // Purple
+            new Color(0.8f, 0.2f, 0.8f), // Bright magenta
+            new Color(0.8f, 0.4f, 0.6f), // Rose
         };
         public static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
-        public static Color CurrentJobLabelColor = new Color(1f, 0.8f, 0.4f, 0.8f);
-        public static float LabelAlpha = 0.8f;
+        public static Color CurrentJobLabelColor = new Color(1f, 0.8f, 0.4f);
+        public static float LabelAlpha = 0.6f;
 
         private static void DoIndent(Listing_Standard listing, float amount = 12f)
         {
@@ -90,23 +94,36 @@ namespace JobInBar
                 listing.CheckboxLabeled("JobInBar_Settings_DrawOnlyOnHover".Translate(), ref Settings.DrawLabelOnlyOnHover, "JobInBar_Settings_DrawOnlyOnHover_desc".Translate());
                 listing.Gap();
 
-                listing.CheckboxLabeled("JobInBar_Settings_Title".Translate(), ref Settings.DrawRoyalTitles, "JobInBar_Settings_Title_desc".Translate());
-                listing.Gap();
-                listing.CheckboxLabeled("JobInBar_Settings_Role".Translate(), ref Settings.DrawIdeoRoles, "JobInBar_Settings_Role_desc".Translate());
-                if (Settings.DrawIdeoRoles)
+                if (Verse.ModsConfig.RoyaltyActive)
                 {
-                    DoIndent(listing);
-                    listing.CheckboxLabeled("JobInBar_Settings_RoleColor".Translate(), ref Settings.UseIdeoColorForRole, "JobInBar_Settings_RoleColor_desc".Translate());
-                    if (Settings.UseIdeoColorForRole)
-                    {
-                        DoIndent(listing);
-                        listing.CheckboxLabeled("JobInBar_Settings_RoleColorAbility".Translate(), ref Settings.RoleColorOnlyIfAbilityAvailable, "JobInBar_Settings_RoleColorAbility_desc".Translate());
-                        DoOutdent(listing);
-                    }
-                    DoOutdent(listing);
+                    listing.CheckboxLabeled("JobInBar_Settings_Title".Translate(), ref Settings.DrawRoyalTitles,
+                        "JobInBar_Settings_Title_desc".Translate());
+                    listing.Gap();
                 }
                 
-                listing.Gap();
+                if (Verse.ModsConfig.IdeologyActive)
+                {
+                    listing.CheckboxLabeled("JobInBar_Settings_Role".Translate(), ref Settings.DrawIdeoRoles,
+                        "JobInBar_Settings_Role_desc".Translate());
+                    if (Settings.DrawIdeoRoles)
+                    {
+                        DoIndent(listing);
+                        listing.CheckboxLabeled("JobInBar_Settings_RoleColor".Translate(),
+                            ref Settings.UseIdeoColorForRole, "JobInBar_Settings_RoleColor_desc".Translate());
+                        if (Settings.UseIdeoColorForRole)
+                        {
+                            DoIndent(listing);
+                            listing.CheckboxLabeled("JobInBar_Settings_RoleColorAbility".Translate(),
+                                ref Settings.RoleColorOnlyIfAbilityAvailable,
+                                "JobInBar_Settings_RoleColorAbility_desc".Translate());
+                            DoOutdent(listing);
+                        }
+
+                        DoOutdent(listing);
+                    }
+                    listing.Gap();
+                }
+                
                 listing.GapLine();
                 
                 var buttonWidth = 80f;
@@ -175,11 +192,18 @@ namespace JobInBar
 
                 listing.GapLine();
 
+                Rect r;
                 listing.Label("JobInBar_Settings_Positioning".Translate());
-                listing.Label("JobInBar_Settings_Ypos".Translate() + Settings.JobLabelVerticalOffset);
+                r = listing.Label("JobInBar_Settings_Ypos".Translate() + Settings.JobLabelVerticalOffset);
+                r.yMax += 24;
+                TooltipHandler.TipRegion(r, "JobInBar_Settings_Ypos_desc".Translate());
                 Settings.JobLabelVerticalOffset = (int)listing.Slider(Settings.JobLabelVerticalOffset, -150f, 150f);
-                listing.Label("JobInBar_Settings_Ydist".Translate() + Settings.ExtraOffsetPerLine);
-                Settings.ExtraOffsetPerLine = (int)listing.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
+                r = listing.Label("JobInBar_Settings_WeaponOffset".Translate() + Settings.ExtraOffsetWeapon);
+                r.yMax += 24;
+                TooltipHandler.TipRegion(r, "JobInBar_Settings_WeaponOffset_desc".Translate());
+                Settings.ExtraOffsetWeapon = (float)listing.Slider(Settings.ExtraOffsetWeapon, 0f, 1.5f);
+                // listing.Label("JobInBar_Settings_Ydist".Translate() + Settings.ExtraOffsetPerLine);
+                // Settings.ExtraOffsetPerLine = (int)listing.Slider(Settings.ExtraOffsetPerLine, -16f, 16f);
             }
 
             listing.End();
@@ -192,7 +216,8 @@ namespace JobInBar
             Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
             
             Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
-            Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
+            Scribe_Values.Look(ref ExtraOffsetWeapon, "ExtraOffsetWeapon", 0.85f);
+            // Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
 
             Scribe_Values.Look(ref DefaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
             Scribe_Values.Look(ref LabelAlpha, "labelAlpha", 0.8f);

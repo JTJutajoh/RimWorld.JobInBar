@@ -25,12 +25,18 @@ namespace JobInBar
             return true;
         }
 
-        public static bool DrawJobLabel(this Pawn colonist) => colonist.story?.Title != null &&
+        public static bool ShouldDrawJobLabel(this Pawn colonist) => colonist.story?.Title != null &&
                 (LabelsTracker_WorldComponent.Instance?[colonist].ShowBackstory ?? false);
 
-        public static bool DrawIdeoLabel(this Pawn colonist) => Settings.DrawIdeoRoles ? (colonist?.ideo?.Ideo?.GetRole(colonist) is Precept_Role role) : false;
+        public static bool ShouldDrawIdeoLabel(this Pawn colonist) =>
+            Settings.DrawIdeoRoles &&
+            (colonist.ideo?.Ideo?.GetRole(colonist) is not null) &&
+            (LabelsTracker_WorldComponent.Instance?[colonist].ShowIdeoRole ?? false);
 
-        public static bool DrawRoyaltyLabel(this Pawn colonist) => Settings.DrawRoyalTitles ? (colonist?.royalty?.MainTitle() is RoyalTitleDef) : false;
+        public static bool ShouldDrawRoyaltyLabel(this Pawn colonist) =>
+            Settings.DrawRoyalTitles && 
+            (colonist.royalty?.MainTitle() is not null) &&
+            (LabelsTracker_WorldComponent.Instance?[colonist].ShowRoyalTitle ?? false);
 
         public static Color JobLabelColor(this Pawn pawn) => LabelsTracker_WorldComponent.Instance?[pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
 
@@ -69,7 +75,7 @@ namespace JobInBar
 
             if (isWeaponShownPref && hasWeaponEquipped)
             {
-                return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f;
+                return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f * Settings.ExtraOffsetWeapon;
             }
 
             return 0f;

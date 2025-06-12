@@ -15,15 +15,8 @@ namespace JobInBar
      public class LabelData : IExposable
      {
          public Pawn Pawn;
- 
-         /// <summary>
-         /// Main option to toggle whether ANY labels are shown for this pawn or not.
-         /// If false, basically all the rest of the data is meaningless.
-         /// </summary>
-         public bool ShowAll = true;
- 
-         public bool ShowBackstory = true;
-         public Color BackstoryColor = Color.white;
+ public bool ShowBackstory = true;
+         public Color BackstoryColor = Settings.DefaultJobLabelColor;
  
          public bool ShowRoyalTitle = true;
  
@@ -39,7 +32,6 @@ namespace JobInBar
          {
              Scribe_References.Look(ref Pawn, "pawn");
  
-             Scribe_Values.Look(ref ShowAll, "ShowAll");
              Scribe_Values.Look(ref ShowBackstory, "ShowBackstory");
              Scribe_Values.Look(ref BackstoryColor, "BackstoryColor");
              Scribe_Values.Look(ref ShowRoyalTitle, "ShowRoyalTitle");

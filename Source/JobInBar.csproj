@@ -63,7 +63,7 @@
     <LangVersion>11.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <DebugSymbols>false</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\1.6\Assemblies\</OutputPath>

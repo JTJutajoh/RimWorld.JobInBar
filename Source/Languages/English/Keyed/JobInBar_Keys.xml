@@ -4,11 +4,16 @@
   <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
   <JobInBar_JobLabelColor>Label Color</JobInBar_JobLabelColor>
   <JobInBar_ShowJobLabelFor>Show job title in colonist bar</JobInBar_ShowJobLabelFor>
+  <JobInBar_ShowRoyaltyLabelFor>Show Royalty Title Label</JobInBar_ShowRoyaltyLabelFor>
+  <JobInBar_ShowIdeoLabelFor>Show Ideology Role Label</JobInBar_ShowIdeoLabelFor>
   <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
   <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
   <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
-  <JobInBar_Settings_Ypos>Vertical offset: </JobInBar_Settings_Ypos>
-  <JobInBar_Settings_Ydist>Vertical offset between labels: </JobInBar_Settings_Ydist>
+  <JobInBar_Settings_Ypos>Vertical offset (Default: 14): </JobInBar_Settings_Ypos>
+  <JobInBar_Settings_Ypos_desc>An absolute amount of pixels that all labels will be offset by. Change this if you want more distinction from the vanilla name label.</JobInBar_Settings_Ypos_desc>
+  <JobInBar_Settings_WeaponOffset>Equipped weapon offset (multiplier): </JobInBar_Settings_WeaponOffset>
+  <JobInBar_Settings_WeaponOffset_desc>When the (vanilla) option "Weapons below portrait" is enabled, the labels will be offset to make room for it. Use this slider to adjust how much. Pawns with lots of labels and an equipped weapon would get visually cluttered if this is set too high.</JobInBar_Settings_WeaponOffset_desc>
+  <JobInBar_Settings_Ydist>Vertical offset between labels (Default: -4): </JobInBar_Settings_Ydist>
   <JobInBar_Settings_DrawBG>Show Background:</JobInBar_Settings_DrawBG>
   <JobInBar_Settings_DrawBG_desc>Draw a black box behind the job title, just like the name label.</JobInBar_Settings_DrawBG_desc>
   <JobInBar_Settings_Truncate>Truncate long labels</JobInBar_Settings_Truncate>
