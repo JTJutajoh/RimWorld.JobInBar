@@ -20,6 +20,7 @@ namespace DarkLog
     {
         public static Verse.Mod modInst;
         static string PackageId => modInst?.Content.PackageIdPlayerFacing ?? Assembly.GetEntryAssembly().GetName().Name;
+
         static string PrefixColor = "cyan";
 
         static string PrefixedMessage(string message) => $"<color={PrefixColor}>[{PackageId}]</color> {message}";
@@ -36,9 +37,9 @@ namespace DarkLog
             Log.Error(PrefixedMessage(text));
         }
 
-        public static void ErrorOnce(string text, int key)
+        public static void ErrorOnce(string text, String key)
         {
-            Log.ErrorOnce(PrefixedMessage(text), key);
+            Log.ErrorOnce(PrefixedMessage(text), key.GetHashCode());
         }
 
         public static void Warning(string text)
@@ -46,10 +47,10 @@ namespace DarkLog
             Log.Warning(PrefixedMessage(text));
         }
 
-#if v1_4 || v1_5
-        public static void WarningOnce(string text, int key)
+#if v1_4 || v1_5 || v1_6
+        public static void WarningOnce(string text, String key)
         {
-            Log.WarningOnce(PrefixedMessage(text), key);
+            Log.WarningOnce(PrefixedMessage(text), key.GetHashCode());
         }
 #endif
 
@@ -63,7 +64,7 @@ namespace DarkLog
         /// Use this for logspam.
         /// </summary>
         /// <param name="warning">If true, sends as a yellow warning message for visibility.</param>
-        public static void Debug(string text, bool warning=false)
+        public static void Debug(string text, bool warning = false)
         {
 #if DEBUG
             if (warning)

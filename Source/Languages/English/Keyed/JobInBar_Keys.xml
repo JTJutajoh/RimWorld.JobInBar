@@ -2,8 +2,8 @@
 
 <LanguageData>
   <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
-  <JobInBar_JobColorButton>Job Color</JobInBar_JobColorButton>
-  <JobInBar_ShowJobLabelFor>Show</JobInBar_ShowJobLabelFor>
+  <JobInBar_JobLabelColor>Label Color</JobInBar_JobLabelColor>
+  <JobInBar_ShowJobLabelFor>Show job title in colonist bar</JobInBar_ShowJobLabelFor>
   <JobInBar_Settings_Enabled>Mod Enabled:</JobInBar_Settings_Enabled>
   <JobInBar_Settings_Enabled_desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_Enabled_desc>
   <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
@@ -34,7 +34,7 @@
   <JobInBar_Settings_Title>Royalty titles (If available)</JobInBar_Settings_Title>
   <JobInBar_Settings_Title_desc>If Royalty is installed, draws the royal titles owned by a pawn below the job label.</JobInBar_Settings_Title_desc>
   <JobInBar_Settings_Alpha>Opacity for all labels</JobInBar_Settings_Alpha>
-  <JobInBar_Settings_JobLabelColor>Job Label Color</JobInBar_Settings_JobLabelColor>
+  <JobInBar_Settings_JobLabelColor>Default Title Label Color</JobInBar_Settings_JobLabelColor>
   <JobInBar_Settings_DefaultShow>Show job label by default</JobInBar_Settings_DefaultShow>
   <JobInBar_Settings_DefaultShow_desc>Sets the default for if job labels should be shown. Can be toggled individually per-colonist.</JobInBar_Settings_DefaultShow_desc>
   <JobInBar_Settings_DisplaySettingsLabel>Display Settings</JobInBar_Settings_DisplaySettingsLabel>
@@ -48,5 +48,8 @@ For large colonies, it is recommended to tweak these settings so that fewer labe
   <TabLabels>Labels</TabLabels>
   <Presets>Presets</Presets>
   <JobInBar_ShowAnyLabels>Show/hide all</JobInBar_ShowAnyLabels>
+  <JobInBar_Change>Change</JobInBar_Change>
+  <JobInBar_LabelColorPickerHeading>Choose a label color</JobInBar_LabelColorPickerHeading>
+  <JobInBar_Settings_ColorPickerHeading>Choose a label color</JobInBar_Settings_ColorPickerHeading>
 
 </LanguageData>

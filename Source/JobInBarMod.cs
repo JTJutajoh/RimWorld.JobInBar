@@ -9,7 +9,7 @@ namespace JobInBar
 {
     public class JobInBarMod : Verse.Mod
     {
-        public static JobInBarMod instance;
+        private static JobInBarMod instance;
         public static JobInBarMod Instance => instance;
         public JobInBarMod(ModContentPack content) : base(content)
         {
@@ -18,7 +18,7 @@ namespace JobInBar
 
             GetSettings<Settings>();
 
-            Harmony harmony = new Harmony("Dark.JobInBar");
+            var harmony = new Harmony("Dark.JobInBar");
 
             harmony.PatchAll();
 

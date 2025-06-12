@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Verse;
 using RimWorld;
 using UnityEngine;
-using DarkColourPicker_Forked;
 using DarkLog;
 
 namespace JobInBar
@@ -15,9 +15,7 @@ namespace JobInBar
         public static int ExtraOffsetPerLine = -4;
 
         public static bool DrawBG = true;
-
-        public static bool DrawJobTitle = true;
-        public static bool OnlyDrawJobIfCustom = false;
+        
         public static bool DrawLabelOnlyOnHover = false;
 
         public static bool DrawCurrentJob = true;
@@ -29,40 +27,57 @@ namespace JobInBar
         public static bool DrawRoyalTitles = true;
 
         // Color
-        [Obsolete("This was just a quick fix for an old bug. Going to be replaced by the new presets system.")]
-        public readonly static Color defaultDefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
-        [Obsolete("PROBABLY going to be replaced by the new presets system.")]
-        private static Color defaultJobLabelColor = defaultDefaultJobLabelColor;
-        [Obsolete("This was just a quick fix for an old bug. Will be irrelevant once the new presets system is implemented.")]
-        public static bool useCustomJobLabelColor = false;
-        public static Color DefaultJobLabelColor { get { return Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : Settings.defaultDefaultJobLabelColor; } }
-        public static Color currentJobLabelColor = Color.yellow;
-        public static float labelAlpha = 0.8f;
+        //TODO: Create some way to modify this list in settings.
+        public static List<Color> AllColors = new List<Color>()
+        {
+            Color.white,
+            Color.gray,
+            Color.black,
+            Color.blue,
+            Color.cyan,
+            Color.green,
+            Color.yellow,
+            Color.red,
+            Color.magenta,
+            new Color(0.5f,0f,0f),
+            new Color(0f,0.5f,0f),
+            new Color(0f,0f,0.5f),
+            new Color(0.8f,0.35f,0f),
+            new Color(0.2f,0.7f,0.7f),
+            new Color(0.1f,0.3f,0.9f),
+            new Color(0.8f,0.8f,0.2f),
+            new Color(0.5f,0.9f,0.4f),
+            new Color(0.8f,0.7f,0f),
+            new Color(0.7f,0.95f,0.4f),
+            new Color(0.5f,0.85f,0.7f),
+            new Color(0.1f,0.3f,0.15f),
+            new Color(0f,0.2f,0.9f),
+            new Color(0.7f,0.5f,0.6f),
+            new Color(0.75f,0.75f,0.1f),
+        };
+        public static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f,0.7f));
+        public static Color CurrentJobLabelColor = new Color(1f, 0.8f, 0.4f, 0.8f);
+        public static float LabelAlpha = 0.8f;
 
-
-        // Pair of functions to have indents that don't go into the next column over
-        // Utility to copy to other mods maybe
-        private void DoIndent(Listing_Standard listing, float amount = 12f)
+        private static void DoIndent(Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth -= amount;
             listing.Indent(amount);
         }
-        private void DoOutdent(Listing_Standard listing, float amount = 12f)
+        private static void DoOutdent(Listing_Standard listing, float amount = 12f)
         {
             listing.ColumnWidth += amount;
             listing.Outdent(amount);
         }
-
 
         public void DoWindowContents(Rect inRect)
         {
             Listing_Standard listing = new Listing_Standard();
 
             listing.Begin(inRect);
+            
             //////////////////////////////
-            /// listing
-            //////////////////////////////
-            /// begin left column
+            // begin left column
             listing.ColumnWidth = inRect.width / 2.2f;
 
             listing.CheckboxLabeled("JobInBar_Settings_Enabled".Translate(), ref Settings.ModEnabled, "JobInBar_Settings_Enabled_desc".Translate());
@@ -73,13 +88,6 @@ namespace JobInBar
             if (Settings.ModEnabled)
             {   
                 listing.CheckboxLabeled("JobInBar_Settings_DrawOnlyOnHover".Translate(), ref Settings.DrawLabelOnlyOnHover, "JobInBar_Settings_DrawOnlyOnHover_desc".Translate());
-                listing.CheckboxLabeled("JobInBar_Settings_Job".Translate(), ref Settings.DrawJobTitle, "JobInBar_Settings_Job_desc".Translate());
-                if (Settings.DrawJobTitle)
-                {
-                    DoIndent(listing);
-                    listing.CheckboxLabeled("JobInBar_Settings_OnlyDrawJobIfCustom".Translate(), ref Settings.OnlyDrawJobIfCustom, "JobInBar_Settings_OnlyDrawJobIfCustom_desc".Translate());
-                    DoOutdent(listing);
-                }
                 listing.Gap();
 
                 listing.CheckboxLabeled("JobInBar_Settings_Title".Translate(), ref Settings.DrawRoyalTitles, "JobInBar_Settings_Title_desc".Translate());
@@ -97,42 +105,40 @@ namespace JobInBar
                     }
                     DoOutdent(listing);
                 }
+                
                 listing.Gap();
                 listing.GapLine();
+                
+                var buttonWidth = 80f;
                 listing.CheckboxLabeled("JobInBar_Settings_DrawCurrentJob".Translate(), ref Settings.DrawCurrentJob, "JobInBar_Settings_DrawCurrentJob_desc".Translate());
                 if (Settings.DrawCurrentJob)
                 {
                     listing.Gap();
                     DoIndent(listing);
                     listing.Label("JobInBar_Settings_CurrentJobHeader".Translate());
-                    Rect colSettingRect_CurJob = listing.Label("JobInBar_Settings_CurrentJobLabelColor".Translate());
-                    //colSettingRect.x += 32f * 6;
-                    colSettingRect_CurJob.x += colSettingRect_CurJob.width - 32f;
-                    colSettingRect_CurJob.y -= 6f;
-                    colSettingRect_CurJob.size = new Vector2(32f, 32f);
-                    Widgets.DrawBoxSolid(colSettingRect_CurJob.ExpandedBy(2f, 2f), Color.white);
-                    Widgets.DrawBoxSolid(colSettingRect_CurJob.ExpandedBy(1f, 1f), Color.black);
-                    Widgets.DrawBoxSolid(colSettingRect_CurJob, Settings.currentJobLabelColor);
-                    if (Widgets.ButtonInvisible(colSettingRect_CurJob, true))
+                    var colSettingRect_CurJob = listing.Label("JobInBar_Settings_CurrentJobLabelColor".Translate());
+                    
+                    if (Widgets.ButtonTextSubtle(new Rect(colSettingRect_CurJob.xMax - buttonWidth - 32f - 8f, colSettingRect_CurJob.yMin, buttonWidth, 32f), "JobInBar_Change".Translate()))
                     {
-                        Find.WindowStack.Add(new Dialog_ColourPicker(Settings.currentJobLabelColor,
-                        (newColor) =>
-                        {
-                            Settings.currentJobLabelColor = newColor;
-                            Settings.currentJobLabelColor.a = labelAlpha;
-                        }
+                        Find.WindowStack.Add(new Dialog_ChooseColor(
+                            "JobInBar_Settings_ColorPickerHeading".Translate(),
+                            Settings.DefaultJobLabelColor,
+                            AllColors, 
+                            (color) =>
+                            {
+                                Settings.CurrentJobLabelColor = color;
+                                Settings.CurrentJobLabelColor.a = LabelAlpha;
+                            }
                         ));
                     }
+                    Widgets.DrawBoxSolid(new Rect(colSettingRect_CurJob.xMax - 32f, colSettingRect_CurJob.yMin, 32f, 32f), Settings.CurrentJobLabelColor);
                     DoOutdent(listing);
                 }
-
-
-                /// end left column
+                // end left column
                 //////////////////////////////
-                //listing.NewColumn();
-                //listing.ColumnWidth = 32f;
+
                 //////////////////////////////
-                /// begin right column
+                // begin right column
                 listing.NewColumn();
                 listing.ColumnWidth = inRect.width / 2.2f;
 
@@ -143,39 +149,29 @@ namespace JobInBar
                 listing.CheckboxLabeled("JobInBar_Settings_DrawBG".Translate(), ref Settings.DrawBG, "JobInBar_Settings_DrawBG_desc".Translate());
 
                 listing.Gap();
-                Rect colSettingRect = listing.Label("JobInBar_Settings_JobLabelColor".Translate());
-                //colSettingRect.x += 32f * 6;
-                colSettingRect.x += colSettingRect.width - 32f;
-                colSettingRect.y -= 6f;
-                colSettingRect.size = new Vector2(32f, 32f);
-                Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(2f,2f), Color.white);
-                Widgets.DrawBoxSolid(colSettingRect.ExpandedBy(1f,1f), Color.black);
-                Widgets.DrawBoxSolid(colSettingRect, Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : GenMapUI.DefaultThingLabelColor);
-                if (Widgets.ButtonInvisible(colSettingRect, true))
+                
+                var colSettingRect = listing.Label("JobInBar_Settings_JobLabelColor".Translate());
+                if (Widgets.ButtonTextSubtle(new Rect(colSettingRect.xMax - buttonWidth - 32f - 8f, colSettingRect.yMin, buttonWidth, 32f), "JobInBar_Change".Translate()))
                 {
-                    Find.WindowStack.Add(new Dialog_ColourPicker(Settings.useCustomJobLabelColor ? Settings.defaultJobLabelColor : GenMapUI.DefaultThingLabelColor,
-                    (newColor) =>
-                    {
-                        Settings.defaultJobLabelColor = newColor;
-                        Settings.defaultJobLabelColor.a = labelAlpha;
-                        Settings.useCustomJobLabelColor = true;
-                    }
+                    Find.WindowStack.Add(new Dialog_ChooseColor(
+                        "JobInBar_Settings_ColorPickerHeading".Translate(),
+                        Settings.DefaultJobLabelColor,
+                        AllColors, 
+                        (color) =>
+                        {
+                            Settings.DefaultJobLabelColor = color;
+                            Settings.DefaultJobLabelColor.a = LabelAlpha;
+                        }
                     ));
                 }
-                Rect colResetRect = colSettingRect;
-                colResetRect.x += colSettingRect.width + 8;
-                colResetRect.width = 100;
-                if (Widgets.ButtonText(colResetRect, "JobInBar_Settings_ResetColor".Translate()))
-                {
-                    Settings.useCustomJobLabelColor = false;
-                    Settings.defaultJobLabelColor = Settings.defaultDefaultJobLabelColor;
-                    Settings.labelAlpha = 0.8f;
-                }
+                Widgets.DrawBoxSolid(new Rect(colSettingRect.xMax - 32f, colSettingRect.yMin, 32f, 32f), Settings.DefaultJobLabelColor);
+                
                 listing.Gap();
-                listing.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.labelAlpha.ToString("N2"));
-                Settings.labelAlpha = listing.Slider(Settings.labelAlpha, 0.25f, 1f);
-                Settings.defaultJobLabelColor.a = labelAlpha;
-                Settings.currentJobLabelColor.a = labelAlpha;
+                
+                listing.Label("JobInBar_Settings_Alpha".Translate() + " " + Settings.LabelAlpha.ToString("N2"));
+                Settings.LabelAlpha = listing.Slider(Settings.LabelAlpha, 0.25f, 1f);
+                Settings.DefaultJobLabelColor.a = LabelAlpha;
+                Settings.CurrentJobLabelColor.a = LabelAlpha;
 
                 listing.GapLine();
 
@@ -187,41 +183,31 @@ namespace JobInBar
             }
 
             listing.End();
-            /// end right column
-            //////////////////////////////
-            /// end listing
+            // end right column
             //////////////////////////////
         }
 
         public override void ExposeData()
         {
+            Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
+            
             Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
             Scribe_Values.Look(ref ExtraOffsetPerLine, "ExtraOffsetPerLine", -4);
+
+            Scribe_Values.Look(ref DefaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
+            Scribe_Values.Look(ref LabelAlpha, "labelAlpha", 0.8f);
+            Scribe_Values.Look(ref CurrentJobLabelColor, "currentJobLabelColor", new Color(1f, 0.8f, 0.4f, 0.8f));
+            
             Scribe_Values.Look(ref DrawBG, "DrawBG", true);
-            Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
-            Scribe_Values.Look(ref DrawJobTitle, "DrawJob", true);
-            Scribe_Values.Look(ref OnlyDrawJobIfCustom, "OnlyDrawJobIfCustom", false);
             Scribe_Values.Look(ref DrawLabelOnlyOnHover, "DrawLabelOnlyOnHover", false);
+            
             Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
             Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
             Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable", false);
+            
             Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
+            
             Scribe_Values.Look(ref DrawCurrentJob, "DrawCurrentJob", true);
-
-            Scribe_Values.Look(ref labelAlpha, "labelAlpha", 0.8f);
-
-            Scribe_Values.Look(ref defaultJobLabelColor, "jobLabelColor", GenMapUI.DefaultThingLabelColor);
-            if (useCustomJobLabelColor && defaultJobLabelColor.IndistinguishableFrom(new Color(0,0,0, labelAlpha)))
-            {
-                LogPrefixed.Warning($"[Dark.JobInBar] Found default job label color with broken value. Setting 'useCustomJobLabelColor' to false to ignore the config value (set the color in mod options again to override if it was the color you wanted).");
-                useCustomJobLabelColor = false;
-            }
-            else
-            {
-                useCustomJobLabelColor = true;
-            }
-            Scribe_Values.Look(ref useCustomJobLabelColor, "useCustomJobLabelColor", false);
-            Scribe_Values.Look(ref currentJobLabelColor, "currentJobLabelColor", Color.yellow);
 
             base.ExposeData();
         }

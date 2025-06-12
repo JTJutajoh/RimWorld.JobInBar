@@ -4,31 +4,91 @@ using Verse;
 using RimWorld;
 using RimWorld.Planet;
 using HarmonyLib;
-using DarkColourPicker_Forked;
 using UnityEngine;
 using DarkLog;
 
 namespace JobInBar
 {
-    /// <summary>
-    /// "Singleton" class that keeps track of all pawns that the player has set a label for
-    /// </summary>
-    public class LabelsTracker_WorldComponent : WorldComponent
-    {
-        private Dictionary<Pawn, LabelData> TrackedPawns = new();
+     /// <summary>
+     /// Struct storing all of the user-set data for one pawn's label.
+     /// </summary>
+     public class LabelData : IExposable
+     {
+         public Pawn Pawn;
+ 
+         /// <summary>
+         /// Main option to toggle whether ANY labels are shown for this pawn or not.
+         /// If false, basically all the rest of the data is meaningless.
+         /// </summary>
+         public bool ShowAll = true;
+ 
+         public bool ShowBackstory = true;
+         public Color BackstoryColor = Color.white;
+ 
+         public bool ShowRoyalTitle = true;
+ 
+         public bool ShowIdeoRole = true;
+ 
+         public LabelData(Pawn pawn)
+         {
+             LogPrefixed.Debug($"Creating new label data for pawn {pawn.Name}");
+             this.Pawn = pawn;
+         }
+ 
+         public void ExposeData()
+         {
+             Scribe_References.Look(ref Pawn, "pawn");
+ 
+             Scribe_Values.Look(ref ShowAll, "ShowAll");
+             Scribe_Values.Look(ref ShowBackstory, "ShowBackstory");
+             Scribe_Values.Look(ref BackstoryColor, "BackstoryColor");
+             Scribe_Values.Look(ref ShowRoyalTitle, "ShowRoyalTitle");
+             Scribe_Values.Look(ref ShowIdeoRole, "ShowIdeoRole");
+         }
+     }
 
-        public static LabelsTracker_WorldComponent instance;
 
-        public LabelsTracker_WorldComponent(World world) : base(world)
-        {
-            LabelsTracker_WorldComponent.instance = this;
-        }
+     /// <summary>
+     /// Singleton class that keeps track of all pawns that the player has set a label for<br />
+     /// Tracked pawns are accessed via indexing. If the pawn is not tracked, indexing it will start tracking it.
+     /// </summary>
+     public class LabelsTracker_WorldComponent : WorldComponent
+     {
+         private Dictionary<Pawn, LabelData> _trackedPawns = new();
+         public Dictionary<Pawn, LabelData> TrackedPawns => _trackedPawns;
+
+         public static LabelsTracker_WorldComponent? Instance;
+
+         public LabelsTracker_WorldComponent(World world) : base(world)
+         {
+             LabelsTracker_WorldComponent.Instance = this;
+         }
+
+         public LabelData this[Pawn pawn]
+         {
+             get
+             {
+                 if (!_trackedPawns.TryGetValue(pawn, out var data))
+                 {
+                     LogPrefixed.Debug($"Pawn {pawn.Name} not tracked. Creating new label data for it.");
+                     data = new LabelData(pawn);
+                     _trackedPawns[pawn] = data;
+                 }
+                 return data;
+             }
+             set => _trackedPawns[pawn] = value;
+         }
 
         public override void ExposeData()
         {
             base.ExposeData();
 
-            Scribe_Collections.Look<Pawn, LabelData>(ref TrackedPawns, "TrackedPawns", LookMode.Reference, LookMode.Deep);
+            Scribe_Collections.Look<Pawn, LabelData>(
+                ref _trackedPawns,
+                "TrackedPawns",
+                LookMode.Reference,
+                LookMode.Deep
+            );
         }
     }
 }
