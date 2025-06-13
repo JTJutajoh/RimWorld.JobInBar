@@ -263,3 +263,4 @@ Source/.vs/
 *.pdb
 *.mdb
 Source/Art/
+*.csproj.user
