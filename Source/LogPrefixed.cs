@@ -90,7 +90,7 @@ namespace DarkLog
         /// Use this for logspam.
         /// </summary>
         /// <param name="warning">If true, sends as a yellow warning message for visibility.</param>
-        public static void Debug(string text, bool warning = false)
+        public static void Trace(string text, bool warning = false)
         {
 #if DEBUG
             if (warning)
