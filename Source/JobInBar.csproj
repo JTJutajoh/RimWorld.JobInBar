@@ -103,28 +103,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
-  <ItemGroup Label="Non-code files">
-    <None Include="About\About.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>../../About/About.xml</TargetPath>
-    </None>
-    <None Include="About\PublishedFileId.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>../../About/PublishedFileId.txt</TargetPath>
-    </None>
-    <None Include="About\Preview.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>../../About/Preview.png</TargetPath>
-    </None>
-    <None Include="Languages\English\Keyed\JobInBar_Keys.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>../../Languages/English/Keyed/JobInBar_Keys.xml</TargetPath>
-    </None>
-    <None Include="Textures/UI/LabelToggle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>../../Textures/UI/LabelToggle.png</TargetPath>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <Content Include="JobInBar.csproj.user" />
     <Content Include="News\JobInBarUpdateNews.xml" />
