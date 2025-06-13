@@ -94,9 +94,9 @@ namespace DarkLog
         {
 #if DEBUG
             if (warning)
-                Warning(PrefixedMessage(text));
+                Warning(text);
             else
-                Message(PrefixedMessage(text));
+                Message(text);
 #endif
             return;
         }
