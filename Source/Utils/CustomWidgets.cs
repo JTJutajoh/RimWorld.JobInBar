@@ -1,114 +1,42 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
-namespace JobInBar;
+namespace JobInBar.Utils;
 
-[SuppressMessage("ReSharper", "InconsistentNaming")]
-internal class Dialog_LabelColorPicker : Window
+/// <summary>
+///     Helper static class that contains methods to create common widgets I use in my mods.<br />
+///     Many of these are implemented as extension methods, some of which are overloads for vanilla methods (such as ones
+///     for <see cref="Listing_Standard" />).
+/// </summary>
+internal static class CustomWidgets
 {
-    public override Vector2 InitialSize => new(340f, 300f);
-
-    internal static Dialog_LabelColorPicker? Instance;
-
-    private Color _color;
-    private string _exampleText;
-    private bool _exampleBackgrounds;
-    private Color _defaultColor;
-    
-    private Action<Color>? _onColorApply;
-    private Action<Color>? _onColorChanged;
-    private Action? _onCancel;
-
+#if !(v1_1 || v1_2 || v1_3) // HSVColorWheel was added in RW 1.4+
+    private static bool _currentlyDraggingHSVWheel;
+#endif
     /// <summary>
-    /// Custom color picker dialog with label examples
-    /// </summary>
-    /// <param name="color">Current or "starting" color when the dialog is opened.</param>
-    /// <param name="defaultColor">The default color used when the Default button is clicked.</param>
-    /// <param name="exampleText">Text used in the example labels of the color picker</param>
-    /// <param name="exampleBackgrounds">Whether to draw the background texture behind the example labels</param>
-    /// <param name="onColorApply">When the user clicks the "Confirm" button to apply their color selection, this delegate is invoked.</param>
-    /// <param name="onColorChanged">Invoked every frame if the currently selected color is different from the previous frame's.</param>
-    /// <param name="onCancel">When the user clicks the "Cancel" button, this delegate is invoked.</param>
-    public Dialog_LabelColorPicker(
-        Color? color,
-        Color defaultColor,
-        string exampleText,
-        bool exampleBackgrounds,
-        Action<Color>? onColorApply,
-        Action<Color>? onColorChanged,
-        Action? onCancel
-    )
-    {
-        Instance?.Close();
-        Instance = this;
-
-        closeOnClickedOutside = true;
-        doCloseX = true;
-        forcePause = true;
-        absorbInputAroundWindow = true;
-
-        _onColorApply = onColorApply;
-        _onColorChanged = onColorChanged;
-        _onCancel = onCancel;
-        
-        _exampleBackgrounds = exampleBackgrounds;
-        _defaultColor = defaultColor;
-        _exampleText = exampleText;
-        _color = color ?? defaultColor;
-    }
-
-    public override void DoWindowContents(Rect inRect)
-    {
-        var innerRect = inRect.TopPartPixels(inRect.height - 32f - 12f);
-        innerRect = innerRect.MiddlePartPixels(292f,
-            200f);
-        var prevColor = _color;
-        LabelColorPicker(innerRect,
-            ref _color,
-            labelBackgrounds: _exampleBackgrounds,
-            exampleText: _exampleText,
-            windowBackground: false,
-            defaultButton: true,
-            defaultColor: _defaultColor
-        );
-
-        if (!_color.IndistinguishableFromFast(prevColor))
-        {
-            _onColorChanged?.Invoke(_color);
-        }
-
-        var buttonsRect = inRect.BottomPartPixels(32f);
-
-        if (Widgets.ButtonText(buttonsRect.LeftPartPixels(80f),
-                "Cancel".Translate()))
-        {
-            _onCancel?.Invoke();
-            Close();
-        }
-
-        if (Widgets.ButtonText(buttonsRect.RightPartPixels(80f),
-                "Confirm".Translate()))
-        {
-            _onColorApply?.Invoke(_color);
-            Close();
-        }
-    }
-
-    /// <summary>
-    /// Helper function to draw a full color picker with example labels.<br />
-    /// Auto-detects if it should do a horizontal or vertical layout based on which dimension of the input rect is larger.
+    ///     Helper function to draw a full color picker with example pawn labels exactly how they appear in the Colonist Bar
+    ///     (literally calls the same function in <see cref="LabelDrawer" />).<br />
+    ///     Auto-detects if it should do a horizontal or vertical layout based on which dimension of the input rect is larger.
+    ///     <br />
     /// </summary>
     /// <param name="rect">The rect to draw it within.</param>
     /// <param name="color">The color to be set</param>
     /// <param name="labelBackgrounds">Add the background to the label examples</param>
-    /// <param name="exampleText">Used for the label example text instead of the auto-translated settingName</param>
+    /// <param name="exampleText">Used for the label example text</param>
     /// <param name="windowBackground">If true, adds a background around the whole element</param>
     /// <param name="defaultButton">Include a "Default" button to reset to the harvested default value</param>
     /// <param name="onDefault">Invoked whenever the Default button is clicked</param>
     /// <param name="defaultColor">Optional color to be used when the Default button is clicked</param>
-    internal static void LabelColorPicker(Rect rect, ref Color color, bool labelBackgrounds,
-        string exampleText, bool windowBackground = true, bool defaultButton = false, Action? onDefault = null, Color? defaultColor = null)
+    internal static void LabelColorPicker(
+        Rect rect,
+        ref Color color,
+        bool labelBackgrounds,
+        string exampleText,
+        bool windowBackground = true,
+        bool defaultButton = false,
+        Action? onDefault = null,
+        Color? defaultColor = null
+    )
     {
         if (windowBackground)
         {
@@ -133,10 +61,7 @@ internal class Dialog_LabelColorPicker : Window
         curY += 12f + 4f;
 
         var colorPickerHeight = rect.height - (curY - rect.yMin);
-        if (defaultButton)
-        {
-            colorPickerHeight -= 32f + 4f;
-        }
+        if (defaultButton) colorPickerHeight -= 32f + 4f;
 
         var colorPickerRect = new Rect(rect.xMin, curY, rect.width, colorPickerHeight);
         ColorPicker(colorPickerRect, ref color, false);
@@ -151,13 +76,10 @@ internal class Dialog_LabelColorPicker : Window
             onDefault?.Invoke();
         }
     }
-    
-#if !(v1_1 || v1_2 || v1_3)
-    private static bool _currentlyDraggingHSVWheel;
-#endif
-    
+
     /// <summary>
-    /// Creates an HSV color picker along with HSVA sliders.
+    ///     Creates an HSV color picker along with HSVA sliders.<br />
+    ///     Uses the HSV color wheel widget added in RW 1.4. If using an older version, the wheel will simply be skipped.
     /// </summary>
     internal static void ColorPicker(Rect rect, ref Color color, bool windowBackground = true)
     {
@@ -167,6 +89,7 @@ internal class Dialog_LabelColorPicker : Window
             rect = rect.ContractedBy(4f);
         }
 
+        //TODO: Remove (or make use of) vertical layout support from the ColorPicker. It's a bunch of extra logic that isn't doing anything
         var horizontalLayout = rect.width >= rect.height;
 
         var curY = rect.yMin;
@@ -187,8 +110,11 @@ internal class Dialog_LabelColorPicker : Window
             slidersRect = new Rect(rect.xMin, curY, rect.width, rect.height - hsvRect.height - 4f);
         }
 
-#if !(v1_1 || v1_2 || v1_3)
+#if !(v1_1 || v1_2 || v1_3) // HSVColorWheel was added in RW 1.4+
         Widgets.HSVColorWheel(hsvRect, ref color, ref _currentlyDraggingHSVWheel);
+#else
+        // For legacy RW versions: Just draw a box with the color. The sliders still work to actually adjust it.
+        Widgets.DrawBoxSolidWithOutline(hsvRect, color, Widgets.SeparatorLineColor);
 #endif
         Color.RGBToHSV(color, out var hue, out var saturation, out var value);
 
@@ -214,13 +140,92 @@ internal class Dialog_LabelColorPicker : Window
         var oldAlpha = color.a;
         color = Color.HSVToRGB(hue, saturation, value);
         color.a = oldAlpha;
-        
+
         color.a =
             Widgets.HorizontalSlider(new Rect(slidersRect.xMin, curY, slidersRect.width, 24f), color.a, 0f, 1f,
                 true, "JobInBar_Alpha".Translate());
 #pragma warning restore CS0612 // Type or member is obsolete
     }
 
+    /// <summary>
+    ///     Extension method for <see cref="Listing_Standard" />.<br />
+    ///     Creates a nicely formatted set of widgets to adjust and set an integer value corresponding to a field in
+    ///     <see cref="Settings" />. The supplied setting name must exactly match the field name.
+    /// </summary>
+    /// <param name="listingStandard">Listing standard instance</param>
+    /// <param name="value">The int value to be adjusted by this widget.</param>
+    /// <param name="settingName">The name of the field on <see cref="Settings" /> that this widget modifies.</param>
+    /// <param name="editBuffer">The string buffer used to temporarily store and edit the value.</param>
+    /// <param name="label">Optional label for the block. If null, no label will be shown.</param>
+    /// <param name="multiplier">A multiplier value applied during input adjustment.</param>
+    /// <param name="min">The minimum allowed value for the integer.</param>
+    /// <param name="max">The maximum allowed value for the integer.</param>
+    /// <param name="doDefaultButton">Optionally, disable the "Default" button.</param>
+    internal static void IntSetting(this Listing_Standard listingStandard,
+        ref int value,
+        string settingName,
+        ref string editBuffer,
+        string? label,
+        int multiplier = 1,
+        int min = 0,
+        int max = 999999,
+        bool doDefaultButton = true)
+    {
+        if (label != null) listingStandard.Label(label);
+        var labelRect = listingStandard.Label(Settings.GetSettingLabel(settingName,
+            true));
+        var tooltip = Settings.GetSettingTooltip(settingName);
+        if (tooltip != "")
+            TooltipHandler.TipRegion(
+                new Rect(labelRect.xMin,
+                    labelRect.yMin,
+                    labelRect.width,
+                    labelRect.height + 30f),
+                tooltip);
+
+        IntEntry(listingStandard,
+            ref value,
+            ref editBuffer,
+            (int)Settings.DefaultSettings[settingName],
+            multiplier,
+            min,
+            max);
+    }
+
+    /// <summary>
+    ///     Extension method for <see cref="Listing_Standard" />.<br />
+    ///     Wrapper for vanilla <see cref="Listing_Standard.IntAdjuster" /> that includes a button to reset to a specified
+    ///     default value.<br />
+    ///     Ensures integer value is clamped within the specified range and supports editing through a buffer.<br />
+    ///     Acts as an overload for vanilla <see cref="Listing_Standard.IntEntry" />.
+    /// </summary>
+    /// <param name="listingStandard">The Listing_Standard instance for extending functionality.</param>
+    /// <param name="value">The integer value to be modified.</param>
+    /// <param name="defaultValue">The default value to reset to when the default button is clicked.</param>
+    /// <param name="editBuffer">The string buffer used to temporarily store and edit the value.</param>
+    /// <param name="multiplier">A multiplier value applied during input adjustment.</param>
+    /// <param name="min">The minimum allowed value for the integer.</param>
+    /// <param name="max">The maximum allowed value for the integer.</param>
+    internal static void IntEntry(this Listing_Standard listingStandard,
+        ref int value,
+        ref string editBuffer,
+        int defaultValue,
+        int multiplier = 1,
+        int min = 0,
+        int max = 999999)
+    {
+        //BUG: value is being clamped to 0 for some reason
+#if !(v1_2 || v1_3 || v1_4 || v1_5)
+        listingStandard.IntEntry(ref value, ref editBuffer, multiplier, min);
+#else
+        listingStandard.IntEntry(ref value, ref editBuffer, multiplier);
+#endif
+        listingStandard.IntSetter(ref value, defaultValue, "JobInBar_Settings_Default".Translate());
+
+        value = Mathf.Clamp(value, min, max);
+    }
+
+    // // Half-baked implementation of color preset selection. Currently replaced with the color wheel.
     // private static void ColorSelector(string label, Rect rect, ref Color color, float maxHeight = 120f,
     //     Texture? icon = null,
     //     int colorSize = 22, int colorPadding = 2, float paddingLeft = 32f, float paddingRight = 32f)

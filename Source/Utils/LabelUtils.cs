@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace JobInBar
+namespace JobInBar.Utils
 {
     public static class LabelUtils
     {
@@ -21,7 +21,7 @@ namespace JobInBar
         {
             var oldFont = Text.Font;
             Text.Font = font;
-            labelString = labelString.Truncate(truncateToWidth);
+            labelString = labelString.Truncate(truncateToWidth)!;
             Text.Font = oldFont;
 
             return labelString;

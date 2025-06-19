@@ -1,13 +1,19 @@
-﻿// ReSharper disable RedundantUsingDirective
+﻿// A lot of the methods in this file are directly copy/pasted out of decompiled vanilla code, and I'd rather keep it
+// as similar as possible to the original code SO instead of addressing style warnings, just suppress them
+
+// ReSharper disable RedundantUsingDirective
+// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable InconsistentNaming
+// ReSharper disable RedundantCast
 
 using RimWorld;
 using UnityEngine;
 
-namespace JobInBar;
+namespace JobInBar.Utils;
 
 /// <summary>
-/// Class with helper functions that assist with multi-version support.<br />
-/// Primarily, backporting functions from newer versions
+///     Class with helper functions that assist with multi-version support.<br />
+///     Primarily, backporting functions from newer versions
 /// </summary>
 public static class LegacySupport
 {
@@ -105,7 +111,7 @@ public static class LegacySupport
         return color;
     }
 #endif
-    
+
 #if v1_1 || v1_2 || v1_3
     /// <summary>
     /// Stub version of CheckboxLabeled that just ignores the 2 float params
@@ -116,7 +122,7 @@ public static class LegacySupport
         listingStandard.CheckboxLabeled(label, ref val, tooltip);
     }
 #endif
-    
+
 #if v1_1 || v1_2 || v1_3
     public static Rect SubLabel(this Listing_Standard listingStandard, string label, float widthPct)
     {

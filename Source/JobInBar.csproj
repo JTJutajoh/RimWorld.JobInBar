@@ -1,199 +1,200 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JobInBar</RootNamespace>
-    <AssemblyName>JobInBar</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <Nullable>enable</Nullable>
-    <Optimize>true</Optimize>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>11.0</LangVersion>
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RimWorldLatestVersion>1.6</RimWorldLatestVersion>
-    <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld</RimWorldDir>
-    <HarmonyPath>D:\Games\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HarmonyPath>
-    <OutputPath>$(RimWorldDir)\Mods\BetterLetters\$(RimWorldLatestVersion)\Assemblies\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.1|AnyCPU'">
-    <OutputPath>..\1.1\Assemblies\</OutputPath>
-    <DefineConstants>v1_1</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.2|AnyCPU'">
-    <OutputPath>..\1.2\Assemblies\</OutputPath>
-    <DefineConstants>v1_2</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.3|AnyCPU' ">
-    <OutputPath>..\1.3\Assemblies\</OutputPath>
-    <DefineConstants>v1_3</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.4|AnyCPU'">
-    <OutputPath>..\1.4\Assemblies\</OutputPath>
-    <DefineConstants>v1_4</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5|AnyCPU'">
-    <OutputPath>..\1.5\Assemblies\</OutputPath>
-    <DefineConstants>v1_5</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6|AnyCPU'">
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <DefineConstants>v1_6</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '1.6 Debug|AnyCPU'">
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <DefineConstants>v1_6;DEBUG</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <ItemGroup Label="Dependencies">
-    <Reference Include="System">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System.Core">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System.Xml.Linq">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System.Data">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="System.Xml">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(HarmonyPath)</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Dialog_LabelColorPicker.cs" />
-    <Compile Include="GlobalUsings.cs" />
-    <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs" />
-    <Compile Include="LegacySupport.cs" />
-    <Compile Include="LogPrefixed.cs" />
-    <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_AddOptions.cs" />
-    <Compile Include="LabelUtils.cs" />
-    <Compile Include="HarmonyPatches\Patch_ColonistBarDrawer_DrawColonist_AddLabels.cs" />
-    <Compile Include="JobInBarMod.cs" />
-    <Compile Include="LabelDrawer.cs" />
-    <Compile Include="HarmonyPatches\Patch_PlaySettings_GlobalControl_ToggleLabels.cs" />
-    <Compile Include="LabelsTracker_WorldComponent.cs" />
-    <Compile Include="PawnLabelExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="About\About.xml" />
-    <Content Include="About\ModIcon.psd" />
-    <Content Include="About\Preview.png" />
-    <Content Include="About\Preview.psd" />
-    <Content Include="JobInBar.csproj.user" />
-    <Content Include="Languages\English\Keyed\JobInBar_Keys.xml" />
-    <Content Include="News\JobInBarUpdateNews.xml" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="DeployMod" AfterTargets="Build">
-    <Message Text="Deploying mod to $(RimWorldDir)/Mods" Importance="high" />
-    
-    <ItemGroup>
-      <PdbFiles Include="$(MSBuildProjectDirectory)\..\**\*.pdb" />
-      <PdbFiles Include="$(RimWorldDir)\Mods\$(ProjectName)\**\*.pdb" />
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>JobInBar</RootNamespace>
+        <AssemblyName>JobInBar</AssemblyName>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <TargetFrameworkProfile/>
+        <Nullable>enable</Nullable>
+        <Optimize>true</Optimize>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <LangVersion>11.0</LangVersion>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
+        <ErrorReport>prompt</ErrorReport>
+    </PropertyGroup>
+    <PropertyGroup>
+        <RimWorldLatestVersion>1.6</RimWorldLatestVersion>
+        <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld</RimWorldDir>
+        <HarmonyPath>D:\Games\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HarmonyPath>
+        <OutputPath>$(RimWorldDir)\Mods\BetterLetters\$(RimWorldLatestVersion)\Assemblies\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.1|AnyCPU'">
+        <OutputPath>..\1.1\Assemblies\</OutputPath>
+        <DefineConstants>v1_1</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.2|AnyCPU'">
+        <OutputPath>..\1.2\Assemblies\</OutputPath>
+        <DefineConstants>v1_2</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.3|AnyCPU' ">
+        <OutputPath>..\1.3\Assemblies\</OutputPath>
+        <DefineConstants>v1_3</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.4|AnyCPU'">
+        <OutputPath>..\1.4\Assemblies\</OutputPath>
+        <DefineConstants>v1_4</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5|AnyCPU'">
+        <OutputPath>..\1.5\Assemblies\</OutputPath>
+        <DefineConstants>v1_5</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6|AnyCPU'">
+        <OutputPath>..\1.6\Assemblies\</OutputPath>
+        <DefineConstants>v1_6</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '1.6 Debug|AnyCPU'">
+        <OutputPath>..\1.6\Assemblies\</OutputPath>
+        <DefineConstants>v1_6;DEBUG</DefineConstants>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+    <ItemGroup Label="Dependencies">
+        <Reference Include="System">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="System.Core">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="System.Xml.Linq">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="System.Data.DataSetExtensions">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="System.Data">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="System.Xml">
+            <EmbedInteropTypes>False</EmbedInteropTypes>
+        </Reference>
+        <Reference Include="0Harmony">
+            <HintPath>$(HarmonyPath)</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
     </ItemGroup>
-    
-    <Delete Files="@(PdbFiles)" Condition="'$(DebugSymbols)' == 'false'" />
-    
     <ItemGroup>
-      <Assemblies Include="$(MSBuildProjectDirectory)\..\1.*\Assemblies\**\*.dll" />
-      <Assemblies Include="$(MSBuildProjectDirectory)\..\1.*\Assemblies\**\*.pdb"
-        Condition="'$(DebugSymbols)' == 'true'" />
+        <Compile Include="Dialog_LabelSettings.cs"/>
+        <Compile Include="GlobalUsings.cs"/>
+        <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs"/>
+        <Compile Include="LogPrefixed.cs"/>
+        <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_AddOptions.cs"/>
+        <Compile Include="HarmonyPatches\Patch_ColonistBarDrawer_DrawColonist_AddLabels.cs"/>
+        <Compile Include="JobInBarMod.cs"/>
+        <Compile Include="LabelDrawer.cs"/>
+        <Compile Include="HarmonyPatches\Patch_PlaySettings_GlobalControl_ToggleLabels.cs"/>
+        <Compile Include="LabelsTracker_WorldComponent.cs"/>
+        <Compile Include="PawnLabelExtensions.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Settings.cs"/>
+        <Compile Include="Utils\CustomWidgets.cs"/>
+        <Compile Include="Utils\LabelUtils.cs"/>
+        <Compile Include="Utils\LegacySupport.cs"/>
     </ItemGroup>
-    
-    <Copy
-      SourceFiles="@(Assemblies)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\%(RecursiveDir)"
-      SkipUnchangedFiles="true" />
-    
     <ItemGroup>
-      <About Include="$(ProjectDir)\About\About.xml" />
-      <About Include="$(ProjectDir)\About\Preview.png" />
-      <About Include="$(ProjectDir)\About\ModIcon.png" />
-      <About Include="$(ProjectDir)\About\PublishedFileId.txt" />
+        <Content Include="About\About.xml"/>
+        <Content Include="About\ModIcon.psd"/>
+        <Content Include="About\Preview.png"/>
+        <Content Include="About\Preview.psd"/>
+        <Content Include="JobInBar.csproj.user"/>
+        <Content Include="Languages\English\Keyed\JobInBar_Keys.xml"/>
+        <Content Include="News\JobInBarUpdateNews.xml"/>
     </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <Target Name="DeployMod" AfterTargets="Build">
+        <Message Text="Deploying mod to $(RimWorldDir)/Mods" Importance="high"/>
 
-    <Copy
-      SourceFiles="@(About)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\About"
-      SkipUnchangedFiles="true" />
+        <ItemGroup>
+            <PdbFiles Include="$(MSBuildProjectDirectory)\..\**\*.pdb"/>
+            <PdbFiles Include="$(RimWorldDir)\Mods\$(ProjectName)\**\*.pdb"/>
+        </ItemGroup>
 
-    <ItemGroup>
-      <Textures Include="$(ProjectDir)\Textures\**\*.png" />
-    </ItemGroup>
+        <Delete Files="@(PdbFiles)" Condition="'$(DebugSymbols)' == 'false'"/>
 
-    <Copy
-      SourceFiles="@(Textures)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Textures\%(RecursiveDir)"
-      SkipUnchangedFiles="true" />
+        <ItemGroup>
+            <Assemblies Include="$(MSBuildProjectDirectory)\..\1.*\Assemblies\**\*.dll"/>
+            <Assemblies Include="$(MSBuildProjectDirectory)\..\1.*\Assemblies\**\*.pdb"
+                        Condition="'$(DebugSymbols)' == 'true'"/>
+        </ItemGroup>
 
-    <ItemGroup>
-      <Languages Include="$(ProjectDir)\Languages\**\*.xml" />
-    </ItemGroup>
+        <Copy
+                SourceFiles="@(Assemblies)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\%(RecursiveDir)"
+                SkipUnchangedFiles="true"/>
 
-    <Copy
-      SourceFiles="@(Languages)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Languages\%(RecursiveDir)"
-      SkipUnchangedFiles="true" />
+        <ItemGroup>
+            <About Include="$(ProjectDir)\About\About.xml"/>
+            <About Include="$(ProjectDir)\About\Preview.png"/>
+            <About Include="$(ProjectDir)\About\ModIcon.png"/>
+            <About Include="$(ProjectDir)\About\PublishedFileId.txt"/>
+        </ItemGroup>
 
-    <ItemGroup>
-      <Patches Include="$(ProjectDir)\Patches\**\*.xml" />
-    </ItemGroup>
+        <Copy
+                SourceFiles="@(About)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\About"
+                SkipUnchangedFiles="true"/>
 
-    <Copy
-      SourceFiles="@(Patches)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Patches\%(RecursiveDir)"
-      SkipUnchangedFiles="true" />
+        <ItemGroup>
+            <Textures Include="$(ProjectDir)\Textures\**\*.png"/>
+        </ItemGroup>
 
-    <ItemGroup>
-      <News Include="$(ProjectDir)\News\**\*.xml" />
-    </ItemGroup>
+        <Copy
+                SourceFiles="@(Textures)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Textures\%(RecursiveDir)"
+                SkipUnchangedFiles="true"/>
 
-    <Copy
-      SourceFiles="@(News)"
-      DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\News\%(RecursiveDir)"
-      SkipUnchangedFiles="true" />
-  </Target>
-  <PropertyGroup>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(RimWorldDir)\RimWorldWin64.exe</StartProgram>
-  </PropertyGroup>
+        <ItemGroup>
+            <Languages Include="$(ProjectDir)\Languages\**\*.xml"/>
+        </ItemGroup>
+
+        <Copy
+                SourceFiles="@(Languages)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Languages\%(RecursiveDir)"
+                SkipUnchangedFiles="true"/>
+
+        <ItemGroup>
+            <Patches Include="$(ProjectDir)\Patches\**\*.xml"/>
+        </ItemGroup>
+
+        <Copy
+                SourceFiles="@(Patches)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\Patches\%(RecursiveDir)"
+                SkipUnchangedFiles="true"/>
+
+        <ItemGroup>
+            <News Include="$(ProjectDir)\News\**\*.xml"/>
+        </ItemGroup>
+
+        <Copy
+                SourceFiles="@(News)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\News\%(RecursiveDir)"
+                SkipUnchangedFiles="true"/>
+    </Target>
+    <PropertyGroup>
+        <StartAction>Program</StartAction>
+        <StartProgram>$(RimWorldDir)\RimWorldWin64.exe</StartProgram>
+    </PropertyGroup>
 </Project>

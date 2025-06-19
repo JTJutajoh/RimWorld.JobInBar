@@ -6,19 +6,19 @@
   <JobInBar_ShowJobLabelFor>Show job title in colonist bar</JobInBar_ShowJobLabelFor>
   <JobInBar_ShowRoyaltyLabelFor>Show Royalty Title Label</JobInBar_ShowRoyaltyLabelFor>
   <JobInBar_ShowIdeoLabelFor>Show Ideology Role Label</JobInBar_ShowIdeoLabelFor>
-  
+
   <JobInBar_Hue>Hue</JobInBar_Hue>
   <JobInBar_Saturation>Saturation</JobInBar_Saturation>
   <JobInBar_Value>Value</JobInBar_Value>
   <JobInBar_Alpha>Alpha</JobInBar_Alpha>
-  
+
   <JobInBar_PlaySettingsToggle>Show/hide job labels in the colonist bar. Disabling this can slightly improve performance in large colonies.</JobInBar_PlaySettingsToggle>
   <TabLabels>Labels</TabLabels>
   <Presets>Presets</Presets>
   <JobInBar_ShowAnyLabels>Show/hide all</JobInBar_ShowAnyLabels>
   <JobInBar_Change>Change</JobInBar_Change>
   <JobInBar_LabelColorPickerHeading>Choose a label color</JobInBar_LabelColorPickerHeading>
-  
+
   <JobInBar_Settings_Tab_Main>Main</JobInBar_Settings_Tab_Main>
   <JobInBar_Settings_Tab_Display>Display</JobInBar_Settings_Tab_Display>
   <JobInBar_Settings_Tab_Job>Job</JobInBar_Settings_Tab_Job>
@@ -29,7 +29,7 @@
 
 Default: {0}</JobInBar_Settings_DefaultSuffix>
   <JobInBar_Settings_Default>Default</JobInBar_Settings_Default>
-  
+
   <!-- Main settings -->
   <JobInBar_Settings_ModEnabled>Mod Enabled</JobInBar_Settings_ModEnabled>
   <JobInBar_Settings_ModEnabled_Desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_ModEnabled_Desc>
@@ -38,7 +38,7 @@ Default: {0}</JobInBar_Settings_DefaultSuffix>
 For large colonies, it is recommended to tweak these settings so that fewer labels are drawn overall. Unity's text rendering code is not the most optimized, so if there are a ton of labels being drawn all the time you might notice a slight performance dip (the more labels the worse it will be).</JobInBar_Settings_PerformanceWarning>
   <JobInBar_Settings_DrawLabelOnlyOnHover>Only show labels on mouse hover</JobInBar_Settings_DrawLabelOnlyOnHover>
   <JobInBar_Settings_DrawLabelOnlyOnHover_Desc>Only draws labels for pawns the mouse is currently hovering over in the colonist bar.
-  
+
 Recommended if you're having performance problems or if you have a colony with a large number of pawns.</JobInBar_Settings_DrawLabelOnlyOnHover_Desc>
   <JobInBar_Settings_CurrentJobNote>Note that the current task is only shown when the mouse is hovered, for performance reasons.
 Fetching the current task of a pawn is a relatively expensive operation and it would quickly tank performance to do it multiple times a frame for multiple pawns.</JobInBar_Settings_CurrentJobNote>
@@ -50,13 +50,13 @@ Enabling this may cause annoying flickering as the weapon shifts when you hover 
   <JobInBar_Settings_CurrentTaskLabelColor>Current task label color</JobInBar_Settings_CurrentTaskLabelColor>
   <JobInBar_Settings_DrawJobTitle>Job titles</JobInBar_Settings_DrawJobTitle>
   <JobInBar_Settings_DrawJobTitle_Desc>Draws a colonist's current job title. The main function of the mod.
-  
+
 Set a custom job title in the pawn's Rename dialog (from the Bio tab). Otherwise defaults to a shortened version of their backstory.</JobInBar_Settings_DrawJobTitle_Desc>
   <JobInBar_Settings_JobTitleNote>Note that you can set this individually for a pawn in their Rename dialog.</JobInBar_Settings_JobTitleNote>
   <JobInBar_Settings_EnablePlaySettingToggle>Play setting toggle to disable/enable all labels</JobInBar_Settings_EnablePlaySettingToggle>
   <JobInBar_Settings_EnablePlaySettingToggle_Desc>Adds a new toggle to the global play settings (the little buttons in the bottom right) to toggle ALL labels from this mod on/off at once.
 Overrides global settings and individual pawn settings.</JobInBar_Settings_EnablePlaySettingToggle_Desc>
-  
+
   <!-- Display settings -->
   <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
   <JobInBar_Settings_JobLabelVerticalOffset>(All labels) Vertical offset</JobInBar_Settings_JobLabelVerticalOffset>
@@ -73,7 +73,7 @@ Overrides global settings and individual pawn settings.</JobInBar_Settings_Enabl
   <JobInBar_Settings_OffsetEquippedExtra_Desc>Number of pixels to vertically offset the equipped weapon icon by, regardless of labels.</JobInBar_Settings_OffsetEquippedExtra_Desc>
   <JobInBar_Settings_OffsetEquippedByLabels>Move equipped weapon icon under labels</JobInBar_Settings_OffsetEquippedByLabels>
   <JobInBar_Settings_OffsetEquippedByLabels_Desc>If enabled, the icon for the currently equipped weapon will be offset vertically so that it appears underneath the labels, instead of overlapping them.</JobInBar_Settings_OffsetEquippedByLabels_Desc>
-  
+
   <!-- Ideology settings -->
   <JobInBar_Settings_DrawIdeoRoles>Ideology specialist roles (If available)</JobInBar_Settings_DrawIdeoRoles>
   <JobInBar_Settings_DrawIdeoRoles_Desc>If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.</JobInBar_Settings_DrawIdeoRoles_Desc>
@@ -83,20 +83,20 @@ Overrides global settings and individual pawn settings.</JobInBar_Settings_Enabl
   <JobInBar_Settings_IdeoRoleColorOverride_Desc>If the "Use Ideology color for roles" setting is disabled, this color will be used for all ideological roles instead.</JobInBar_Settings_IdeoRoleColorOverride_Desc>
   <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready</JobInBar_Settings_RoleColorAbility>
   <JobInBar_Settings_RoleColorAbility_Desc>If enabled, the ideology role color will only be used if the role's ability cooldown is complete and the ability can be used. Otherwise will be the same color as the name label.</JobInBar_Settings_RoleColorAbility_Desc>
-  
+
   <!-- Royalty settings -->
   <JobInBar_Settings_DrawRoyalTitles>Add a label for any Royalty titles</JobInBar_Settings_DrawRoyalTitles>
   <JobInBar_Settings_DrawRoyalTitles_Desc>If the pawn has any Royal titles, adds the name of their title below the label.
-  
+
 Can be disabled on an individual basis in the pawn's Rename dialog.</JobInBar_Settings_DrawRoyalTitles_Desc>
   <JobInBar_Settings_RoyalTitleColor>Royal title color</JobInBar_Settings_RoyalTitleColor>
   <JobInBar_Settings_RoyalTitleColor_Desc>Defaults to the vanilla Imperial color.</JobInBar_Settings_RoyalTitleColor_Desc>
   <JobInBar_Settings_RoyalTitleNote>Note that (currently) only the "first" royal title that a pawn has will be considered. If you have mods that add other factions that grant titles, it will not show every single title that a pawn owns if they have more than one.</JobInBar_Settings_RoyalTitleNote>
-  
+
   <!-- Job settings -->
   <JobInBar_Settings_DefaultJobLabelColor>Default Job Title Color</JobInBar_Settings_DefaultJobLabelColor>
   <JobInBar_Settings_LabelAlpha>Opacity for all labels</JobInBar_Settings_LabelAlpha>
-  
+
   <JobInBar_Settings_DefaultShow>Show job label by default</JobInBar_Settings_DefaultShow>
   <JobInBar_Settings_DefaultShow_Desc>Sets the default for if job labels should be shown. Can be toggled individually per-colonist.</JobInBar_Settings_DefaultShow_Desc>
   <JobInBar_Settings_DisplaySettingsLabel>Display Settings</JobInBar_Settings_DisplaySettingsLabel>
@@ -105,9 +105,11 @@ Can be disabled on an individual basis in the pawn's Rename dialog.</JobInBar_Se
   <JobInBar_Settings_OnlyDrawJobIfCustom>Only draw custom job titles</JobInBar_Settings_OnlyDrawJobIfCustom>
   <JobInBar_Settings_OnlyDrawJobIfCustom_Desc>Job titles are only shown if you set a custom job title for the pawn (using the rename dialog). This setting is recommended for larger colonies.</JobInBar_Settings_OnlyDrawJobIfCustom_Desc>
   <JobInBar_Settings_ColorPickerHeading>Choose a label color</JobInBar_Settings_ColorPickerHeading>
-  
+
   <JobInBar_Settings_Cache_Label>Contents of {0} Cache:</JobInBar_Settings_Cache_Label>
   <JobInBar_Settings_Cache_Tip>This is only for debugging. Use this page to manually check or delete entries from the cache if something is going wrong.</JobInBar_Settings_Cache_Tip>
   <JobInBar_Reset>Reset</JobInBar_Reset>
+  <JobInBar_JobTitle>Job Title</JobInBar_JobTitle>
+  <JobInBar_Unknown>Unknown</JobInBar_Unknown>
 
 </LanguageData>

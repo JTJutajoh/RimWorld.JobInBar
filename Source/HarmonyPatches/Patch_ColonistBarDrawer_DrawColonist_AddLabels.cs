@@ -19,8 +19,14 @@ namespace JobInBar.HarmonyPatches
         public static void AddLabels(Rect rect, Pawn colonist, Map pawnMap, bool highlight, bool reordering)
         {
             if (!Settings.ModEnabled) return;
-            
+
             var bar = Find.ColonistBar;
+            if (bar is null)
+            {
+                Log.Error("Error adding mod labels, ColonistBar was null. Is there another mod replacing it?");
+                return;
+            }
+
             var barHeight =  4f * bar.Scale; // from Core
 
             var pos = new Vector2(rect.center.x, rect.yMax - barHeight + Settings.JobLabelVerticalOffset + 14f);
