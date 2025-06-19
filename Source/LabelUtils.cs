@@ -4,6 +4,7 @@ namespace JobInBar
 {
     public static class LabelUtils
     {
+        // ReSharper disable once InconsistentNaming
         public static Rect LabelBGRect(Vector2 pos, float labelWidth) => new Rect(pos.x - labelWidth / 2f - 4f, pos.y, labelWidth + 8f, 12f);
 
         public static Rect GetLabelRect(Vector2 pos, float labelWidth)
