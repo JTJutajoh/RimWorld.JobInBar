@@ -76,4 +76,16 @@ public static class LegacySupport
         };
     }
 #endif
+    
+#if v1_1 || v1_2 || v1_3 || v1_4
+    public static void AdjustRectsForScrollView(Rect parentRect, ref Rect outRect, ref Rect viewRect)
+    {
+        if ((double)viewRect.height < (double)outRect.height)
+            return;
+        viewRect.width -= 20f;
+        outRect.xMax -= 4f;
+        outRect.yMin = Mathf.Max(parentRect.yMin + 6f, outRect.yMin);
+        outRect.yMax = Mathf.Min(parentRect.yMax - 6f, outRect.yMax);
+    }
+#endif
 }

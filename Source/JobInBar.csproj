@@ -100,6 +100,7 @@
     <Compile Include="Dialog_LabelColorPicker.cs" />
     <Compile Include="GlobalUsings.cs" />
     <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs" />
+    <Compile Include="LegacySupport.cs" />
     <Compile Include="LogPrefixed.cs" />
     <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_AddOptions.cs" />
     <Compile Include="LabelUtils.cs" />

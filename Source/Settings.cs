@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BetterLetters;
 using HarmonyLib;
 using UnityEngine;
 
@@ -473,7 +474,7 @@ namespace JobInBar
             if (LabelsTracker_WorldComponent.Instance is not { } labelsComp) return;
 
 
-            var labelRect = inRect.TopPart(0.1f);
+            var labelRect = inRect.TopPartPixels(32f);
             Widgets.Label(labelRect, "JobInBar_Settings_Cache_Label".Translate(nameof(LabelsTracker_WorldComponent)));
             Text.Font = GameFont.Tiny;
             GUI.color = Color.gray;
@@ -484,7 +485,11 @@ namespace JobInBar
 
             var outerRect = inRect.BottomPart(0.9f);
             var viewRect = inRect.BottomPart(0.9f);
+#if !(v1_1 || v1_2 || v1_3 || v1_4)
             Widgets.AdjustRectsForScrollView(inRect.BottomPart(0.9f), ref outerRect, ref viewRect);
+#else
+            LegacySupport.AdjustRectsForScrollView(inRect.BottomPart(0.9f), ref outerRect, ref viewRect);
+#endif
             viewRect.height = (labelsComp.TrackedPawns.Count * 48f) + 32f;
             Widgets.BeginScrollView(outerRect, ref _scrollPositionCache, viewRect);
             var curY = viewRect.yMin;
@@ -536,7 +541,11 @@ namespace JobInBar
                     new Rect(labelRect.xMin, labelRect.yMin, labelRect.width, labelRect.height + 30f), tooltip);
             }
 
+#if !(v1_2 || v1_3 || v1_4 || v1_5)
             listingStandard.IntEntry(ref value, ref editBuffer, multiplier, min);
+#else
+            listingStandard.IntEntry(ref value, ref editBuffer, multiplier);
+#endif
             if (defaultButton)
             {
                 listingStandard.IntSetter(ref value, (int)DefaultSettings[key],
