@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
-using UnityEngine;
 
 namespace JobInBar.HarmonyPatches
 {
@@ -27,7 +26,7 @@ namespace JobInBar.HarmonyPatches
             {
                 if (worldView) return;
 
-                var texture = ContentFinder<Texture2D>.Get("UI/LabelToggle") ?? TexButton.Rename; //TODO: Don't load this dynamically every frame
+                var texture = Icons.LabelToggleIcon;
                 row.ToggleableIcon(ref _drawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle);
             }
             catch (Exception e)

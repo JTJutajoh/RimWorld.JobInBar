@@ -45,6 +45,12 @@ namespace JobInBar
     }
 
     [StaticConstructorOnStartup]
+    internal static class Icons
+    {
+        internal static readonly Texture2D LabelToggleIcon = ContentFinder<Texture2D>.Get("UI/LabelToggle");
+    }
+    
+    [StaticConstructorOnStartup]
     internal static class LoadHarmony
     {
         internal static readonly Harmony Harmony;
