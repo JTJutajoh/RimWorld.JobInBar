@@ -1,5 +1,8 @@
 ﻿// ReSharper disable RedundantUsingDirective
 
+using RimWorld;
+using UnityEngine;
+
 namespace JobInBar;
 
 /// <summary>
@@ -23,7 +26,7 @@ public static class LegacySupport
         Text.Anchor = TextAnchor.MiddleLeft;
         Widgets.Label(rect.LeftPart(labelPct), label);
         if (tooltip != null)
-            TooltipHandler.TipRegion(rect.LeftPart(labelPct), (TipSignal) tooltip);
+            TooltipHandler.TipRegion(rect.LeftPart(labelPct), (TipSignal)tooltip);
         Text.Anchor = TextAnchor.UpperLeft;
         var num = Widgets.HorizontalSlider(rect.RightPart(1f - labelPct), val, min, max, true);
         this_.Gap(this_.verticalSpacing);
@@ -47,16 +50,20 @@ public static class LegacySupport
     /// Backported from RimWorld 1.6 <see cref="GenUI" />
     public static Rect MiddlePart(this Rect rect, float pctWidth, float pctHeight)
     {
-        return new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) rect.width * (double) pctWidth / 2.0), (float) ((double) rect.y + (double) rect.height / 2.0 - (double) rect.height * (double) pctHeight / 2.0), rect.width * pctWidth, rect.height * pctHeight);
+        return new Rect(
+            (float)((double)rect.x + (double)rect.width / 2.0 - (double)rect.width * (double)pctWidth / 2.0),
+            (float)((double)rect.y + (double)rect.height / 2.0 - (double)rect.height * (double)pctHeight / 2.0),
+            rect.width * pctWidth, rect.height * pctHeight);
     }
 
     /// Backported from RimWorld 1.6 <see cref="GenUI" />
     public static Rect MiddlePartPixels(this Rect rect, float width, float height)
     {
-        return new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) width / 2.0), (float) ((double) rect.y + (double) rect.height / 2.0 - (double) height / 2.0), width, height);
+        return new Rect((float)((double)rect.x + (double)rect.width / 2.0 - (double)width / 2.0),
+            (float)((double)rect.y + (double)rect.height / 2.0 - (double)height / 2.0), width, height);
     }
 #endif
-    
+
 #if v1_1 || v1_2 || v1_3 || v1_4 || v1_5
     public static TargetingParameters ForThing()
     {
@@ -73,7 +80,7 @@ public static class LegacySupport
         };
     }
 #endif
-    
+
 #if v1_1 || v1_2 || v1_3 || v1_4
     public static void AdjustRectsForScrollView(Rect parentRect, ref Rect outRect, ref Rect viewRect)
     {
@@ -83,6 +90,47 @@ public static class LegacySupport
         outRect.xMax -= 4f;
         outRect.yMin = Mathf.Max(parentRect.yMin + 6f, outRect.yMin);
         outRect.yMax = Mathf.Min(parentRect.yMax - 6f, outRect.yMax);
+    }
+#endif
+
+#if v1_1 || v1_2 || v1_3
+    public static Color ClampToValueRange(this Color color, FloatRange range)
+    {
+        float H;
+        float S;
+        float V;
+        Color.RGBToHSV(color, out H, out S, out V);
+        float range1 = range.ClampToRange(V);
+        color = Color.HSVToRGB(H, S, range1);
+        return color;
+    }
+#endif
+    
+#if v1_1 || v1_2 || v1_3
+    /// <summary>
+    /// Stub version of CheckboxLabeled that just ignores the 2 float params
+    /// </summary>
+    public static void CheckboxLabeled(this Listing_Standard listingStandard, string label, ref bool val,
+        string? tooltip = null, float height = 0f, float labelPct = 1f)
+    {
+        listingStandard.CheckboxLabeled(label, ref val, tooltip);
+    }
+#endif
+    
+#if v1_1 || v1_2 || v1_3
+    public static Rect SubLabel(this Listing_Standard listingStandard, string label, float widthPct)
+    {
+        Rect rect = listingStandard.GetRect(Text.CalcHeight(label, listingStandard.ColumnWidth * widthPct), widthPct);
+        float num = 20f;
+        rect.x += num;
+        rect.width -= num;
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+        Widgets.Label(rect, label);
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        listingStandard.Gap(listingStandard.verticalSpacing);
+        return rect;
     }
 #endif
 }

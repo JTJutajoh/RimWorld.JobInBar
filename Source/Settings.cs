@@ -134,19 +134,23 @@ namespace JobInBar
                 new TabRecord("JobInBar_Settings_Tab_Job".Translate(), () => _currentTab = SettingsTab.Job,
                     () => _currentTab == SettingsTab.Job)
             };
+#if !(v1_1)
             if (ModsConfig.RoyaltyActive)
             {
                 tabs.Add(new TabRecord("JobInBar_Settings_Tab_Royalty".Translate(),
                     () => _currentTab = SettingsTab.Royalty,
                     () => _currentTab == SettingsTab.Royalty));
             }
-
+#endif
+            
+#if !(v1_1 || v1_2)
             if (ModsConfig.IdeologyActive)
             {
                 tabs.Add(new TabRecord("JobInBar_Settings_Tab_Ideology".Translate(),
                     () => _currentTab = SettingsTab.Ideology,
                     () => _currentTab == SettingsTab.Ideology));
             }
+#endif
 
             if (Prefs.DevMode && LabelsTracker_WorldComponent.Instance != null)
             {
@@ -200,6 +204,7 @@ namespace JobInBar
                     }
 
                     break;
+#if !(v1_1 || v1_2)
                 case SettingsTab.Ideology:
                     if (!ModsConfig.IdeologyActive)
                     {
@@ -218,6 +223,8 @@ namespace JobInBar
                     }
 
                     break;
+#endif
+#if !(v1_1)
                 case SettingsTab.Royalty:
                     if (!ModsConfig.RoyaltyActive)
                     {
@@ -236,6 +243,7 @@ namespace JobInBar
                     }
 
                     break;
+#endif
                 case SettingsTab.Cache:
                     try
                     {
@@ -495,10 +503,10 @@ namespace JobInBar
             Widgets.BeginScrollView(outerRect, ref _scrollPositionCache, viewRect);
             var curY = viewRect.yMin;
             Pawn? remove = null;
-            foreach (var (key, value) in labelsComp.TrackedPawns)
+            foreach (var p in labelsComp.TrackedPawns)
             {
                 var label =
-                    $"{key?.NameShortColored}: [Pawn: \"{value?.Pawn?.NameShortColored}\", ShowBackstory: {value?.ShowBackstory}, BackstoryColor: {value?.BackstoryColor}, ShowRoyalTitle: {value?.ShowRoyalTitle}, ShowIdeoRole: {value?.ShowIdeoRole}]";
+                    $"{p.Key?.NameShortColored}: [Pawn: \"{p.Value?.Pawn?.NameShortColored}\", ShowBackstory: {p.Value?.ShowBackstory}, BackstoryColor: {p.Value?.BackstoryColor}, ShowRoyalTitle: {p.Value?.ShowRoyalTitle}, ShowIdeoRole: {p.Value?.ShowIdeoRole}]";
                 var rect = new Rect(viewRect.xMin, curY, viewRect.width,
                     Text.CalcHeight(label, viewRect.width * 0.95f));
                 Widgets.DrawLineHorizontal(rect.xMin, rect.yMin, rect.width);
@@ -510,10 +518,10 @@ namespace JobInBar
                 Widgets.DrawLineHorizontal(rect.xMin, rect.yMax, rect.width);
 
                 GUI.color = Color.red;
-                if (key != null && Widgets.ButtonTextSubtle(rect.RightPart(0.05f).MiddlePartPixels(50f, 24f),
+                if (p.Key != null && Widgets.ButtonTextSubtle(rect.RightPart(0.05f).MiddlePartPixels(50f, 24f),
                         "JobInBar_Reset".Translate()))
                 {
-                    remove = key;
+                    remove = p.Key;
                 }
 
                 curY += rect.height + 4f;

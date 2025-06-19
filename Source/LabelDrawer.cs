@@ -102,6 +102,7 @@ namespace JobInBar
             {
                 if (Settings.DrawCurrentTask && Mouse.IsOver(rect))
                 {
+#if !(v1_1 || v1_2 || v1_3) // RW 1.4 introduced the ShowWeaponsUnderPortraitMode pref
                     if (!Settings.MoveWeaponBelowCurrentTask)
                     {
                         if (((Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.Always) ||
@@ -111,6 +112,7 @@ namespace JobInBar
                             pos.y += 28f + Settings.OffsetEquippedExtra;
                         }
                     }
+#endif
                     HoveredPawn = colonist;
                     DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentTaskLabelColor, truncate: false,
                         drawBg: Settings.DrawCurrentTaskBackground);

@@ -11,8 +11,6 @@ internal class Dialog_LabelColorPicker : Window
 
     internal static Dialog_LabelColorPicker? Instance;
 
-    private static bool _currentlyDraggingHSVWheel;
-
     private Color _color;
     private string _exampleText;
     private bool _exampleBackgrounds;
@@ -153,7 +151,11 @@ internal class Dialog_LabelColorPicker : Window
             onDefault?.Invoke();
         }
     }
-
+    
+#if !(v1_1 || v1_2 || v1_3)
+    private static bool _currentlyDraggingHSVWheel;
+#endif
+    
     /// <summary>
     /// Creates an HSV color picker along with HSVA sliders.
     /// </summary>
@@ -185,12 +187,15 @@ internal class Dialog_LabelColorPicker : Window
             slidersRect = new Rect(rect.xMin, curY, rect.width, rect.height - hsvRect.height - 4f);
         }
 
+#if !(v1_1 || v1_2 || v1_3)
         Widgets.HSVColorWheel(hsvRect, ref color, ref _currentlyDraggingHSVWheel);
-
+#endif
         Color.RGBToHSV(color, out var hue, out var saturation, out var value);
 
         curY += 4f;
 
+// RW 1.4 marked this Widgets.HorizontalSlider overload obsolete for some reason. Ignore the warning.
+#pragma warning disable CS0612 // Type or member is obsolete
         hue =
             Widgets.HorizontalSlider(new Rect(slidersRect.xMin, curY, slidersRect.width, 24f), hue, 0f, 1f, true,
                 "JobInBar_Hue".Translate());
@@ -213,6 +218,7 @@ internal class Dialog_LabelColorPicker : Window
         color.a =
             Widgets.HorizontalSlider(new Rect(slidersRect.xMin, curY, slidersRect.width, 24f), color.a, 0f, 1f,
                 true, "JobInBar_Alpha".Translate());
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 
     // private static void ColorSelector(string label, Rect rect, ref Color color, float maxHeight = 120f,

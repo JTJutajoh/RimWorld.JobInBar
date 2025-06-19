@@ -35,6 +35,7 @@ namespace JobInBar.HarmonyPatches
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         static void ExpandWindow(ref Vector2 ___size, ref Pawn? ___pawn)
         {
+            //BUG: In 1.3 there is no 'size' property so this fails to patch
             if (!Settings.ModEnabled) return;
             if (___pawn == null || !IsValidPawn(___pawn)) return;
 
@@ -45,10 +46,12 @@ namespace JobInBar.HarmonyPatches
                 additionalY += 32f;
             }
 
+#if !(v1_1 || v1_2)
             if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && ___pawn.ideo?.Ideo?.GetRole(___pawn) is not null)
             {
                 additionalY += 32f;
             }
+#endif
 
             _startY = additionalY - 8f;
 
@@ -136,18 +139,23 @@ namespace JobInBar.HarmonyPatches
                 }
             );
 
-            //TODO: Change how individual toggles work to be able to override the global setting
+#if !(v1_1)
+            // Royalty royal title:
             if (ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && pawn.royalty?.MainTitle() is not null)
             {
                 DoLabelRow(containerRect, ref curY, "JobInBar_ShowRoyaltyLabelFor".Translate(),
                     ref labelsComp[pawn].ShowRoyalTitle, null);
             }
+#endif
 
+#if !(v1_1 || v1_2)
+            // Ideology role:
             if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && pawn.ideo?.Ideo?.GetRole(pawn) is not null)
             {
                 DoLabelRow(containerRect, ref curY, "JobInBar_ShowIdeoLabelFor".Translate(),
                     ref labelsComp[pawn].ShowIdeoRole, null);
             }
+#endif
         }
 
         /// <summary>
@@ -207,8 +215,8 @@ namespace JobInBar.HarmonyPatches
                 ColorButton(colorButtonRect, color, onColorButtonClick);
 
                 rowRect.xMax = colorButtonRect.xMin - 8f;
-                return rowRect;
 #endif
+                return rowRect;
             });
         }
 
