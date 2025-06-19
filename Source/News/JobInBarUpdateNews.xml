@@ -17,15 +17,4 @@ There is also a new toggle in the bottom right buttons that hides all labels at 
 NOTE: New fixes/improvements are ONLY for RimWorld 1.4-1.6. If you're still playing on 1.3 or earlier (why?) you should see no change.</content>
         <targetAudience>ReturningPlayers</targetAudience>
     </HugsLib.UpdateFeatureDef>
-    
-    <HugsLib.UpdateFeatureDef ParentName="JobInBarUpdateFeatureBase">
-        <defName>JobInBar_1.6.1</defName>
-        <assemblyVersion>1.6.1</assemblyVersion>
-        <content>|Overhauled mod settings and color picking features for 1.6. Overall polished
-|Mod settings page has gotten a total overhaul with some new options and a generally easier to understand layout.
-|Label colors are working better than before, with a new color picker
-|Equipped weapon icons and labels will no longer overlap awkwardly. Check mod settings for more details
-|New "Cache" tab in the mod settings whenever the game is in dev mode that shows the raw data in the labels cache, use it if you're having problems with the mod.</content>
-        <targetAudience>ReturningPlayers</targetAudience>
-    </HugsLib.UpdateFeatureDef>
 </Defs>
