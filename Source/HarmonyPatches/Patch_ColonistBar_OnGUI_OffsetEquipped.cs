@@ -44,6 +44,7 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
                 {
                     if (!Settings.ModEnabled) return 0f;
                     if (!Settings.OffsetEquippedByLabels) return Settings.OffsetEquippedExtra;
+                    if (Settings.DrawLabelOnlyOnHover && LabelDrawer.HoveredPawn != pawn) return 0f;
                     var offset = 0f;
 
                     offset += Settings.JobLabelVerticalOffset;
