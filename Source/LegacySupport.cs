@@ -1,9 +1,6 @@
 ﻿// ReSharper disable RedundantUsingDirective
-using HarmonyLib;
-using RimWorld;
-using UnityEngine;
 
-namespace BetterLetters;
+namespace JobInBar;
 
 /// <summary>
 /// Class with helper functions that assist with multi-version support.<br />

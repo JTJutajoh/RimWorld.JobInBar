@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using BetterLetters;
 using HarmonyLib;
 using UnityEngine;
 

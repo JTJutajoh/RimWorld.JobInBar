@@ -1,5 +1,4 @@
 ﻿using System;
-using BetterLetters;
 using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;

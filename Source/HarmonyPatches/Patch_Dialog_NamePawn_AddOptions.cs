@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using BetterLetters;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
