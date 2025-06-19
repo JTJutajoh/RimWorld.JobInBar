@@ -108,7 +108,7 @@ namespace JobInBar
                              (Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.WhileDrafted && colonist.Drafted)) && 
                             (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
                         {
-                            pos.y += 20f;
+                            pos.y += 28f + Settings.OffsetEquippedExtra;
                         }
                     }
                     HoveredPawn = colonist;
