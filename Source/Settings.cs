@@ -32,7 +32,7 @@ namespace JobInBar
 
         [Setting] public static bool DrawCurrentTask = true;
         [Setting] public static bool DrawCurrentTaskBackground = false;
-        [Setting] public static bool MoveWeaponBelowCurrentTask = false;
+        [Setting] public static bool MoveWeaponBelowCurrentTask = true;
         [Setting] public static Color CurrentTaskLabelColor = new Color(1f, 0.8f, 0.4f);
 
         [Setting] public static bool DrawIdeoRoles = true;
@@ -582,7 +582,7 @@ namespace JobInBar
             Scribe_Values.Look(ref RoyalTitleColor, "RoyalTitleColor", new Color(0.85f, 0.85f, 0.75f));
 
             Scribe_Values.Look(ref DrawCurrentTask, "DrawCurrentTask", true);
-            Scribe_Values.Look(ref MoveWeaponBelowCurrentTask, "MoveWeaponBelowCurrentTask");
+            Scribe_Values.Look(ref MoveWeaponBelowCurrentTask, "MoveWeaponBelowCurrentTask", true);
 
             base.ExposeData();
         }
