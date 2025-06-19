@@ -54,6 +54,9 @@ namespace JobInBar
     {
         internal static readonly Harmony Harmony;
 
+        private static int _loadedPatches = 0;
+        private static int _failedPatches = 0;
+        
         static LoadHarmony()
         {
             Harmony = new Harmony(JobInBarMod.Instance!.Content.PackageId);
@@ -74,13 +77,46 @@ namespace JobInBar
                     "Error patching vanilla. This likely means either the wrong game version or a hard incompatibility with another mod.");
             }
 
-            Log.Message("Harmony patching complete");
+            Log.Message($"{_loadedPatches}/{_loadedPatches+_failedPatches} Harmony patches successful.");
+            if (_failedPatches > 0) 
+                Log.Warning($"{_failedPatches} Harmony patches failed! The mod/game might behave in undesirable ways.");
         }
 
         private static void Patch_Vanilla()
         {
-            //TODO: Replace PatchAll() with categorized patching
-            Harmony.PatchAll();
+            PatchCategory("AddLabels");
+            PatchCategory("NamePawn");
+            PatchCategory("OffsetEquippedWeapon");
+            PatchCategory("PlaySettings");
+        }
+
+        /// <summary>
+        /// Wrapper for <see cref="Harmony"/>.<see cref="Harmony.PatchCategory(string)"/> that logs any errors that occur and
+        /// skips patches that are disabled in the mod's configs.
+        /// </summary>
+        /// <param name="category">Name of the category to pass to <see cref="Harmony"/>.<see cref="Harmony.PatchCategory(string)"/></param>
+        /// <param name="condition">Optional condition that must be true or the patch will be skipped.<br />
+        /// Used for conditionally skipping patches based on mod configs.</param>
+        private static void PatchCategory(string category, bool condition = true)
+        {
+            if (!condition) //TODO: Come up with a way to conditionally RE-patch categories if they're enabled in settings without requiring a restart
+            {
+                Log.Message($"Patch \"{category}\" skipped, disabled in mod config.");
+                return;
+            }
+
+            try
+            {
+                Log.Trace($"Patching category \"{category}\"...");
+                Harmony.PatchCategory(category);
+            }
+            catch (Exception e)
+            {
+                Log.Exception(e, $"Error patching category {category}");
+                _failedPatches++;
+                return;
+            }
+            _loadedPatches++;
         }
     }
 }
