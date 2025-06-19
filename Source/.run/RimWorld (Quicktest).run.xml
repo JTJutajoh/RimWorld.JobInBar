@@ -1,0 +1,26 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RimWorld (Quicktest)" type="DotNetProject" factoryName=".NET Project">
+    <log_file alias="Player.log" path="$USER_HOME$/AppData/LocalLow/Ludeon Studios/RimWorld by Ludeon Studios/Player.log" />
+    <option name="EXE_PATH" value="$RIMWORLD_LATEST$/RimWorldWin64.exe" />
+    <option name="PROGRAM_PARAMETERS" value="--debugger-agent=transport=dt_socket,address=127.0.0.1:56000,server=y -savedatafolder=.$SAVE_DATA$/ -quicktest" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PASS_PARENT_ENVS" value="1" />
+    <option name="USE_EXTERNAL_CONSOLE" value="0" />
+    <option name="ENV_FILE_PATHS" value="" />
+    <option name="REDIRECT_INPUT_PATH" value="" />
+    <option name="PTY_MODE" value="Auto" />
+    <option name="USE_MONO" value="0" />
+    <option name="RUNTIME_ARGUMENTS" value="" />
+    <option name="AUTO_ATTACH_CHILDREN" value="0" />
+    <option name="MIXED_MODE_DEBUG" value="0" />
+    <option name="PROJECT_PATH" value="$PROJECT_DIR$/JobInBar.csproj" />
+    <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+    <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+    <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+    <option name="PROJECT_KIND" value="Console" />
+    <option name="PROJECT_TFM" value=".NETFramework,Version=v4.7.2" />
+    <method v="2">
+      <option name="Build" />
+    </method>
+  </configuration>
+</component>

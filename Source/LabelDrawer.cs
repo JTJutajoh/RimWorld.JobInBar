@@ -1,14 +1,13 @@
 ﻿using System;
-using DarkLog;
-using Verse;
 using RimWorld;
 using UnityEngine;
-using HarmonyLib;
 
 namespace JobInBar
 {
     public static class LabelDrawer
     {
+        public static Pawn? HoveredPawn;
+
         /// <summary>
         /// Draws a custom label at the specified position with the specified text, color, and truncation options.
         /// </summary>
@@ -17,12 +16,12 @@ namespace JobInBar
         /// <param name="labelColor">The color of the label to draw.</param>
         /// <param name="truncateToWidth">The maximum width, in pixels, of the label after truncation.</param>
         /// <param name="truncate">A value indicating whether to truncate the label if it exceeds the specified width.</param>
-        private static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor, float truncateToWidth = 9999f, bool truncate = true)
+        /// <param name="drawBg"></param>
+        internal static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor,
+            float truncateToWidth = 9999f, bool truncate = true, bool drawBg = true)
         {
             // Save the current font and restore it after drawing the label
-            //GameFont font2 = Text.Font;
             Text.Font = GameFont.Tiny;
-            //Text.Font = font2;
 
             if (truncate)
                 labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
@@ -32,11 +31,8 @@ namespace JobInBar
             var rect = LabelUtils.GetLabelRect(pos, pawnLabelNameWidth);
             var bgRect = LabelUtils.LabelBGRect(pos, pawnLabelNameWidth);
 
-            if (Settings.DrawBG)
+            if (drawBg)
                 GUI.DrawTexture(bgRect, TexUI.GrayTextBG);
-
-            // Override the label color with the global opacity mod setting
-            labelColor.a = Settings.LabelAlpha;
 
             GUI.color = labelColor;
             Text.Font = GameFont.Tiny;
@@ -45,11 +41,15 @@ namespace JobInBar
             // Reset the GUI color to white
             GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
+            Text.Font = GameFont.Small;
         }
 
-        public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect, float truncateToWidth = 9999f)
+        public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect,
+            float truncateToWidth = 9999f)
         {
-            var lineOffset = new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
+            HoveredPawn = null;
+            var lineOffset =
+                new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
             // Apply position offsets
             pos = new Vector2(pos.x, pos.y + colonist.LabelYOffset());
@@ -59,53 +59,67 @@ namespace JobInBar
                 {
                     if (colonist.ShouldDrawJobLabel())
                     {
-                        DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth);
+                        DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth,
+                            drawBg: Settings.DrawJobTitleBackground);
                         pos += lineOffset;
                     }
                 }
                 catch (Exception e)
                 {
-                    LogPrefixed.Exception(e, extraMessage: "Job label", once: true);
+                    Log.Exception(e, extraMessage: "Job label", once: true);
                 }
 
                 try
                 {
                     if (colonist.ShouldDrawRoyaltyLabel())
                     {
-                        DrawCustomLabel(pos, colonist.RoyaltyLabel(), LabelUtils.ImperialColor, truncateToWidth);
+                        DrawCustomLabel(pos, colonist.RoyaltyLabel(), Settings.RoyalTitleColor, truncateToWidth,
+                            drawBg: Settings.DrawRoyalTitleBackground);
                         pos += lineOffset;
                     }
                 }
                 catch (Exception e)
                 {
-                    LogPrefixed.Exception(e, extraMessage: "Royalty label", once: true);
+                    Log.Exception(e, extraMessage: "Royalty label", once: true);
                 }
 
                 try
                 {
                     if (colonist.ShouldDrawIdeoLabel())
                     {
-                        DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth);
+                        DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth,
+                            drawBg: Settings.DrawIdeoRoleBackground);
                         pos += lineOffset;
                     }
                 }
                 catch (Exception e)
                 {
-                    LogPrefixed.Exception(e, extraMessage: "Ideology role label", once: true);
+                    Log.Exception(e, extraMessage: "Ideology role label", once: true);
                 }
             }
 
             try
             {
-                if (Settings.DrawCurrentJob && Mouse.IsOver(rect))
+                if (Settings.DrawCurrentTask && Mouse.IsOver(rect))
                 {
-                    DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentJobLabelColor, truncate: false);
+                    if (!Settings.MoveWeaponBelowCurrentTask)
+                    {
+                        if (((Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.Always) ||
+                             (Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.WhileDrafted && colonist.Drafted)) && 
+                            (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
+                        {
+                            pos.y += 20f;
+                        }
+                    }
+                    HoveredPawn = colonist;
+                    DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentTaskLabelColor, truncate: false,
+                        drawBg: Settings.DrawCurrentTaskBackground);
                     pos += lineOffset;
                 }
             }
             catch (Exception e)
             {
-                LogPrefixed.Exception(e, extraMessage: "Current job label", once: false);
+                Log.Exception(e, extraMessage: "Current job label", once: false);
             }
         }
     }

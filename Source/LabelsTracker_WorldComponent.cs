@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Verse;
-using RimWorld;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 using RimWorld.Planet;
-using HarmonyLib;
 using UnityEngine;
-using DarkLog;
+
 
 namespace JobInBar
 {
@@ -17,7 +14,7 @@ namespace JobInBar
     {
         public Pawn? Pawn;
         public bool ShowBackstory = true;
-        public Color BackstoryColor = Settings.DefaultJobLabelColor;
+        public Color? BackstoryColor;
         
         public bool ShowRoyalTitle = true;
  
@@ -25,15 +22,15 @@ namespace JobInBar
 
         public LabelData()
         {
-            LogPrefixed.Trace("Creating new empty label data");
+            Log.Trace("Creating new empty label data");
             // Empty constructor for scribe.
             // This is only used when loading existing save files.
         }
         
         public LabelData(Pawn pawn)
         {
-            LogPrefixed.Trace($"Creating new label data for pawn {pawn.Name}");
-            this.Pawn = pawn;
+            Log.Trace($"Creating new label data for pawn {pawn.Name}");
+            Pawn = pawn;
         }
 
         public void ExposeData()
@@ -52,16 +49,18 @@ namespace JobInBar
      /// Singleton class that keeps track of all pawns that the player has set a label for<br />
      /// Tracked pawns are accessed via indexing. If the pawn is not tracked, indexing it will start tracking it.
      /// </summary>
+     [SuppressMessage("ReSharper", "InconsistentNaming")]
+     [UsedImplicitly]
      public class LabelsTracker_WorldComponent : WorldComponent
      {
          private Dictionary<Pawn, LabelData> _trackedPawns = new();
          public Dictionary<Pawn, LabelData> TrackedPawns => _trackedPawns;
 
-         public static LabelsTracker_WorldComponent? Instance;
+         internal static LabelsTracker_WorldComponent? Instance;
 
          public LabelsTracker_WorldComponent(World world) : base(world)
          {
-             LabelsTracker_WorldComponent.Instance = this;
+             Instance = this;
          }
 
          public LabelData this[Pawn pawn]
@@ -70,7 +69,7 @@ namespace JobInBar
              {
                  if (!_trackedPawns.TryGetValue(pawn, out var data))
                  {
-                     LogPrefixed.Trace($"Pawn {pawn.Name} not tracked. Creating new label data for it.");
+                     Log.Trace($"Pawn {pawn.Name} not tracked. Creating new label data for it.");
                      data = new LabelData(pawn);
                      _trackedPawns[pawn] = data;
                  }
@@ -82,8 +81,8 @@ namespace JobInBar
         // Used for reassembling the dictionary of pawns and their label data.
         // This is necessary because the data is loaded from the save in multiple passes and the dictionary can only
         // be reassembled after all of the data has been loaded, so the lists must persist outside of each run of ExposeData
-        private static List<Pawn>? _pawnList = null;
-        private static List<LabelData>? _labelDataList = null;
+        private static List<Pawn>? _pawnList;
+        private static List<LabelData>? _labelDataList;
         public override void ExposeData()
         {
             base.ExposeData();
@@ -100,24 +99,24 @@ namespace JobInBar
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 // Safety checks to sanitize null refs or mismatched data
-                foreach (var pawn in this.TrackedPawns.Keys)
+                foreach (var pawn in TrackedPawns.Keys)
                 {
                     if (pawn == null)
                     {
-                        LogPrefixed.Warning("Null pawn in label tracker while loading.");
-                        this.TrackedPawns.Remove(null!); // Remove null key if it somehow exists
+                        Log.Warning("Null pawn in label tracker while loading.");
+                        TrackedPawns.Remove(null!); // Remove null key if it somehow exists
                         continue;
                     }
-                    if (this.TrackedPawns[pawn] == null)
+                    if (TrackedPawns[pawn] == null)
                     {
-                        LogPrefixed.Warning($"Null label data for pawn {pawn.Name}. Creating new label data.");
-                        this.TrackedPawns[pawn] = new LabelData(pawn);
+                        Log.Warning($"Null label data for pawn {pawn.Name}. Creating new label data.");
+                        TrackedPawns[pawn] = new LabelData(pawn);
                         continue;
                     }
-                    if (this.TrackedPawns[pawn].Pawn != pawn)
+                    if (TrackedPawns[pawn].Pawn != pawn)
                     {
-                        LogPrefixed.Warning($"Pawn {pawn.Name} has incorrect pawn reference in label data. Resetting.");
-                        this.TrackedPawns[pawn].Pawn = pawn;
+                        Log.Warning($"Pawn {pawn.Name} has incorrect pawn reference in label data. Resetting.");
+                        TrackedPawns[pawn].Pawn = pawn;
                     }
                 }
                 _pawnList = null;
