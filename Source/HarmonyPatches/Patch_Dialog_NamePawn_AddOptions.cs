@@ -27,7 +27,7 @@ namespace JobInBar.HarmonyPatches
         }
 
         /// <summary>
-        /// Patch that expands the rename dialog before anything is added to it.
+        /// Patch that expands the rename dialog before anything is added to it based on what labels will be added to it
         /// </summary>
         [HarmonyPatch(typeof(Dialog_NamePawn), "DoWindowContents")]
         [HarmonyPrefix]
@@ -97,121 +97,140 @@ namespace JobInBar.HarmonyPatches
             curY += 8f;
 
             // Job title toggle
+            //TODO: Maybe replace these checkboxes with dropdowns that include an "Only when hovered" option
+            var color = labelsComp[pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
             DoLabelRow(
                 containerRect,
                 ref curY,
-                "JobInBar_ShowJobLabelFor".Translate(),
-                ref labelsComp[pawn].ShowBackstory,
-                "DefaultJobLabelColor",
-                pawn.story.Title,
-                pawn,
-                color => labelsComp[pawn].BackstoryColor = color,
-                labelsComp[pawn].BackstoryColor ?? Settings.DefaultJobLabelColor,
-                Settings.DrawJobTitleBackground
+                checkboxLabel: "JobInBar_ShowJobLabelFor".Translate(),
+                checkOn: ref labelsComp[pawn].ShowBackstory,
+                color: color,
+                onColorButtonClick: () =>
+                {
+                    SoundDefOf.Tick_High.PlayOneShotOnCamera();
+                    Find.WindowStack.Add(
+                        new Dialog_LabelColorPicker(
+                            color: labelsComp[pawn].BackstoryColor,
+                            defaultColor: Settings.DefaultJobLabelColor,
+                            exampleText: pawn.story.TitleCap,
+                            exampleBackgrounds: Settings.DrawJobTitleBackground,
+                            onColorApply: newColor =>
+                            {
+                                // If the new color is the default color, cache null instead
+                                labelsComp[pawn].BackstoryColor =
+                                    newColor.IndistinguishableFrom(Settings.DefaultJobLabelColor) ? null : newColor;
+                            },
+                            onColorChanged: newColor =>
+                            {
+                                // Naively cache the new color, it can wait to be checked against the default
+                                // This makes the actual label in the colonist bar update as you change the values
+                                labelsComp[pawn].BackstoryColor = newColor;
+                            },
+                            onCancel: delegate
+                            {
+                                // Reset to the color it was before the dialog was spawned if the user clicked Cancel
+                                labelsComp[pawn].BackstoryColor = color;
+                            }
+                        )
+                    );
+                }
             );
 
+            //TODO: Change how individual toggles work to be able to override the global setting
             if (ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && pawn.royalty?.MainTitle() is not null)
             {
-                DoLabelRow(
-                    containerRect,
-                    ref curY,
-                    "JobInBar_ShowRoyaltyLabelFor".Translate(),
-                    ref labelsComp[pawn].ShowRoyalTitle
-                );
+                DoLabelRow(containerRect, ref curY, "JobInBar_ShowRoyaltyLabelFor".Translate(),
+                    ref labelsComp[pawn].ShowRoyalTitle, null);
             }
 
             if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && pawn.ideo?.Ideo?.GetRole(pawn) is not null)
             {
-                DoLabelRow(
-                    containerRect,
-                    ref curY,
-                    "JobInBar_ShowIdeoLabelFor".Translate(),
-                    ref labelsComp[pawn].ShowIdeoRole
-                );
+                DoLabelRow(containerRect, ref curY, "JobInBar_ShowIdeoLabelFor".Translate(),
+                    ref labelsComp[pawn].ShowIdeoRole, null);
             }
         }
 
-        private static void DoLabelRow(
-            Rect containerRect,
-            ref float curY,
-            string label,
-            ref bool checkOn
-        )
+        /// <summary>
+        /// Draws a row in the pawn NamePawn dialog with a checkbox to toggle each label individually for the specific pawn
+        /// </summary>
+        /// <param name="containerRect">The rect containing ALL rows, not just this one.</param>
+        /// <param name="curY">Ref that vertically lays out rows when carried over between them.</param>
+        /// <param name="checkboxLabel">String displayed as the primary content of the row, what the checkbox value represents.</param>
+        /// <param name="checkOn">The state of the checkbox, whether the corresponding label is enabled or not.</param>
+        /// <param name="extraGUIOnChecked">Optional delegate to add elements to the row. It should return a modified rect that the checkbox will be drawn within.</param>
+        private static void DoLabelRow(Rect containerRect, ref float curY, string checkboxLabel, ref bool checkOn,
+            Func<Rect, Rect>? extraGUIOnChecked)
         {
             var lineHeight = Text.LineHeightOf(GameFont.Medium);
+            var rowRect = new Rect(containerRect.xMin, curY, containerRect.width, lineHeight);
 
-            var rectToggle = new Rect(containerRect.xMin, curY, containerRect.width, lineHeight);
-            Widgets.CheckboxLabeled(
-                rectToggle,
-                label,
-                ref checkOn,
-                placeCheckboxNearText: false
-            );
-            
+            if (checkOn)
+            {
+                rowRect = extraGUIOnChecked?.Invoke(rowRect) ?? rowRect;
+            }
+
+            Widgets.CheckboxLabeled(rowRect, checkboxLabel, ref checkOn, placeCheckboxNearText: false);
+
             curY += lineHeight + 4f;
         }
 
+        /// <summary>
+        /// Draws a row in the pawn NamePawn dialog with settings to control the appearance of the pawn's label.<br />
+        /// This overload also adds a button that opens a <see cref="Dialog_LabelColorPicker"/> to set the corresponding
+        /// label's color in <see cref="LabelsTracker_WorldComponent"/>
+        /// </summary>
+        /// <param name="containerRect">The rect containing ALL rows, not just this one.</param>
+        /// <param name="curY">Ref that vertically lays out rows when carried over between them.</param>
+        /// <param name="checkboxLabel">String displayed as the primary content of the row, what the checkbox value represents.</param>
+        /// <param name="checkOn">The state of the checkbox, whether the corresponding label is enabled or not.</param>
+        /// <param name="color">The starting color that this setting represents.</param>
+        /// <param name="onColorButtonClick">Delegate called when the button is clicked, should spawn the dialog</param>
         private static void DoLabelRow(
             Rect containerRect,
             ref float curY,
-            string label,
+            string checkboxLabel,
             ref bool checkOn,
-            string key,
-            string exampleText,
-            Pawn pawn,
-            Action<Color>? onColorApply,
             Color color,
-            bool drawBackground = true
+            Action onColorButtonClick
         )
         {
-            var lineHeight = Text.LineHeightOf(GameFont.Medium);
-            var colorButtonSize = lineHeight - 4f;
-            
-            // Draw the original row without a color button
-            var rowRect = containerRect;
-            if (checkOn)
+            DoLabelRow(containerRect, ref curY, checkboxLabel, ref checkOn, extraGUIOnChecked: (rowRect) =>
             {
-                rowRect = rowRect.LeftPartPixels(containerRect.width - colorButtonSize - 8f);
-            }
-            DoLabelRow(rowRect,
-                ref curY,
-                label,
-                ref checkOn);
+#if v1_4 || v1_5 || v1_6 // Color picking doesn't really work in 1.3 or earlier, so disable all of this
+                var lineHeight = Text.LineHeightOf(GameFont.Medium);
+                var colorButtonSize = lineHeight - 4f;
 
-#if v1_4 || v1_5 || v1_6
-            if (!checkOn) return;
+                var colorButtonRect = rowRect.RightPartPixels(colorButtonSize);
+                colorButtonRect = colorButtonRect.MiddlePartPixels(colorButtonSize, colorButtonSize);
+                colorButtonRect.y += 2f;
 
-            // Color picker
-            var rectColor = containerRect.RightPartPixels(colorButtonSize);
-            rectColor.yMin = curY - lineHeight - 2f;
-            rectColor.yMax = curY - 2f;
-            rectColor = rectColor.MiddlePartPixels(colorButtonSize,
-                colorButtonSize);
+                ColorButton(colorButtonRect, color, onColorButtonClick);
 
-            Widgets.DrawLightHighlight(rectColor);
-            Widgets.DrawBoxSolid(rectColor,
-                color);
-            
-            GUI.color = Widgets.SeparatorLineColor;
-            Widgets.DrawBox(rectColor);
-            GUI.color = Color.white;
-            
-            Widgets.DrawHighlightIfMouseover(rectColor);
-
-            if (Widgets.ButtonInvisible(rectColor))
-            {
-                SoundDefOf.Tick_High.PlayOneShotOnCamera();
-                Find.WindowStack.Add(
-                    new Dialog_LabelColorPicker(pawn,
-                        key,
-                        color,
-                        drawBackground,
-                        onColorApply,
-                        Settings.DefaultJobLabelColor,
-                        exampleText)
-                );
-            }
+                rowRect.xMax = colorButtonRect.xMin - 8f;
+                return rowRect;
 #endif
+            });
+        }
+
+        /// <summary>
+        /// Draw a simple colored box that when clicked fires an action
+        /// </summary>
+        private static void ColorButton(Rect rect, Color color, Action onColorButtonClick)
+        {
+            Widgets.DrawLightHighlight(rect);
+            Widgets.DrawBoxSolid(rect,
+                color);
+
+            GUI.color = Widgets.SeparatorLineColor;
+            Widgets.DrawBox(rect);
+            GUI.color = Color.white;
+
+            Widgets.DrawHighlightIfMouseover(rect);
+
+            if (Widgets.ButtonInvisible(rect))
+            {
+                onColorButtonClick.Invoke();
+            }
         }
     }
 }

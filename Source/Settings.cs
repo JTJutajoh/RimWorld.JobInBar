@@ -299,7 +299,7 @@ namespace JobInBar
                 var colorPickerRect = new Rect(listingStandard.ColumnWidth - colorPickerWidth - 16f,
                     sectionRect.yMin + 4f, colorPickerWidth, 200f);
                 Dialog_LabelColorPicker.LabelColorPicker(colorPickerRect, ref CurrentTaskLabelColor,
-                    "CurrentTaskLabelColor", DrawCurrentTaskBackground,
+                    DrawCurrentTaskBackground, "JobInBar_Settings_CurrentTaskLabelColor".Translate(),
                     defaultButton: true, defaultColor: DefaultSettings["CurrentTaskLabelColor"] as Color?);
                 // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
                 listingStandard.GetRect(colorPickerRect.yMax - labelRect.yMax);
@@ -359,6 +359,8 @@ namespace JobInBar
                 GetTooltip("DrawJobTitle"), 36f, 0.40f);
             listingStandard.Gap();
 
+            //TODO: Re-implement the "only draw if custom" setting
+
             var labelRect = listingStandard.SubLabel("JobInBar_Settings_JobTitleNote".Translate(), 0.36f);
 
 
@@ -369,8 +371,8 @@ namespace JobInBar
                 var colorPickerRect = new Rect(listingStandard.ColumnWidth - colorPickerWidth - 16f,
                     sectionRect.yMin + 4f, colorPickerWidth, 200f);
                 Dialog_LabelColorPicker.LabelColorPicker(colorPickerRect, ref DefaultJobLabelColor,
-                    "DefaultJobLabelColor",
                     DrawJobTitleBackground,
+                    "JobInBar_Settings_DefaultJobLabelColor".Translate(),
                     defaultButton: true, defaultColor: DefaultSettings["DefaultJobLabelColor"] as Color?);
                 // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
                 listingStandard.GetRect(colorPickerRect.yMax - sectionRect.yMax);
@@ -409,9 +411,9 @@ namespace JobInBar
                 var colorPickerRect = new Rect(listingStandard.ColumnWidth - colorPickerWidth - 16f,
                     sectionRect.yMin + 4f, colorPickerWidth, 200f);
                 Dialog_LabelColorPicker.LabelColorPicker(colorPickerRect, ref IdeoRoleColorOverride,
-                    "IdeoRoleColorOverride", DrawIdeoRoleBackground,
+                    DrawIdeoRoleBackground, "JobInBar_Settings_IdeoRoleColorOverride".Translate(),
                     defaultButton: true, defaultColor: DefaultSettings["IdeoRoleColorOverride"] as Color?);
-                
+
                 // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
                 listingStandard.GetRect(colorPickerRect.yMax - sectionRect.yMax);
             }
@@ -456,8 +458,8 @@ namespace JobInBar
                 var colorPickerWidth = listingStandard.ColumnWidth * 0.5f - 32f;
                 var colorPickerRect = new Rect(listingStandard.ColumnWidth - colorPickerWidth - 16f,
                     sectionRect.yMin + 4f, colorPickerWidth, 200f);
-                Dialog_LabelColorPicker.LabelColorPicker(colorPickerRect, ref RoyalTitleColor, "RoyalTitleColor",
-                    DrawRoyalTitleBackground,
+                Dialog_LabelColorPicker.LabelColorPicker(colorPickerRect, ref RoyalTitleColor, DrawRoyalTitleBackground,
+                    "JobInBar_Settings_RoyalTitleColor".Translate(),
                     defaultButton: true, defaultColor: DefaultSettings["RoyalTitleColor"] as Color?);
                 // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
                 listingStandard.GetRect(colorPickerRect.yMax - labelRect.yMax);
@@ -508,7 +510,8 @@ namespace JobInBar
                 Widgets.DrawLineHorizontal(rect.xMin, rect.yMax, rect.width);
 
                 GUI.color = Color.red;
-                if (key != null && Widgets.ButtonTextSubtle(rect.RightPart(0.05f).MiddlePartPixels(50f, 24f), "JobInBar_Reset".Translate()))
+                if (key != null && Widgets.ButtonTextSubtle(rect.RightPart(0.05f).MiddlePartPixels(50f, 24f),
+                        "JobInBar_Reset".Translate()))
                 {
                     remove = key;
                 }
@@ -530,6 +533,7 @@ namespace JobInBar
             ref string editBuffer,
             int multiplier = 1, int min = 0, int max = 999999, bool defaultButton = true)
         {
+            //BUG: value is being clamped to 0 for some reason
             if (label == null)
                 listingStandard.Label(label);
             var labelRect = listingStandard.Label(GetLabel(key, true));
