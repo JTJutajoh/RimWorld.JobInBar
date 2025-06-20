@@ -107,9 +107,8 @@ public class LabelsTracker_WorldComponent : WorldComponent
             {
                 if (pawn == null)
                 {
-                    //TODO: Add a patch to more gracefully stop tracking a pawn if they're destroyed
                     Log.Warning("Null pawn key in label tracker while loading.");
-                    TrackedPawns.Remove(null!); // Remove null key if it somehow exists
+                    Remove(null!); // Remove null key if it somehow exists
                     continue;
                 }
 

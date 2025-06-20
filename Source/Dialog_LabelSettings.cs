@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using JobInBar.Utils;
 using UnityEngine;
 
 namespace JobInBar;

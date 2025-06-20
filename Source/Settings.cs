@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using HarmonyLib;
-using JobInBar.Utils;
 using UnityEngine;
 
 namespace JobInBar;
@@ -486,6 +486,7 @@ internal class Settings : ModSettings
         Widgets.EndScrollView();
     }
 
+    [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
     public override void ExposeData()
     {
         Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
