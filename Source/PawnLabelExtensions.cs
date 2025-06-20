@@ -21,8 +21,19 @@ public static class PawnLabelExtensions
 
     public static bool ShouldDrawJobLabel(this Pawn colonist)
     {
-        return Settings.DrawJobTitle && colonist.story?.Title != null &&
-               (LabelsTracker_WorldComponent.Instance?[colonist].ShowBackstory ?? false);
+        // Global setting
+        if (!Settings.DrawJobTitle) return false;
+
+        // Pawn-specific setting
+        if (!LabelsTracker_WorldComponent.Instance?[colonist].ShowBackstory ?? false) return false;
+
+        // Story tracker null check
+        if (colonist.story is not { } story) return false;
+
+        // story.title FIELD is the player-set custom one. story.Title PROPERTY defaults to the backstory if no custom is set
+        var title = Settings.OnlyDrawCustomJobTitles ? story.title : story.Title;
+
+        return title != null;
     }
 
     public static bool ShouldDrawIdeoLabel(this Pawn colonist)

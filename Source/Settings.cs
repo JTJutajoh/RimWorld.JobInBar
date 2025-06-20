@@ -319,12 +319,13 @@ internal class Settings : ModSettings
 
         listingStandard.CheckboxLabeled(GetSettingLabel("DrawJobTitle"), ref DrawJobTitle,
             GetSettingTooltip("DrawJobTitle"), 36f, 0.40f);
-        listingStandard.Gap();
-
-        //TODO: Re-implement the "only draw if custom" setting
 
         var labelRect = listingStandard.SubLabel("JobInBar_Settings_JobTitleNote".Translate(), 0.36f);
 
+        listingStandard.Gap();
+
+        listingStandard.CheckboxLabeled(GetSettingLabel("OnlyDrawCustomJobTitles"), ref OnlyDrawCustomJobTitles,
+            GetSettingTooltip("OnlyDrawCustomJobTitles"), 36f, 0.40f);
 
 #if v1_4 || v1_5 || v1_6
         if (DrawJobTitle)
@@ -490,6 +491,7 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
 
         Scribe_Values.Look(ref DrawJobTitle, "DrawJobTitle", true);
+        Scribe_Values.Look(ref OnlyDrawCustomJobTitles, "OnlyDrawCustomJobTitles", false);
         Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
         Scribe_Values.Look(ref OffsetEquippedExtra, "OffsetEquippedExtra");
         Scribe_Values.Look(ref OffsetEquippedByLabels, "OffsetEquippedByLabels", true);
@@ -544,6 +546,7 @@ internal class Settings : ModSettings
 
     [Setting] public static bool DrawJobTitle = true;
     [Setting] public static bool DrawJobTitleBackground = true;
+    [Setting] public static bool OnlyDrawCustomJobTitles = false;
 
     [Setting] public static Color DefaultJobLabelColor =
         GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f, 0.7f));
