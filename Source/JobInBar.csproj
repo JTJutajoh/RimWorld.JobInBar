@@ -100,6 +100,7 @@
         <Compile Include="Dialog_LabelSettings.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs"/>
+        <Compile Include="HarmonyPatches\Patch_Pawn_Destroy_StopTracking.cs" />
         <Compile Include="LogPrefixed.cs"/>
         <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_AddOptions.cs"/>
         <Compile Include="HarmonyPatches\Patch_ColonistBarDrawer_DrawColonist_AddLabels.cs"/>

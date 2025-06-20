@@ -82,6 +82,11 @@ public class LabelsTracker_WorldComponent : WorldComponent
         internal set => _trackedPawns[pawn] = value;
     }
 
+    public bool Remove(Pawn pawn)
+    {
+        return _trackedPawns.Remove(pawn);
+    }
+
     public override void ExposeData()
     {
         base.ExposeData();

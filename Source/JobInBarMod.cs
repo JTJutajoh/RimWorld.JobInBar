@@ -88,6 +88,7 @@ internal static class LoadHarmony
         PatchCategory("NamePawn");
         PatchCategory("OffsetEquippedWeapon");
         PatchCategory("PlaySettings");
+        PatchCategory("StopTracking");
     }
 
     /// <summary>
