@@ -24,7 +24,7 @@ public static class LabelDrawer
         // Save the current font and restore it after drawing the label
         Text.Font = GameFont.Tiny;
 
-        if (truncate)
+        if (truncate && Settings.TruncateLongLabels)
             labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
 
         var pawnLabelNameWidth = Text.CalcSize(labelToDraw).x;

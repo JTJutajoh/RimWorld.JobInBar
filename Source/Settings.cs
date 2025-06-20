@@ -258,10 +258,6 @@ internal class Settings : ModSettings
                 defaultButton: true, defaultColor: DefaultSettings["CurrentTaskLabelColor"] as Color?);
             // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
             listingStandard.GetRect(colorPickerRect.yMax - labelRect.yMax);
-
-            listingStandard.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"),
-                ref MoveWeaponBelowCurrentTask,
-                GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f, 0.38f);
         }
 
         listingStandard.Outdent();
@@ -272,16 +268,16 @@ internal class Settings : ModSettings
 
     private static void DoTabDisplay(Rect inRect)
     {
-        //TODO: Re-implement the truncate toggle.
-        // Maybe also add it as a per-pawn setting
-
         _bufferJobLabelVerticalOffset = JobLabelVerticalOffset.ToString();
         _bufferOffsetEquippedExtra = OffsetEquippedExtra.ToString();
         var listingStandard = new Listing_Standard();
         listingStandard.Begin(inRect.MiddlePart(0.75f, 1f));
 
-        listingStandard.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"), ref DrawJobTitleBackground,
-            GetSettingTooltip("DrawBackground"), 36f, 0.90f);
+        listingStandard.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawJobTitleBackground,
+            GetSettingTooltip("DrawBackground"), 36f, 0.50f);
+
+        listingStandard.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
+            GetSettingTooltip("TruncateLongLabels"), 36f, labelPct: 0.50f);
 
         listingStandard.GapLine();
 
@@ -298,8 +294,18 @@ internal class Settings : ModSettings
         listingStandard.CheckboxLabeled(GetSettingLabel("OffsetEquippedByLabels"), ref OffsetEquippedByLabels,
             GetSettingTooltip("OffsetEquippedByLabels"), labelPct: 0.50f);
 
+        if (DrawCurrentTask)
+        {
+            listingStandard.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"),
+                ref MoveWeaponBelowCurrentTask,
+                GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f, 0.50f);
+        }
+
         listingStandard.IntSetting(ref OffsetEquippedExtra,
             "OffsetEquippedExtra", ref _bufferOffsetEquippedExtra, null, 2, -150, 150);
+
+        listingStandard.GapLine();
+
 
         listingStandard.End();
     }
@@ -496,6 +502,7 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref DrawIdeoRoleBackground, "DrawIdeoRoleBackground", true);
         Scribe_Values.Look(ref DrawCurrentTaskBackground, "DrawCurrentTaskBackground");
         Scribe_Values.Look(ref EnablePlaySettingToggle, "EnablePlaySettingToggle", true);
+        Scribe_Values.Look(ref TruncateLongLabels, "TruncateLongLabels", true);
         Scribe_Values.Look(ref DrawLabelOnlyOnHover, "DrawLabelOnlyOnHover");
 
         Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
@@ -533,6 +540,7 @@ internal class Settings : ModSettings
 
     [Setting] public static bool DrawLabelOnlyOnHover = false;
     [Setting] public static bool EnablePlaySettingToggle = true;
+    [Setting] public static bool TruncateLongLabels = true;
 
     [Setting] public static bool DrawJobTitle = true;
     [Setting] public static bool DrawJobTitleBackground = true;

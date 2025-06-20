@@ -73,6 +73,9 @@ Overrides global settings and individual pawn settings.</JobInBar_Settings_Enabl
   <JobInBar_Settings_OffsetEquippedExtra_Desc>Number of pixels to vertically offset the equipped weapon icon by, regardless of labels.</JobInBar_Settings_OffsetEquippedExtra_Desc>
   <JobInBar_Settings_OffsetEquippedByLabels>Move equipped weapon icon under labels</JobInBar_Settings_OffsetEquippedByLabels>
   <JobInBar_Settings_OffsetEquippedByLabels_Desc>If enabled, the icon for the currently equipped weapon will be offset vertically so that it appears underneath the labels, instead of overlapping them.</JobInBar_Settings_OffsetEquippedByLabels_Desc>
+  <JobInBar_Settings_TruncateLongLabels>Truncate long labels</JobInBar_Settings_TruncateLongLabels>
+  <JobInBar_Settings_TruncateLongLabels_Desc>Labels will be shortened so they don't overlap each other if they're too long to fit within the width of one colonist in the bar.
+This technically incurs a tiny performance cost every frame, but it should be negligible.</JobInBar_Settings_TruncateLongLabels_Desc>
 
   <!-- Ideology settings -->
   <JobInBar_Settings_DrawIdeoRoles>Ideology specialist roles (If available)</JobInBar_Settings_DrawIdeoRoles>
