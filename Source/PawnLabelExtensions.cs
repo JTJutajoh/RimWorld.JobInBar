@@ -95,25 +95,6 @@ public static class PawnLabelExtensions
         return colonist.royalty?.MainTitle()?.GetLabelCapFor(colonist) ?? "";
     }
 
-    public static float LabelYOffset(this Pawn colonist)
-    {
-#if v1_4 || v1_5 || v1_6
-        // var equipment = colonist.equipment;
-        //
-        // var showWeaponMode = Prefs.ShowWeaponsUnderPortraitMode;
-        // var isWeaponShownPref = showWeaponMode == ShowWeaponsUnderPortraitMode.Always ||
-        //                         showWeaponMode == ShowWeaponsUnderPortraitMode.WhileDrafted && colonist.Drafted;
-        // var hasWeaponEquipped = colonist.equipment?.Primary?.def?.IsWeapon ?? false;
-        //
-        // if (isWeaponShownPref && hasWeaponEquipped)
-        // {
-        //     return ColonistBar.BaseSize.y * Find.ColonistBar.Scale * 0.75f * Settings.OffsetEquippedExtra;
-        // }
-#endif
-
-        return 0f;
-    }
-
     private static Caravan? Caravan(this Pawn pawn)
     {
         return pawn.ParentHolder as Caravan;

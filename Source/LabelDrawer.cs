@@ -53,7 +53,7 @@ public static class LabelDrawer
             new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
         // Apply position offsets
-        pos = new Vector2(pos.x, pos.y + colonist.LabelYOffset());
+        pos = new Vector2(pos.x, pos.y);
         if (colonist.DrawAnyPermanentLabels(rect))
         {
             try
