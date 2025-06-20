@@ -26,7 +26,7 @@ namespace JobInBar.HarmonyPatches
             {
                 if (worldView) return;
 
-                var texture = Icons.LabelToggleIcon ?? TexUI.RenameTex!;
+                var texture = Icons.LabelToggleIcon!;
                 row.ToggleableIcon(ref _drawLabels, texture, "JobInBar_PlaySettingsToggle".Translate(), SoundDefOf.Mouseover_ButtonToggle!);
             }
             catch (Exception e)
