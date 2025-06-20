@@ -214,11 +214,10 @@ internal static class CustomWidgets
         int min = 0,
         int max = 999999)
     {
-        //BUG: value is being clamped to 0 for some reason
-#if !(v1_2 || v1_3 || v1_4 || v1_5)
+#if !(v1_2 || v1_3 || v1_4 || v1_5) // RW 1.6 fixed a bug with IntEntry that forced the value to be a positive number
         listingStandard.IntEntry(ref value, ref editBuffer, multiplier, min);
 #else
-        listingStandard.IntEntry(ref value, ref editBuffer, multiplier);
+        listingStandard.IntEntryWithNegative(ref value, ref editBuffer, multiplier, min);
 #endif
         listingStandard.IntSetter(ref value, defaultValue, "JobInBar_Settings_Default".Translate());
 

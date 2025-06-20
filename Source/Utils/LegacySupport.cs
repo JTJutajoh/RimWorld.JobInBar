@@ -6,8 +6,11 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable RedundantCast
 
+using System.Diagnostics.CodeAnalysis;
+using HarmonyLib;
 using RimWorld;
 using UnityEngine;
+using Verse.Sound;
 
 namespace JobInBar.Utils;
 
@@ -137,6 +140,62 @@ public static class LegacySupport
         Text.Font = GameFont.Small;
         listingStandard.Gap(listingStandard.verticalSpacing);
         return rect;
+    }
+#endif
+
+#if v1_1 || v1_2 || v1_3 || v1_4 || v1_5
+    /// <summary>
+    /// RW 1.6 bugfixed <see cref="Widgets.TextFieldNumeric"/> so that it only clamps the input value if a minimum is specified<br />
+    /// In 1.5 or earlier, it is automatically clamped to 0, and the minimum is not passed through from <see cref="Listing_Standard.IntEntry"/>
+    /// so this is a replacement version that fixes that, so that negative numbers are allowed.<br />
+    /// </summary>
+    internal static void IntEntryWithNegative(this Listing_Standard _this, ref int val, ref string editBuffer, int multiplier = 1, int min = 0)
+    {
+        Rect rect = _this.GetRect(24f);
+        if (!_this.BoundingRectCached.HasValue || rect.Overlaps(_this.BoundingRectCached.Value))
+            IntEntryWithNegative(rect, ref val, ref editBuffer, multiplier, min); // Call the replaced bugfix version
+        _this.Gap(_this.verticalSpacing);
+    }
+
+    /// <summary>
+    /// Same bugfix as the above overload: <see cref="IntEntryWithNegative(Verse.Listing_Standard,ref int,ref string,int,int)"/>,
+    /// this replaces vanilla <see cref="Widgets.IntEntry"/> to fix the bug by passing on the value of min to the call to
+    /// <see cref="Widgets.TextFieldNumeric"/>.
+    /// </summary>
+    // [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+    private static void IntEntryWithNegative(Rect rect, ref int value, ref string editBuffer, int multiplier = 1,
+        int min = 0)
+    {
+        // IntEntryButtonWidth is a private field on Widgets but it's needed here
+        var IntEntryButtonWidth = new Traverse(typeof(Widgets)).Field("IntEntryButtonWidth")?.GetValue<int>() ?? 40;
+
+        // Original method
+        int width = Mathf.Min(IntEntryButtonWidth, (int) rect.width / 5);
+        if (Widgets.ButtonText(new Rect(rect.xMin, rect.yMin, (float) width, rect.height), (-10 * multiplier).ToStringCached()!))
+        {
+            value -= 10 * multiplier * GenUI.CurrentAdjustmentMultiplier();
+            editBuffer = value.ToStringCached()!;
+            SoundDefOf.Checkbox_TurnedOff!.PlayOneShotOnCamera();
+        }
+        if (Widgets.ButtonText(new Rect(rect.xMin + (float) width, rect.yMin, (float) width, rect.height), (-1 * multiplier).ToStringCached()!))
+        {
+            value -= multiplier * GenUI.CurrentAdjustmentMultiplier();
+            editBuffer = value.ToStringCached()!;
+            SoundDefOf.Checkbox_TurnedOff!.PlayOneShotOnCamera();
+        }
+        if (Widgets.ButtonText(new Rect(rect.xMax - (float) width, rect.yMin, (float) width, rect.height), "+" + (10 * multiplier).ToStringCached()))
+        {
+            value += 10 * multiplier * GenUI.CurrentAdjustmentMultiplier();
+            editBuffer = value.ToStringCached()!;
+            SoundDefOf.Checkbox_TurnedOn!.PlayOneShotOnCamera();
+        }
+        if (Widgets.ButtonText(new Rect(rect.xMax - (float) (width * 2), rect.yMin, (float) width, rect.height), "+" + multiplier.ToStringCached()))
+        {
+            value += multiplier * GenUI.CurrentAdjustmentMultiplier();
+            editBuffer = value.ToStringCached()!;
+            SoundDefOf.Checkbox_TurnedOn!.PlayOneShotOnCamera();
+        }
+        Widgets.TextFieldNumeric<int>(new Rect(rect.xMin + (float) (width * 2), rect.yMin, rect.width - (float) (width * 4), rect.height), ref value, ref editBuffer, min);
     }
 #endif
 }
