@@ -105,7 +105,7 @@ internal static class LoadHarmony
     /// </param>
     private static void PatchCategory(string category, bool condition = true)
     {
-        if (!condition) //TODO: Come up with a way to conditionally RE-patch categories if they're enabled in settings without requiring a restart
+        if (!condition) //MAYBE: Come up with a way to conditionally RE-patch categories if they're enabled in settings without requiring a restart
         {
             Log.Message($"Patch \"{category}\" skipped, disabled in mod config.");
             return;

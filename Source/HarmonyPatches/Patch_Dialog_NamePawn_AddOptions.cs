@@ -105,9 +105,9 @@ internal static class Patch_Dialog_NamePawn_AddOptions
         GUI.color = Color.white;
         curY += 8f;
 
-        //TODO: Maybe replace these checkboxes with dropdowns that include an "Only when hovered" option
+        //MAYBE: Replace these checkboxes with dropdowns that include an "Only when hovered" option
 
-        //TODO: Change how individual toggles work to be able to override the global setting
+        //MAYBE: Change how individual toggles work to be able to override the global setting
 
         // Label toggles
 
@@ -127,6 +127,7 @@ internal static class Patch_Dialog_NamePawn_AddOptions
                     Log.Error("Error while trying to open label settings dialog: pawn was null");
                     return;
                 }
+
                 SoundDefOf.Tick_High!.PlayOneShotOnCamera();
                 Find.WindowStack?.Add(
                     new Dialog_LabelSettings(
