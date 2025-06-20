@@ -108,7 +108,9 @@ internal class Settings : ModSettings
 #if v1_5 || v1_6
         TabDrawer.DrawTabsOverflow(inRect.TopPartPixels(TabHeight), tabs, 80f, 200f);
 #elif v1_1 || v1_2 || v1_3 || v1_4
-            TabDrawer.DrawTabs(inRect.TopPartPixels(TabHeight), tabs, 200f);
+        var tabsRect = inRect.TopPartPixels(TabHeight);
+        tabsRect.y += TabHeight;
+        TabDrawer.DrawTabs(tabsRect, tabs, 200f);
 #endif
         Widgets.DrawLineHorizontal(inRect.xMin, inRect.yMin + TabHeight, inRect.width);
 
