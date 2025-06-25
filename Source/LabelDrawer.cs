@@ -32,10 +32,10 @@ public static class LabelDrawer
         var bgRect = LabelUtils.LabelBGRect(pos, pawnLabelNameWidth);
 
         if (drawBg)
-            GUI.DrawTexture(bgRect, TexUI.GrayTextBG!);
+            GUI.DrawTexture(bgRect, TexUI.GrayTextBG!); //BUG: If Tiny font is disabled, the bg doesn't adjust
 
         GUI.color = labelColor;
-        Text.Font = GameFont.Tiny;
+        Text.Font = GameFont.Tiny; //TODO: Dynamically calculate font size instead of just hard coding the rect sizes
         Widgets.Label(rect, labelToDraw);
 
         // Reset the GUI color to white

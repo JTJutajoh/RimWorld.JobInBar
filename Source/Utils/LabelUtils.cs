@@ -11,7 +11,7 @@ namespace JobInBar.Utils
         {
             var bgRect = LabelBGRect(pos, labelWidth);
 
-            Text.Anchor = TextAnchor.UpperCenter;
+            // Text.Anchor = TextAnchor.UpperCenter;
             var rect = new Rect(bgRect.center.x - labelWidth / 2f, bgRect.y - 2f, labelWidth, 100f);
 
             return rect;

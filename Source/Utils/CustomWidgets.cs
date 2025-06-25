@@ -165,7 +165,7 @@ internal static class CustomWidgets
         ref int value,
         string settingName,
         ref string editBuffer,
-        string? label,
+        string? label = null,
         int multiplier = 1,
         int min = 0,
         int max = 999999,
