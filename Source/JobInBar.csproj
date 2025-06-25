@@ -108,6 +108,7 @@
         <Compile Include="LabelDrawer.cs"/>
         <Compile Include="HarmonyPatches\Patch_PlaySettings_GlobalControl_ToggleLabels.cs"/>
         <Compile Include="LabelsTracker_WorldComponent.cs"/>
+        <Compile Include="ModCompatibility.cs" />
         <Compile Include="PawnLabelExtensions.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Settings.cs"/>
