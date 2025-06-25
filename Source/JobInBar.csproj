@@ -24,7 +24,7 @@
         <RimWorldLatestVersion>1.6</RimWorldLatestVersion>
         <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld</RimWorldDir>
         <HarmonyPath>D:\Games\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HarmonyPath>
-        <OutputPath>$(RimWorldDir)\Mods\BetterLetters\$(RimWorldLatestVersion)\Assemblies\</OutputPath>
+        <OutputPath>$(RimWorldDir)\Mods\JobInBar\$(RimWorldLatestVersion)\Assemblies\</OutputPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.1|AnyCPU'">
         <OutputPath>..\1.1\Assemblies\</OutputPath>
@@ -108,7 +108,8 @@
         <Compile Include="LabelDrawer.cs"/>
         <Compile Include="HarmonyPatches\Patch_PlaySettings_GlobalControl_ToggleLabels.cs"/>
         <Compile Include="LabelsTracker_WorldComponent.cs"/>
-        <Compile Include="ModCompatibility.cs" />
+        <Compile Include="ModCompatibility.cs"/>
+        <Compile Include="PatchManager.cs"/>
         <Compile Include="PawnLabelExtensions.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Settings.cs"/>
