@@ -26,7 +26,9 @@ internal static class Patch_PawnNameColorUtility_PawnNameColorOf
             || pawn.IsPrisoner
             || (pawn.IsSlave && SlaveRebellionUtility.IsRebelling(pawn))
             || pawn.IsWildMan()
+#if !(v1_1 || v1_2 || v1_3)
             || pawn.IsColonyMechRequiringMechanitor()
+#endif
             || (pawn.Faction?.HostileTo(Faction.OfPlayer!) ?? false))
             return;
 

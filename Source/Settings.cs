@@ -29,7 +29,7 @@ internal class Settings : ModSettings
 
 
     private static Vector2 _scrollPositionMainTab = Vector2.zero;
-    private static float? _lastMainTabHeight = null;
+    private static float? _lastMainTabHeight;
 
     private SettingsTab _currentTab = SettingsTab.Main;
 
@@ -146,7 +146,11 @@ internal class Settings : ModSettings
     {
         var viewRect = new Rect(inRect);
         var outerRect = new Rect(inRect);
+#if !(v1_1 || v1_2 || v1_3 || v1_4)
         Widgets.AdjustRectsForScrollView(inRect, ref outerRect, ref viewRect);
+#else
+        LegacySupport.AdjustRectsForScrollView(inRect, ref outerRect, ref viewRect);
+#endif
         viewRect.height = _lastMainTabHeight ?? 9999f;
 
         Widgets.BeginScrollView(outerRect, ref _scrollPositionMainTab, viewRect);
@@ -220,14 +224,14 @@ internal class Settings : ModSettings
         section.SectionHeader("JobInBar_Settings_Section_Misc");
 
         section.CheckboxLabeled(GetSettingLabel("EnablePlaySettingToggle"), ref EnablePlaySettingToggle,
-            GetSettingTooltip("EnablePlaySettingToggle"), 36f, 1f);
+            GetSettingTooltip("EnablePlaySettingToggle"), 36f);
 
         section.Gap();
         section.Label(GetSettingLabel("EnabledButtonLocations"));
 
         var locNamePawn = EnabledButtonLocations.HasFlag(ButtonLocations.NamePawn);
         section.CheckboxLabeled(GetSettingLabel("ButtonLocation_NamePawn"), ref locNamePawn,
-            GetSettingTooltip("ButtonLocation_NamePawn"), 24f, 1f);
+            GetSettingTooltip("ButtonLocation_NamePawn"), 24f);
         if (locNamePawn)
             EnabledButtonLocations |= ButtonLocations.NamePawn;
         else
@@ -235,7 +239,7 @@ internal class Settings : ModSettings
 
         var locCharacterCard = EnabledButtonLocations.HasFlag(ButtonLocations.CharacterCard);
         section.CheckboxLabeled(GetSettingLabel("ButtonLocation_CharacterCard"), ref locCharacterCard,
-            GetSettingTooltip("ButtonLocation_CharacterCard"), 24f, 1f);
+            GetSettingTooltip("ButtonLocation_CharacterCard"), 24f);
         if (locCharacterCard)
             EnabledButtonLocations |= ButtonLocations.CharacterCard;
         else
@@ -245,7 +249,7 @@ internal class Settings : ModSettings
     }
 
 
-    private static bool _draggingJobTitleColorPicker = false;
+    private static bool _draggingJobTitleColorPicker;
 
     private static void DoJobTitleSection(Listing_Standard listing)
     {
@@ -254,7 +258,7 @@ internal class Settings : ModSettings
         section.SectionHeader("JobInBar_Settings_Section_JobTitle");
 
         section.CheckboxLabeled(GetSettingLabel("DrawJobTitle"), ref DrawJobTitle,
-            GetSettingTooltip("DrawJobTitle"), 36f, 1f);
+            GetSettingTooltip("DrawJobTitle"), 36f);
 
         section.SubLabel("JobInBar_Settings_JobTitleNote".Translate(), 1f);
 
@@ -272,13 +276,13 @@ internal class Settings : ModSettings
             disabled: !DrawJobTitle);
 
         section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawJobTitleBackground, !DrawJobTitle,
-            GetSettingTooltip("DrawBackground"), 36f, 1f);
+            GetSettingTooltip("DrawBackground"), 36f);
 
         listing.EndSection(section);
     }
 
 
-    private static bool _draggingCurrentTaskColorPicker = false;
+    private static bool _draggingCurrentTaskColorPicker;
 
     private static void DoCurrentTaskSection(Listing_Standard listing)
     {
@@ -317,18 +321,18 @@ internal class Settings : ModSettings
         section.SectionHeader("JobInBar_Settings_Section_Ideology");
 
         section.CheckboxLabeled(GetSettingLabel("DrawIdeoRoles"), ref DrawIdeoRoles,
-            GetSettingTooltip("DrawIdeoRoles"), 36f, 1f);
+            GetSettingTooltip("DrawIdeoRoles"), 36f);
 
 
         section.CheckboxLabeled(GetSettingLabel("UseIdeoColorForRole"), ref UseIdeoColorForRole, !DrawIdeoRoles,
-            GetSettingTooltip("UseIdeoColorForRole"), 36f, 1f);
+            GetSettingTooltip("UseIdeoColorForRole"), 36f);
 
         section.CheckboxLabeled(GetSettingLabel("RoleColorAbility"), ref RoleColorOnlyIfAbilityAvailable,
             (!DrawIdeoRoles || !UseIdeoColorForRole),
-            GetSettingTooltip("RoleColorAbility"), 36f, 1f);
+            GetSettingTooltip("RoleColorAbility"), 36f);
 
         section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawIdeoRoleBackground, !DrawIdeoRoles,
-            GetSettingTooltip("DrawBackground"), 36f, 1f);
+            GetSettingTooltip("DrawBackground"), 36f);
 
         listing.EndSection(section);
     }
@@ -343,7 +347,7 @@ internal class Settings : ModSettings
         section.SectionHeader("JobInBar_Settings_Section_Display");
 
         section.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
-            GetSettingTooltip("TruncateLongLabels"), 36f, 1f);
+            GetSettingTooltip("TruncateLongLabels"), 36f);
 
         section.GapLine();
 
@@ -361,7 +365,7 @@ internal class Settings : ModSettings
             GetSettingTooltip("OffsetEquippedByLabels"), labelPct: 1f);
 
         section.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"), ref MoveWeaponBelowCurrentTask,
-            !DrawCurrentTask, GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f, 1f);
+            !DrawCurrentTask, GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f);
 
         section.IntSetting(ref OffsetEquippedExtra,
             "OffsetEquippedExtra", ref _bufferOffsetEquippedExtra, null, 2, -150, 150);
@@ -369,7 +373,7 @@ internal class Settings : ModSettings
         listing.EndSection(section);
     }
 
-    private static bool _draggingRoyalTitleColorPicker = false;
+    private static bool _draggingRoyalTitleColorPicker;
 
     private static void DoRoyaltySection(Listing_Standard listing)
     {
@@ -380,7 +384,7 @@ internal class Settings : ModSettings
         section.SectionHeader("JobInBar_Settings_Section_Royalty");
 
         section.CheckboxLabeled(GetSettingLabel("DrawRoyalTitles"), ref DrawRoyalTitles,
-            GetSettingTooltip("DrawRoyalTitles"), 36f, 1f);
+            GetSettingTooltip("DrawRoyalTitles"), 36f);
         section.Gap();
 
         section.SubLabel("JobInBar_Settings_RoyalTitleNote".Translate(), 1f);
@@ -397,7 +401,7 @@ internal class Settings : ModSettings
         );
 
         section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawRoyalTitleBackground, !DrawRoyalTitles,
-            GetSettingTooltip("DrawBackground"), 36f, 1f);
+            GetSettingTooltip("DrawBackground"), 36f);
 
         listing.EndSection(section);
     }

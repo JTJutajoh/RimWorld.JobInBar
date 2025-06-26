@@ -22,7 +22,7 @@ internal class Dialog_LabelSettings : Window
 
     private readonly string? _oldTitle;
 
-    private static bool _draggingColorPicker = false;
+    private static bool _draggingColorPicker;
 
     private readonly Pawn _pawn;
     private readonly Color DefaultBackstoryTitleColor = Settings.DefaultJobLabelColor;
@@ -325,6 +325,7 @@ internal class Dialog_LabelSettings : Window
             Close();
         }
 
+#if !(v1_1 || v1_2 || v1_3)
         var gearRect = inRect.BottomPartPixels(32f).RightPartPixels(32f);
         if (Widgets.ButtonImage(gearRect, Icons.GearIcon))
         {
@@ -335,6 +336,7 @@ internal class Dialog_LabelSettings : Window
         {
             TooltipHandler.TipRegion(gearRect, "JobInBar_Settings_Button".Translate());
         }
+#endif
     }
 
     public override void Close(bool doClouseSound = true)

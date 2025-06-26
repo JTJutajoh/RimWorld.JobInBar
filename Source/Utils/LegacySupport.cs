@@ -254,3 +254,25 @@ public static class LegacySupport
     }
 #endif
 }
+
+#if v1_1 || v1_2 || v1_3
+/// <summary>
+/// Stub class for <see cref="RectDivider"/> for old versions of RimWorld before it was created.
+/// </summary>
+internal class RectDivider
+{
+    internal Rect Rect;
+
+    internal Rect NewCol(float _)
+    {
+        return Rect.zero;
+    }
+}
+
+/// <summary>
+/// Stub class for targeting patches. Exists just to prevent compiler errors for old rimworld versions.
+/// </summary>
+internal class PawnNamingUtility
+{
+}
+#endif

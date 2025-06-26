@@ -11,7 +11,7 @@ namespace JobInBar;
 /// </summary>
 public class LabelData : IExposable
 {
-    private Color? _nameColor = null;
+    private Color? _nameColor;
 
     public Color? NameColor
     {
@@ -19,7 +19,7 @@ public class LabelData : IExposable
         set => SetColor(LabelType.Name, value);
     }
 
-    private Color? _backstoryColor = null;
+    private Color? _backstoryColor;
 
     public Color? BackstoryColor
     {
@@ -27,7 +27,7 @@ public class LabelData : IExposable
         set => SetColor(LabelType.JobTitle, value);
     }
 
-    private Color? _ideoRoleColor = null;
+    private Color? _ideoRoleColor;
 
     public Color? IdeoRoleColor
     {
@@ -35,7 +35,7 @@ public class LabelData : IExposable
         set => SetColor(LabelType.IdeoRole, value);
     }
 
-    private Color? _royalTitleColor = null;
+    private Color? _royalTitleColor;
 
     public Color? RoyalTitleColor
     {
@@ -105,10 +105,10 @@ public class LabelData : IExposable
         Scribe_References.Look(ref Pawn, "pawn");
 
         Scribe_Values.Look(ref ShowBackstory, "ShowBackstory", true);
-        Scribe_Values.Look(ref _backstoryColor, "BackstoryColor", null);
-        Scribe_Values.Look(ref _nameColor, "NameColor", null);
-        Scribe_Values.Look(ref _royalTitleColor, "RoyalTitleColor", null);
-        Scribe_Values.Look(ref _ideoRoleColor, "IdeoRoleColor", null);
+        Scribe_Values.Look(ref _backstoryColor, "BackstoryColor");
+        Scribe_Values.Look(ref _nameColor, "NameColor");
+        Scribe_Values.Look(ref _royalTitleColor, "RoyalTitleColor");
+        Scribe_Values.Look(ref _ideoRoleColor, "IdeoRoleColor");
         Scribe_Values.Look(ref ShowRoyalTitle, "ShowRoyalTitle", true);
         Scribe_Values.Look(ref ShowIdeoRole, "ShowIdeoRole", true);
     }

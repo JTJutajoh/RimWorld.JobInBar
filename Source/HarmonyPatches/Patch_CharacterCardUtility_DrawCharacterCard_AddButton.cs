@@ -20,6 +20,16 @@ namespace JobInBar.HarmonyPatches;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal static class Patch_CharacterCardUtility_DrawCharacterCard_AddButton
 {
+    [UsedImplicitly]
+    static bool Prepare()
+    {
+        var skip = LegacySupport.CurrentRWVersion <= RWVersion.v1_3;
+        if (skip)
+            Log.Warning(
+                $"Skipping {nameof(Patch_CharacterCardUtility_DrawCharacterCard_AddButton)} patch, requires RimWorld 1.4+.");
+        return !skip;
+    }
+
     /// <summary>
     ///     Vanilla hard-codes its buttons to be 30 px, so this constant just copies that.
     /// </summary>
@@ -72,8 +82,7 @@ internal static class Patch_CharacterCardUtility_DrawCharacterCard_AddButton
             !Settings.EnabledButtonLocations.HasFlag(Settings.ButtonLocations.CharacterCard)) return;
         var buttonRect = new Rect(curX, 0f, ButtonSize, ButtonSize);
 
-        if (Widgets.ButtonImage(buttonRect, Icons.LabelSettingsIcon, true, "JobInBar_NamePawn_GearButton".Translate()))
-            Find.WindowStack?.Add(new Dialog_LabelSettings(pawn));
+        CustomWidgets.LabelSettingsButton(pawn, buttonRect);
 
         curX -= 40f;
     }

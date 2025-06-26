@@ -16,6 +16,16 @@ namespace JobInBar.HarmonyPatches;
 [SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
 internal static class Patch_Dialog_NamePawn_NameContext_TitleRowButton
 {
+    [UsedImplicitly]
+    static bool Prepare()
+    {
+        var skip = LegacySupport.CurrentRWVersion <= RWVersion.v1_3;
+        if (skip)
+            Log.Warning(
+                $"Skipping {nameof(Patch_Dialog_NamePawn_NameContext_TitleRowButton)} patch, requires RimWorld 1.4+.");
+        return !skip;
+    }
+
     // Cache the modified textbox width so it only gets modified once
     private static float _textboxWidth = -1f;
 
@@ -47,7 +57,6 @@ internal static class Patch_Dialog_NamePawn_NameContext_TitleRowButton
 
         var rect = divider.NewCol(buttonSize);
 
-        if (Widgets.ButtonImage(rect.Rect, Icons.LabelSettingsIcon, true, "JobInBar_NamePawn_GearButton".Translate()))
-            Find.WindowStack?.Add(new Dialog_LabelSettings(pawn));
+        CustomWidgets.LabelSettingsButton(pawn, rect);
     }
 }

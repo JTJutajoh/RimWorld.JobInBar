@@ -20,10 +20,13 @@ internal static class CustomWidgets
     /// <param name="color">The color to be set</param>
     /// <param name="labelBackgrounds">Add the background to the label examples</param>
     /// <param name="exampleText">Used for the label example text</param>
+    /// <param name="currentlyDraggingColorPicker">Unique bool ref for each color picker instance.</param>
     /// <param name="doBackground">If true, adds a background around the whole element</param>
     /// <param name="defaultButton">Include a "Default" button to reset to the harvested default value</param>
     /// <param name="onDefault">Invoked whenever the Default button is clicked</param>
     /// <param name="defaultColor">Optional color to be used when the Default button is clicked</param>
+    /// <param name="header">Optional string to show as a header section above the color picker.</param>
+    /// <param name="disabled">Is the color picker interactive or not.</param>
     internal static void LabelColorPicker(
         Rect rect,
         ref Color color,
@@ -50,7 +53,7 @@ internal static class CustomWidgets
         if (header != null)
         {
             Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(settingsRect.TopPartPixels(Text.LineHeightOf(GameFont.Small)), ref curY, header);
+            Widgets.Label(settingsRect.xMin, ref curY, settingsRect.width, header);
             Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Widgets.SeparatorLineColor;
             Widgets.DrawLineHorizontal(settingsRect.xMin, curY, settingsRect.width);
@@ -290,6 +293,7 @@ internal static class CustomWidgets
     }
 
     internal static void CheckboxLabeled(
+        // ReSharper disable once InconsistentNaming
         this Listing_Standard _this,
         string label,
         ref bool checkOn,
@@ -298,7 +302,7 @@ internal static class CustomWidgets
         float height = 0.0f,
         float labelPct = 1f)
     {
-        Rect rect = _this.GetRect((double)height != 0.0 ? height : Text.CalcHeight(label, _this.ColumnWidth * labelPct),
+        Rect rect = _this.GetRect(height != 0.0 ? height : Text.CalcHeight(label, _this.ColumnWidth * labelPct),
             labelPct);
         rect.width = Math.Min(rect.width + 24f, _this.ColumnWidth);
         Rect? boundingRectCached = _this.BoundingRectCached;
@@ -321,5 +325,12 @@ internal static class CustomWidgets
         Widgets.CheckboxLabeled(rect, label, ref checkOn, disabled: disabled);
         label_7:
         _this.Gap(_this.verticalSpacing);
+    }
+
+    internal static void LabelSettingsButton(Pawn pawn, Rect rect)
+    {
+        if (Widgets.ButtonImage(rect, Icons.LabelSettingsIcon))
+            Find.WindowStack?.Add(new Dialog_LabelSettings(pawn));
+        TooltipHandler.TipRegionByKey(rect, "JobInBar_NamePawn_GearButton");
     }
 }

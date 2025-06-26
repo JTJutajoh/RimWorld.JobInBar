@@ -24,6 +24,7 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
     private static readonly MethodInfo? IsWeaponGetterAnchor = AccessTools.PropertyGetter(typeof(ThingDef), "IsWeapon");
     private static float OffsetPerLabel => 16f + Settings.ExtraOffsetPerLine;
 
+    [UsedImplicitly]
     static bool Prepare(MethodBase original)
     {
         if (!PatchManager.CheckForMod(Patch_ColonistBar_OnGUI_OffsetEquipped_ShowUtilityApparelCompat.TargetPackageId,
@@ -123,11 +124,11 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped_ShowUtilityApparelC
             return false;
         }
 
-        if (!PatchManager.TryGetModAssembly(ShowUtilityApparelMod?.PackageId ?? TargetPackageId,
+        if (!PatchManager.TryGetModAssembly(ShowUtilityApparelMod.PackageId ?? TargetPackageId,
                 out ShowUtilityApparelAssemblies))
         {
             Log.Error(
-                $"Detected \"{ShowUtilityApparelMod?.Name ?? TargetPackageId}\" mod, but failed to find its assemblies for compat patches.");
+                $"Detected \"{ShowUtilityApparelMod.Name ?? TargetPackageId}\" mod, but failed to find its assemblies for compat patches.");
             return false;
         }
 

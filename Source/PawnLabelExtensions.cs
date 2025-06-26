@@ -37,17 +37,6 @@ public static class PawnLabelExtensions
         return title != null;
     }
 
-    public static bool ShouldDrawIdeoLabel(this Pawn pawn)
-    {
-        return Settings.DrawIdeoRoles && pawn.HasIdeoRole() &&
-               (LabelsTracker_WorldComponent.Instance?[pawn].ShowIdeoRole ?? false);
-    }
-
-    internal static bool HasIdeoRole(this Pawn pawn)
-    {
-        return pawn.ideo?.Ideo?.GetRole(pawn) is not null;
-    }
-
     public static bool ShouldDrawRoyaltyLabel(this Pawn pawn)
     {
         return Settings.DrawRoyalTitles && pawn.HasRoyalTitle() &&
@@ -62,6 +51,19 @@ public static class PawnLabelExtensions
     public static Color JobLabelColor(this Pawn pawn)
     {
         return LabelsTracker_WorldComponent.Instance?[pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
+    }
+
+
+#if !(v1_1 || v1_2)
+    public static bool ShouldDrawIdeoLabel(this Pawn pawn)
+    {
+        return ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && pawn.HasIdeoRole() &&
+               (LabelsTracker_WorldComponent.Instance?[pawn].ShowIdeoRole ?? false);
+    }
+
+    internal static bool HasIdeoRole(this Pawn pawn)
+    {
+        return ModsConfig.IdeologyActive && pawn.ideo?.Ideo?.GetRole(pawn) is not null;
     }
 
     // Looks up the pawn's ideology and returns the rgb color associated with that ideology, adjusting it for readability
@@ -91,6 +93,7 @@ public static class PawnLabelExtensions
 
             ideoColor = Color.Lerp(ideoColor ?? fallbackColor, Color.white, 0.35f);
         }
+
         if (role == null) return ideoColor.Value;
 
         if (Settings.RoleColorOnlyIfAbilityAvailable)
@@ -103,9 +106,22 @@ public static class PawnLabelExtensions
 
     internal static bool IdeoRoleAbilityReady(this Pawn pawn, Precept_Role? role = null)
     {
+        if (!ModsConfig.IdeologyActive) return false;
+
         role ??= pawn.ideo?.Ideo?.GetRole(pawn);
         return role?.AbilitiesFor(pawn)?.FirstOrDefault()?.CanCast ?? false;
     }
+
+    public static string IdeoLabel(this Pawn colonist)
+    {
+        return ModsConfig.IdeologyActive ? colonist.ideo?.Ideo?.GetRole(colonist)?.LabelForPawn(colonist) ?? "" : "";
+    }
+#else
+    /// <summary>
+    /// Pre-Ideology stub.
+    /// </summary>
+    public static bool ShouldDrawIdeoLabel(this Pawn pawn) => false;
+#endif
 
     internal static Color RoyalTitleColor(this Pawn pawn)
     {
@@ -115,11 +131,6 @@ public static class PawnLabelExtensions
     public static string JobLabel(this Pawn colonist)
     {
         return colonist.story?.TitleShortCap ?? "";
-    }
-
-    public static string IdeoLabel(this Pawn colonist)
-    {
-        return colonist.ideo?.Ideo?.GetRole(colonist)?.LabelForPawn(colonist) ?? "";
     }
 
     public static string RoyaltyLabel(this Pawn colonist)
