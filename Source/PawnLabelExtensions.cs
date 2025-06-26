@@ -36,18 +36,26 @@ public static class PawnLabelExtensions
         return title != null;
     }
 
-    public static bool ShouldDrawIdeoLabel(this Pawn colonist)
+    public static bool ShouldDrawIdeoLabel(this Pawn pawn)
     {
-        return Settings.DrawIdeoRoles &&
-               colonist.ideo?.Ideo?.GetRole(colonist) is not null &&
-               (LabelsTracker_WorldComponent.Instance?[colonist].ShowIdeoRole ?? false);
+        return Settings.DrawIdeoRoles && pawn.HasIdeoRole() &&
+               (LabelsTracker_WorldComponent.Instance?[pawn].ShowIdeoRole ?? false);
     }
 
-    public static bool ShouldDrawRoyaltyLabel(this Pawn colonist)
+    internal static bool HasIdeoRole(this Pawn pawn)
     {
-        return Settings.DrawRoyalTitles &&
-               colonist.royalty?.MainTitle() is not null &&
-               (LabelsTracker_WorldComponent.Instance?[colonist].ShowRoyalTitle ?? false);
+        return pawn.ideo?.Ideo?.GetRole(pawn) is not null;
+    }
+
+    public static bool ShouldDrawRoyaltyLabel(this Pawn pawn)
+    {
+        return Settings.DrawRoyalTitles && pawn.HasRoyalTitle() &&
+               (LabelsTracker_WorldComponent.Instance?[pawn].ShowRoyalTitle ?? false);
+    }
+
+    internal static bool HasRoyalTitle(this Pawn pawn)
+    {
+        return pawn.royalty?.MainTitle() is not null;
     }
 
     public static Color JobLabelColor(this Pawn pawn)

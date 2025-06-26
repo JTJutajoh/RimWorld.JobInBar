@@ -1,9 +1,16 @@
 ﻿using System;
-using HarmonyLib;
 using JetBrains.Annotations;
 using UnityEngine;
 
 namespace JobInBar;
+
+internal enum LabelType
+{
+    Name,
+    JobTitle,
+    RoyalTitle,
+    IdeoRole
+}
 
 [UsedImplicitly]
 public class JobInBarMod : Mod
@@ -21,9 +28,9 @@ public class JobInBarMod : Mod
 
     public override void DoSettingsWindowContents(Rect inRect)
     {
-        base.DoSettingsWindowContents(inRect);
         try
         {
+            base.DoSettingsWindowContents(inRect);
             GetSettings<Settings>()?.DoWindowContents(inRect);
         }
         catch (Exception e)
@@ -31,7 +38,7 @@ public class JobInBarMod : Mod
             Log.Exception(e, "Error drawing mod settings window.", true);
             Widgets.DrawBoxSolid(inRect, new Color(0, 0, 0, 0.5f));
             var errorRect = inRect.MiddlePart(0.4f, 0.25f);
-            Widgets.DrawBoxSolidWithOutline(errorRect, Widgets.WindowBGFillColor, Color.red, 5);
+            Widgets.DrawWindowBackground(errorRect);
             Widgets.Label(errorRect.ContractedBy(16f),
                 $"Error rendering settings window:\n\"{e.Message}\", see log for stack trace.\nPlease report this to the mod author.");
         }

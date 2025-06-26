@@ -99,11 +99,13 @@
     <ItemGroup>
         <Compile Include="Dialog_LabelSettings.cs"/>
         <Compile Include="GlobalUsings.cs"/>
+        <Compile Include="HarmonyPatches\Patch_CharacterCardUtility_DrawCharacterCard_AddButton.cs"/>
         <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs"/>
-        <Compile Include="HarmonyPatches\Patch_Pawn_Destroy_StopTracking.cs" />
-        <Compile Include="LogPrefixed.cs"/>
-        <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_AddOptions.cs"/>
+        <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_NameContext_TitleRowButton.cs"/>
+        <Compile Include="HarmonyPatches\Patch_PawnNameColorUtility_PawnNameColorOf.cs"/>
+        <Compile Include="HarmonyPatches\Patch_Pawn_Destroy_StopTracking.cs"/>
         <Compile Include="HarmonyPatches\Patch_ColonistBarDrawer_DrawColonist_AddLabels.cs"/>
+        <Compile Include="Icons.cs"/>
         <Compile Include="JobInBarMod.cs"/>
         <Compile Include="LabelDrawer.cs"/>
         <Compile Include="HarmonyPatches\Patch_PlaySettings_GlobalControl_ToggleLabels.cs"/>
@@ -116,12 +118,17 @@
         <Compile Include="Utils\CustomWidgets.cs"/>
         <Compile Include="Utils\LabelUtils.cs"/>
         <Compile Include="Utils\LegacySupport.cs"/>
+        <Compile Include="Utils\LogPrefixed.cs"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="About\About.xml"/>
+        <Content Include="About\ModIcon.png"/>
         <Content Include="About\ModIcon.psd"/>
         <Content Include="About\Preview.png"/>
         <Content Include="About\Preview.psd"/>
+        <Content Include="C:\Users\darkf\Desktop\harmony.log.txt">
+            <Link>harmony.log.txt</Link>
+        </Content>
         <Content Include="JobInBar.csproj.user"/>
         <Content Include="Languages\English\Keyed\JobInBar_Keys.xml"/>
         <Content Include="News\JobInBarUpdateNews.xml"/>

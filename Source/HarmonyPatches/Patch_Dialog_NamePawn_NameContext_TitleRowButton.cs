@@ -1,0 +1,53 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using HarmonyLib;
+using JetBrains.Annotations;
+
+namespace JobInBar.HarmonyPatches;
+
+//BUG: Need an alternate patch for legacy versions before the new NamePawn dialog
+
+/// <summary>
+///     Patch that adds a button next to the "Title" textbox in the pawn rename dialog. Clicking the button opens
+///     <see cref="Dialog_LabelSettings" />
+/// </summary>
+[HarmonyPatch]
+[HarmonyPatchCategory("NamePawn")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
+internal static class Patch_Dialog_NamePawn_NameContext_TitleRowButton
+{
+    // Cache the modified textbox width so it only gets modified once
+    private static float _textboxWidth = -1f;
+
+    [HarmonyPatch("NameContext", "MakeRow")]
+    [HarmonyPrefix]
+    [UsedImplicitly]
+    static void AddButtonToTitleRow(object __instance, ref RectDivider divider, ref float ___textboxWidth, Pawn pawn)
+    {
+        if (!Settings.ModEnabled || !Settings.EnabledButtonLocations.HasFlag(Settings.ButtonLocations.NamePawn)) return;
+
+        // First check which textbox in the dialog this row is based on the name of the box
+        var textboxName = (string?)Traverse.Create(__instance)?.Field("textboxName")?.GetValue() ?? "";
+        // Skip all the textboxes we don't care about
+        if (textboxName != "BackstoryTitle") return;
+
+        // Ensure that this only runs while there's a valid world component, AKA in-game
+        var labelsComp = LabelsTracker_WorldComponent.Instance;
+        if (labelsComp is null) return;
+
+        var buttonSize = divider.Rect.height;
+
+        const float rectDividerMargin = 17f; // Just grabbed from vanilla RectDivider
+
+        // Calculate the modified textbox width only once
+        if (_textboxWidth < 0f) _textboxWidth = ___textboxWidth - buttonSize - rectDividerMargin;
+
+        // Resize the textbox to make room for the added button
+        ___textboxWidth = _textboxWidth;
+
+        var rect = divider.NewCol(buttonSize);
+
+        if (Widgets.ButtonImage(rect.Rect, Icons.LabelSettingsIcon, true, "JobInBar_NamePawn_GearButton".Translate()))
+            Find.WindowStack?.Add(new Dialog_LabelSettings(pawn));
+    }
+}

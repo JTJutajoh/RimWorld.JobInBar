@@ -6,6 +6,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable RedundantCast
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using HarmonyLib;
 using RimWorld;
@@ -20,6 +21,41 @@ namespace JobInBar.Utils;
 /// </summary>
 public static class LegacySupport
 {
+    [Flags]
+    internal enum RWVersion
+    {
+        None = 0,
+        v1_0 = 2,
+        v1_1 = 4,
+        v1_2 = 8,
+        v1_3 = 16,
+        v1_4 = 32,
+        v1_5 = 64,
+        v1_6 = 128,
+        All = v1_0 | v1_1 | v1_2 | v1_3 | v1_4 | v1_5 | v1_6
+    }
+
+    internal static RWVersion CurrentRWVersion
+    {
+        get
+        {
+#if v1_1
+                return RWVersion.v1_1;
+#elif v1_2
+                return RWVersion.v1_2;
+#elif v1_3
+                return RWVersion.v1_3;
+#elif v1_4
+                return RWVersion.v1_4;
+#elif v1_5
+                return RWVersion.v1_5;
+#elif v1_6
+            return RWVersion.v1_6;
+#else
+                return RWVersion.None;
+#endif
+        }
+    }
 #if v1_1 || v1_2 || v1_3
     /// Extension method for a function that was added in RimWorld 1.4+
     public static float SliderLabeled(
@@ -149,7 +185,8 @@ public static class LegacySupport
     /// In 1.5 or earlier, it is automatically clamped to 0, and the minimum is not passed through from <see cref="Listing_Standard.IntEntry"/>
     /// so this is a replacement version that fixes that, so that negative numbers are allowed.<br />
     /// </summary>
-    internal static void IntEntryWithNegative(this Listing_Standard _this, ref int val, ref string editBuffer, int multiplier = 1, int min = 0)
+    internal static void IntEntryWithNegative(this Listing_Standard _this, ref int val, ref string editBuffer, int multiplier
+ = 1, int min = 0)
     {
         Rect rect = _this.GetRect(24f);
         if (!_this.BoundingRectCached.HasValue || rect.Overlaps(_this.BoundingRectCached.Value))

@@ -23,7 +23,7 @@ internal static class CustomWidgets
     /// <param name="color">The color to be set</param>
     /// <param name="labelBackgrounds">Add the background to the label examples</param>
     /// <param name="exampleText">Used for the label example text</param>
-    /// <param name="windowBackground">If true, adds a background around the whole element</param>
+    /// <param name="doBackground">If true, adds a background around the whole element</param>
     /// <param name="defaultButton">Include a "Default" button to reset to the harvested default value</param>
     /// <param name="onDefault">Invoked whenever the Default button is clicked</param>
     /// <param name="defaultColor">Optional color to be used when the Default button is clicked</param>
@@ -32,30 +32,42 @@ internal static class CustomWidgets
         ref Color color,
         bool labelBackgrounds,
         string exampleText,
-        bool windowBackground = true,
+        bool doBackground = true,
         bool defaultButton = false,
         Action? onDefault = null,
-        Color? defaultColor = null
+        Color? defaultColor = null,
+        string? header = null
     )
     {
-        if (windowBackground)
+        if (doBackground)
         {
-            Widgets.DrawWindowBackground(rect);
+            Widgets.DrawMenuSection(rect);
             rect = rect.ContractedBy(4f);
         }
 
         var settingsRect = new Rect(rect);
         var curY = settingsRect.yMin + 4f;
 
+        if (header != null)
+        {
+            Text.Anchor = TextAnchor.UpperCenter;
+            Widgets.Label(settingsRect.TopPartPixels(Text.LineHeightOf(GameFont.Small)), ref curY, header);
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Widgets.SeparatorLineColor;
+            Widgets.DrawLineHorizontal(settingsRect.xMin, curY, settingsRect.width);
+            GUI.color = Color.white;
+            curY += 3f;
+        }
+
         var colorLabel = exampleText;
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2f, settingsRect.width, 16f),
-            new Color(0.2f, 0.2f, 0.2f));
+            ColorLibrary.DarkBrown);
         LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, color,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
 
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2, settingsRect.width, 16f),
-            new Color(0.8f, 0.8f, 0.8f));
+            ColorLibrary.Beige);
         LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, color,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
@@ -258,4 +270,12 @@ internal static class CustomWidgets
     //     var rect = listingStandard.GetRect(maxHeight);
     //     ColorSelector(label, rect, ref color, maxHeight, icon, colorSize, colorPadding, paddingLeft, paddingRight);
     // }
+
+    internal static void SectionHeader(this Listing_Standard listing, string sectionKey)
+    {
+        Text.Anchor = TextAnchor.UpperCenter;
+        listing.Label(sectionKey.Translate());
+        Text.Anchor = TextAnchor.UpperLeft;
+        listing.GapLine(8f);
+    }
 }

@@ -26,7 +26,8 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
 
     static bool Prepare(MethodBase original)
     {
-        if (!PatchManager.CheckForMod(Patch_ColonistBar_OnGUI_OffsetEquipped_ShowUtilityApparelCompat.TargetPackageId, out var modMetaData)) return true;
+        if (!PatchManager.CheckForMod(Patch_ColonistBar_OnGUI_OffsetEquipped_ShowUtilityApparelCompat.TargetPackageId,
+                out var modMetaData)) return true;
 
         Log.Message(
             $"\"{modMetaData!.Name}\" is active, skipping default {nameof(Patch_ColonistBar_OnGUI_OffsetEquipped)} patch...");
@@ -92,7 +93,8 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
 
 /// <summary>
 ///     Compatibility patch for "[AV] Show Utility Apparel" mod:
-///     https://steamcommunity.com/sharedfiles/filedetails/?id=3266625851 <para />
+///     https://steamcommunity.com/sharedfiles/filedetails/?id=3266625851
+///     <para />
 ///     That mod's patch ignores the vanilla rect that the normal patch
 ///     <see cref="Patch_ColonistBar_OnGUI_OffsetEquipped" />
 ///     modifies in favor of its own static reference to a new rect.<br />
@@ -112,14 +114,17 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped_ShowUtilityApparelC
     [UsedImplicitly]
     static bool Prepare(MethodBase original)
     {
-        if (!PatchManager.CheckForMod(TargetPackageId, out ShowUtilityApparelMod))
+        if (!PatchManager.CheckForMod(TargetPackageId, out ShowUtilityApparelMod)) return false;
+
+        if (ShowUtilityApparelMod?.PackageId is null)
         {
             Log.Error(
                 $"Detected \"{TargetPackageId}\", but failed to get its metadata for compat patches.");
             return false;
         }
 
-        if (!PatchManager.TryGetModAssembly(ShowUtilityApparelMod?.PackageId ?? TargetPackageId, out ShowUtilityApparelAssemblies))
+        if (!PatchManager.TryGetModAssembly(ShowUtilityApparelMod?.PackageId ?? TargetPackageId,
+                out ShowUtilityApparelAssemblies))
         {
             Log.Error(
                 $"Detected \"{ShowUtilityApparelMod?.Name ?? TargetPackageId}\" mod, but failed to find its assemblies for compat patches.");

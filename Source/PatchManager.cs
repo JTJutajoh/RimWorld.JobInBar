@@ -115,7 +115,9 @@ internal static class PatchManager
     private static void PatchAll()
     {
         PatchCategory("AddLabels");
+        PatchCategory("ColorName");
         PatchCategory("NamePawn");
+        PatchCategory("BioTabButton");
         PatchCategory("OffsetEquippedWeapon");
         PatchCategory("PlaySettings");
         PatchCategory("StopTracking");

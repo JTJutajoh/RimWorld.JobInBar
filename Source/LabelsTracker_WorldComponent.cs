@@ -11,7 +11,11 @@ namespace JobInBar;
 /// </summary>
 public class LabelData : IExposable
 {
+    private Color? _ideoRoleColor;
+    private Color? _nameColor;
+    private Color? _royalTitleColor;
     public Color? BackstoryColor;
+
     public Pawn? Pawn;
     public bool ShowBackstory = true;
 
@@ -30,6 +34,44 @@ public class LabelData : IExposable
     {
         Log.Trace($"Creating new label data for pawn {pawn.Name}");
         Pawn = pawn;
+    }
+
+    public LabelData(LabelData other)
+    {
+        Log.Trace("Creating new label data from existing data");
+        Pawn = other.Pawn;
+
+        NameColor = other.NameColor;
+
+        ShowBackstory = other.ShowBackstory;
+        BackstoryColor = other.BackstoryColor;
+
+        ShowRoyalTitle = other.ShowRoyalTitle;
+        RoyalTitleColor = other.RoyalTitleColor;
+
+        ShowIdeoRole = other.ShowIdeoRole;
+        IdeoRoleColor = other.IdeoRoleColor;
+    }
+
+    //TODO: Make this actually do anything
+    public Color NameColor
+    {
+        get => _nameColor ?? GenMapUI.DefaultThingLabelColor;
+        set => _nameColor = value.IndistinguishableFrom(GenMapUI.DefaultThingLabelColor) ? null : value;
+    }
+
+    //TODO: Make this actually do anything
+    public Color RoyalTitleColor
+    {
+        get => _royalTitleColor ?? Settings.RoyalTitleColor;
+        set => _royalTitleColor = value.IndistinguishableFrom(Settings.RoyalTitleColor) ? null : value;
+    }
+
+    //TODO: Make this actually do anything
+    public Color IdeoRoleColor
+    {
+        get => _ideoRoleColor ?? Pawn?.IdeoLabelColor() ?? Settings.IdeoRoleColorOverride;
+        set => _ideoRoleColor = value.IndistinguishableFrom(Settings.IdeoRoleColorOverride) ? null : value;
     }
 
     public void ExposeData()
@@ -80,6 +122,15 @@ public class LabelsTracker_WorldComponent : WorldComponent
             return data;
         }
         internal set => _trackedPawns[pawn] = value;
+    }
+
+    /// <summary>
+    ///     Alternate way of accessing <see cref="LabelData" /> for a given pawn that does NOT create a new blank cache entry
+    ///     if the pawn is not already tracked.
+    /// </summary>
+    internal LabelData? GetExistingLabelData(Pawn pawn)
+    {
+        return _trackedPawns.TryGetValue(pawn, out var data) ? data : null;
     }
 
     public bool Remove(Pawn pawn)

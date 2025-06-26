@@ -4,7 +4,7 @@
     <log_file alias="Harmony.DEBUG" path="$USER_HOME$/Desktop/harmony.log.txt" skipped="false" />
     <option name="EXE_PATH" value="$RIMWORLD_LATEST$/RimWorldWin64.exe" />
     <option name="PROGRAM_PARAMETERS" value="--debugger-agent=transport=dt_socket,address=127.0.0.1:56000,server=y -savedatafolder=.$SAVE_DATA$/" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="WORKING_DIRECTORY" value="$RIMWORLD_LATEST$/" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="ENV_FILE_PATHS" value="" />
@@ -17,7 +17,7 @@
     <option name="PROJECT_PATH" value="$PROJECT_DIR$/JobInBar.csproj" />
     <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
-    <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+    <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="0" />
     <option name="PROJECT_KIND" value="Console" />
     <option name="PROJECT_TFM" value=".NETFramework,Version=v4.7.2" />
     <method v="2">
