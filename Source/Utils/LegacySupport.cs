@@ -232,7 +232,17 @@ public static class LegacySupport
             editBuffer = value.ToStringCached()!;
             SoundDefOf.Checkbox_TurnedOn!.PlayOneShotOnCamera();
         }
-        Widgets.TextFieldNumeric<int>(new Rect(rect.xMin + (float) (width * 2), rect.yMin, rect.width - (float) (width * 4), rect.height), ref value, ref editBuffer, min);
+
+        Widgets.TextFieldNumeric<int>(
+            new Rect(rect.xMin + (float)(width * 2), rect.yMin, rect.width - (float)(width * 4), rect.height),
+            ref value, ref editBuffer, min);
+    }
+#endif
+
+#if v1_1 || v1_2 || v1_3 || v1_4 || v1_5
+    internal static Color WithAlpha(this Color color, float alpha)
+    {
+        return new Color(color.r, color.g, color.b, alpha);
     }
 #endif
 }

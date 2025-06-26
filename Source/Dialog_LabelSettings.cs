@@ -322,6 +322,17 @@ internal class Dialog_LabelSettings : Window
             _saveOnClose = false;
             Close();
         }
+
+        var gearRect = inRect.BottomPartPixels(32f).RightPartPixels(32f);
+        if (Widgets.ButtonImage(gearRect, Icons.GearIcon))
+        {
+            Find.WindowStack!.Add(new Dialog_ModSettings(JobInBarMod.Instance!));
+        }
+
+        if (Mouse.IsOver(gearRect))
+        {
+            TooltipHandler.TipRegion(gearRect, "JobInBar_Settings_Button".Translate());
+        }
     }
 
     public override void Close(bool doClouseSound = true)
