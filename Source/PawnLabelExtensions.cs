@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using JobInBar.HarmonyPatches;
+using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
 
@@ -66,26 +67,49 @@ public static class PawnLabelExtensions
     // Looks up the pawn's ideology and returns the rgb color associated with that ideology, adjusting it for readability
     public static Color IdeoLabelColor(this Pawn pawn)
     {
-        if (!Settings.UseIdeoColorForRole) return Settings.IdeoRoleColorOverride;
-        try
+        var fallbackColor = GenMapUI.DefaultThingLabelColor;
+        // If the user has disabled the automatic color assignment, check for any individual color settings and otherwise use the global setting
+        if (!Settings.UseIdeoColorForRole)
+            return LabelsTracker_WorldComponent.Instance?[pawn].IdeoRoleColor ?? fallbackColor;
+
+        Precept_Role? role = null;
+        // Get a cached color override (or null if no override has been set)
+        Color? ideoColor = LabelsTracker_WorldComponent.Instance?[pawn].IdeoRoleColor;
+        // If there isn't an override saved in the cache, determine a color
+        if (ideoColor == null)
         {
-            if (Settings.UseIdeoColorForRole && pawn.ideo?.Ideo?.GetRole(pawn) is { } role)
+            try
             {
-                bool abilityReady = pawn.ideo?.Ideo?.GetRole(pawn)?.AbilitiesFor(pawn)?[0]?.CanCast ?? false;
-                if (!Settings.RoleColorOnlyIfAbilityAvailable ||
-                    (Settings.RoleColorOnlyIfAbilityAvailable && abilityReady))
-                    // Brighten ideo colors so dark ones are readable
-                    // Magic number: 0.35f for the lerp to white, to brighten every ideo color by a set amount.
-                    // tested with black to assure minimum readability
-                    return Color.Lerp(role.ideo?.colorDef?.color ?? Settings.IdeoRoleColorOverride, Color.white, 0.35f);
+                role = pawn.ideo?.Ideo?.GetRole(pawn);
+                ideoColor = role?.ideo?.colorDef?.color;
             }
+            catch (Exception e)
+            {
+                Log.Exception(e, "Ideo label color.", true);
+                return fallbackColor;
+            }
+
+            ideoColor = Color.Lerp(ideoColor ?? fallbackColor, Color.white, 0.35f);
         }
-        catch (Exception e)
+        if (role == null) return ideoColor.Value;
+
+        if (Settings.RoleColorOnlyIfAbilityAvailable)
         {
-            Log.Exception(e, "Ideo label color", true);
+            return pawn.IdeoRoleAbilityReady(role) ? ideoColor.Value : fallbackColor;
         }
 
-        return PawnNameColorUtility.PawnNameColorOf(pawn);
+        return ideoColor.Value;
+    }
+
+    internal static bool IdeoRoleAbilityReady(this Pawn pawn, Precept_Role? role = null)
+    {
+        role ??= pawn.ideo?.Ideo?.GetRole(pawn);
+        return role?.AbilitiesFor(pawn)?.FirstOrDefault()?.CanCast ?? false;
+    }
+
+    internal static Color RoyalTitleColor(this Pawn pawn)
+    {
+        return LabelsTracker_WorldComponent.Instance?[pawn].RoyalTitleColor ?? Settings.RoyalTitleColorDefault;
     }
 
     public static string JobLabel(this Pawn colonist)

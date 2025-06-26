@@ -18,6 +18,8 @@ internal static class Patch_PawnNameColorUtility_PawnNameColorOf
     static void ApplyCustomNameColor(Pawn pawn, ref Color __result)
     {
         if (!Settings.ModEnabled) return;
+        // Skip pawns that don't have LabelData cached
+        if (LabelsTracker_WorldComponent.Instance?.GetExistingLabelData(pawn) is not { } labelData) return;
         // Mostly copied from vanilla version of the same method.
         // Ignore pawns that should have specific label colors
         if (pawn.MentalStateDef != null
@@ -27,8 +29,7 @@ internal static class Patch_PawnNameColorUtility_PawnNameColorOf
             || pawn.IsColonyMechRequiringMechanitor()
             || (pawn.Faction?.HostileTo(Faction.OfPlayer!) ?? false))
             return;
-        if (LabelsTracker_WorldComponent.Instance?.GetExistingLabelData(pawn) is not { } labelData) return;
 
-        __result = labelData.NameColor;
+        __result = labelData.NameColor ?? __result;
     }
 }

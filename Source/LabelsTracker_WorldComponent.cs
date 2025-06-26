@@ -11,10 +11,37 @@ namespace JobInBar;
 /// </summary>
 public class LabelData : IExposable
 {
-    private Color? _ideoRoleColor;
-    private Color? _nameColor;
-    private Color? _royalTitleColor;
-    public Color? BackstoryColor;
+    private Color? _nameColor = null;
+
+    public Color? NameColor
+    {
+        get => _nameColor;
+        set => SetColor(LabelType.Name, value);
+    }
+
+    private Color? _backstoryColor = null;
+
+    public Color? BackstoryColor
+    {
+        get => _backstoryColor;
+        set => SetColor(LabelType.JobTitle, value);
+    }
+
+    private Color? _ideoRoleColor = null;
+
+    public Color? IdeoRoleColor
+    {
+        get => _ideoRoleColor;
+        set => SetColor(LabelType.IdeoRole, value);
+    }
+
+    private Color? _royalTitleColor = null;
+
+    public Color? RoyalTitleColor
+    {
+        get => _royalTitleColor;
+        set => SetColor(LabelType.RoyalTitle, value);
+    }
 
     public Pawn? Pawn;
     public bool ShowBackstory = true;
@@ -53,25 +80,24 @@ public class LabelData : IExposable
         IdeoRoleColor = other.IdeoRoleColor;
     }
 
-    //TODO: Make this actually do anything
-    public Color NameColor
+    internal void SetColor(LabelType type, Color? color)
     {
-        get => _nameColor ?? GenMapUI.DefaultThingLabelColor;
-        set => _nameColor = value.IndistinguishableFrom(GenMapUI.DefaultThingLabelColor) ? null : value;
-    }
-
-    //TODO: Make this actually do anything
-    public Color RoyalTitleColor
-    {
-        get => _royalTitleColor ?? Settings.RoyalTitleColor;
-        set => _royalTitleColor = value.IndistinguishableFrom(Settings.RoyalTitleColor) ? null : value;
-    }
-
-    //TODO: Make this actually do anything
-    public Color IdeoRoleColor
-    {
-        get => _ideoRoleColor ?? Pawn?.IdeoLabelColor() ?? Settings.IdeoRoleColorOverride;
-        set => _ideoRoleColor = value.IndistinguishableFrom(Settings.IdeoRoleColorOverride) ? null : value;
+        switch (type)
+        {
+            default:
+            case LabelType.JobTitle:
+                _backstoryColor = color?.IndistinguishableFrom(Settings.DefaultJobLabelColor) ?? true ? null : color;
+                break;
+            case LabelType.Name:
+                _nameColor = color?.IndistinguishableFrom(GenMapUI.DefaultThingLabelColor) ?? true ? null : color;
+                break;
+            case LabelType.RoyalTitle:
+                _royalTitleColor = color?.IndistinguishableFrom(Settings.RoyalTitleColorDefault) ?? true ? null : color;
+                break;
+            case LabelType.IdeoRole:
+                _ideoRoleColor = color?.IndistinguishableFrom(GenMapUI.DefaultThingLabelColor) ?? true ? null : color;
+                break;
+        }
     }
 
     public void ExposeData()
@@ -79,7 +105,10 @@ public class LabelData : IExposable
         Scribe_References.Look(ref Pawn, "pawn");
 
         Scribe_Values.Look(ref ShowBackstory, "ShowBackstory", true);
-        Scribe_Values.Look(ref BackstoryColor, "BackstoryColor", Settings.DefaultJobLabelColor);
+        Scribe_Values.Look(ref _backstoryColor, "BackstoryColor", null);
+        Scribe_Values.Look(ref _nameColor, "NameColor", null);
+        Scribe_Values.Look(ref _royalTitleColor, "RoyalTitleColor", null);
+        Scribe_Values.Look(ref _ideoRoleColor, "IdeoRoleColor", null);
         Scribe_Values.Look(ref ShowRoyalTitle, "ShowRoyalTitle", true);
         Scribe_Values.Look(ref ShowIdeoRole, "ShowIdeoRole", true);
     }

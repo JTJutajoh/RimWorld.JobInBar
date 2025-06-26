@@ -48,7 +48,7 @@ public static class LegacySupport
 #elif v1_4
                 return RWVersion.v1_4;
 #elif v1_5
-                return RWVersion.v1_5;
+            return RWVersion.v1_5;
 #elif v1_6
             return RWVersion.v1_6;
 #else
@@ -185,8 +185,9 @@ public static class LegacySupport
     /// In 1.5 or earlier, it is automatically clamped to 0, and the minimum is not passed through from <see cref="Listing_Standard.IntEntry"/>
     /// so this is a replacement version that fixes that, so that negative numbers are allowed.<br />
     /// </summary>
-    internal static void IntEntryWithNegative(this Listing_Standard _this, ref int val, ref string editBuffer, int multiplier
- = 1, int min = 0)
+    internal static void IntEntryWithNegative(this Listing_Standard _this, ref int val, ref string editBuffer,
+        int multiplier
+            = 1, int min = 0)
     {
         Rect rect = _this.GetRect(24f);
         if (!_this.BoundingRectCached.HasValue || rect.Overlaps(_this.BoundingRectCached.Value))
@@ -207,26 +208,33 @@ public static class LegacySupport
         var IntEntryButtonWidth = new Traverse(typeof(Widgets)).Field("IntEntryButtonWidth")?.GetValue<int>() ?? 40;
 
         // Original method
-        int width = Mathf.Min(IntEntryButtonWidth, (int) rect.width / 5);
-        if (Widgets.ButtonText(new Rect(rect.xMin, rect.yMin, (float) width, rect.height), (-10 * multiplier).ToStringCached()!))
+        int width = Mathf.Min(IntEntryButtonWidth, (int)rect.width / 5);
+        if (Widgets.ButtonText(new Rect(rect.xMin, rect.yMin, (float)width, rect.height),
+                (-10 * multiplier).ToStringCached()!))
         {
             value -= 10 * multiplier * GenUI.CurrentAdjustmentMultiplier();
             editBuffer = value.ToStringCached()!;
             SoundDefOf.Checkbox_TurnedOff!.PlayOneShotOnCamera();
         }
-        if (Widgets.ButtonText(new Rect(rect.xMin + (float) width, rect.yMin, (float) width, rect.height), (-1 * multiplier).ToStringCached()!))
+
+        if (Widgets.ButtonText(new Rect(rect.xMin + (float)width, rect.yMin, (float)width, rect.height),
+                (-1 * multiplier).ToStringCached()!))
         {
             value -= multiplier * GenUI.CurrentAdjustmentMultiplier();
             editBuffer = value.ToStringCached()!;
             SoundDefOf.Checkbox_TurnedOff!.PlayOneShotOnCamera();
         }
-        if (Widgets.ButtonText(new Rect(rect.xMax - (float) width, rect.yMin, (float) width, rect.height), "+" + (10 * multiplier).ToStringCached()))
+
+        if (Widgets.ButtonText(new Rect(rect.xMax - (float)width, rect.yMin, (float)width, rect.height),
+                "+" + (10 * multiplier).ToStringCached()))
         {
             value += 10 * multiplier * GenUI.CurrentAdjustmentMultiplier();
             editBuffer = value.ToStringCached()!;
             SoundDefOf.Checkbox_TurnedOn!.PlayOneShotOnCamera();
         }
-        if (Widgets.ButtonText(new Rect(rect.xMax - (float) (width * 2), rect.yMin, (float) width, rect.height), "+" + multiplier.ToStringCached()))
+
+        if (Widgets.ButtonText(new Rect(rect.xMax - (float)(width * 2), rect.yMin, (float)width, rect.height),
+                "+" + multiplier.ToStringCached()))
         {
             value += multiplier * GenUI.CurrentAdjustmentMultiplier();
             editBuffer = value.ToStringCached()!;

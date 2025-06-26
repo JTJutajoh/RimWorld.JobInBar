@@ -9,6 +9,14 @@ namespace JobInBar;
 internal class Settings : ModSettings
 {
     private const float TabHeight = 32f;
+    private const float PerformanceSectionHeight = 206f + 8f;
+    private const float MiscSectionHeight = 158f + 8f;
+    private const float JobTitleSectionHeight = 394f;
+    private const float CurrentTaskSectionHeight = 412f + 8f;
+    private const float IdeologySectionHeight = 184f + 8f;
+    private const float RoyaltySectionHeight = 394f;
+    private const float DisplaySectionHeight = 428f + 8f;
+    private const float ColorPickersHeight = 200f;
 
     internal static Dictionary<string, object> DefaultSettings = new();
 
@@ -21,9 +29,7 @@ internal class Settings : ModSettings
 
 
     private static Vector2 _scrollPositionMainTab = Vector2.zero;
-    private static float? _lastMainTabHeight;
-    private static float? _miscSectionHeight;
-    private static float? _perfSectionHeight;
+    private static float? _lastMainTabHeight = null;
 
     private SettingsTab _currentTab = SettingsTab.Main;
 
@@ -87,36 +93,19 @@ internal class Settings : ModSettings
         var tabs = new List<TabRecord>
         {
             new("JobInBar_Settings_Tab_Main".Translate(), () => _currentTab = SettingsTab.Main,
-                () => _currentTab == SettingsTab.Main),
-            new("JobInBar_Settings_Tab_Display".Translate(), () => _currentTab = SettingsTab.Display,
-                () => _currentTab == SettingsTab.Display),
-            new("JobInBar_Settings_Tab_Job".Translate(), () => _currentTab = SettingsTab.Job,
-                () => _currentTab == SettingsTab.Job)
+                () => _currentTab == SettingsTab.Main)
         };
-#if !(v1_1)
-        if (ModsConfig.RoyaltyActive)
-            tabs.Add(new TabRecord("JobInBar_Settings_Tab_Royalty".Translate(),
-                () => _currentTab = SettingsTab.Royalty,
-                () => _currentTab == SettingsTab.Royalty));
-#endif
-
-#if !(v1_1 || v1_2)
-        if (ModsConfig.IdeologyActive)
-            tabs.Add(new TabRecord("JobInBar_Settings_Tab_Ideology".Translate(),
-                () => _currentTab = SettingsTab.Ideology,
-                () => _currentTab == SettingsTab.Ideology));
-#endif
 
         if (Prefs.DevMode && LabelsTracker_WorldComponent.Instance != null)
             tabs.Add(new TabRecord("JobInBar_Settings_Tab_Cache".Translate(), () => _currentTab = SettingsTab.Cache,
                 () => _currentTab == SettingsTab.Cache));
 
 #if v1_5 || v1_6
-        TabDrawer.DrawTabsOverflow(inRect.TopPartPixels(TabHeight), tabs, 80f, 200f);
+        TabDrawer.DrawTabsOverflow(inRect.TopPartPixels(TabHeight), tabs, 80f, inRect.width / 2f);
 #elif v1_1 || v1_2 || v1_3 || v1_4
         var tabsRect = inRect.TopPartPixels(TabHeight);
         tabsRect.y += TabHeight;
-        TabDrawer.DrawTabs(tabsRect, tabs, 200f);
+        TabDrawer.DrawTabs(tabsRect, tabs, 400f);
 #endif
         Widgets.DrawLineHorizontal(inRect.xMin, inRect.yMin + TabHeight, inRect.width);
 
@@ -135,70 +124,6 @@ internal class Settings : ModSettings
                 }
 
                 break;
-            case SettingsTab.Display:
-                try
-                {
-                    DoTabDisplay(tabRect);
-                }
-                catch (Exception e)
-                {
-                    Log.Exception(e, "Error drawing display settings tab.", true);
-                    throw;
-                }
-
-                break;
-            case SettingsTab.Job:
-                try
-                {
-                    DoTabJob(tabRect);
-                }
-                catch (Exception e)
-                {
-                    Log.Exception(e, "Error drawing colors settings tab.", true);
-                    throw;
-                }
-
-                break;
-#if !(v1_1 || v1_2)
-            case SettingsTab.Ideology:
-                if (!ModsConfig.IdeologyActive)
-                {
-                    _currentTab = SettingsTab.Main;
-                    break;
-                }
-
-                try
-                {
-                    DoTabIdeology(tabRect);
-                }
-                catch (Exception e)
-                {
-                    Log.Exception(e, "Error drawing ideology settings tab.", true);
-                    throw;
-                }
-
-                break;
-#endif
-#if !(v1_1)
-            case SettingsTab.Royalty:
-                if (!ModsConfig.RoyaltyActive)
-                {
-                    _currentTab = SettingsTab.Main;
-                    break;
-                }
-
-                try
-                {
-                    DoTabRoyalty(tabRect);
-                }
-                catch (Exception e)
-                {
-                    Log.Exception(e, "Error drawing royalty settings tab.", true);
-                    throw;
-                }
-
-                break;
-#endif
             case SettingsTab.Cache:
                 try
                 {
@@ -222,7 +147,7 @@ internal class Settings : ModSettings
         var viewRect = new Rect(inRect);
         var outerRect = new Rect(inRect);
         Widgets.AdjustRectsForScrollView(inRect, ref outerRect, ref viewRect);
-        viewRect.height = _lastMainTabHeight ?? inRect.height * 2f;
+        viewRect.height = _lastMainTabHeight ?? 9999f;
 
         Widgets.BeginScrollView(outerRect, ref _scrollPositionMainTab, viewRect);
 
@@ -243,237 +168,238 @@ internal class Settings : ModSettings
         }
 
         listing.Gap();
-        var perfSection = listing.BeginSection(_perfSectionHeight ?? 9999f)!;
 
-        perfSection.SectionHeader("JobInBar_Settings_PerformanceWarningHeader");
-        perfSection.SubLabel("JobInBar_Settings_PerformanceWarning".Translate(), 1f);
+        DoPerfSection(listing);
 
-        perfSection.CheckboxLabeled(GetSettingLabel("DrawLabelOnlyOnHover"), ref DrawLabelOnlyOnHover,
-            GetSettingTooltip("DrawLabelOnlyOnHover"), 36f);
-
-        perfSection.CheckboxLabeled(GetSettingLabel("OnlyDrawCustomJobTitles"), ref OnlyDrawCustomJobTitles,
-            GetSettingTooltip("OnlyDrawCustomJobTitles"), 36f);
-
-        _perfSectionHeight = perfSection.MaxColumnHeightSeen;
-        listing.EndSection(perfSection);
         listing.Gap();
 
-        var miscSection = listing.BeginSection(_miscSectionHeight ?? 9999f)!;
+        DoMiscSection(listing);
 
-        miscSection.SectionHeader("JobInBar_Settings_Section_Misc");
+        listing.Gap();
 
-        miscSection.CheckboxLabeled(GetSettingLabel("EnablePlaySettingToggle"), ref EnablePlaySettingToggle,
-            GetSettingTooltip("EnablePlaySettingToggle"), 36f, 0.90f);
+        DoDisplaySection(listing);
 
-        miscSection.Gap();
-        miscSection.Label(GetSettingLabel("EnabledButtonLocations"));
+        listing.NewColumn();
+
+        DoJobTitleSection(listing);
+
+        listing.Gap();
+
+        DoCurrentTaskSection(listing);
+
+        listing.Gap();
+
+        DoIdeologySection(listing);
+
+        listing.Gap();
+
+        DoRoyaltySection(listing);
+
+        _lastMainTabHeight ??= listing.MaxColumnHeightSeen;
+        listing.End();
+        Widgets.EndScrollView();
+    }
+
+    private static void DoPerfSection(Listing_Standard listing)
+    {
+        var section = listing.BeginSection(PerformanceSectionHeight)!;
+
+        section.SectionHeader("JobInBar_Settings_PerformanceWarningHeader");
+        section.SubLabel("JobInBar_Settings_PerformanceWarning".Translate(), 1f);
+
+        section.CheckboxLabeled(GetSettingLabel("DrawLabelOnlyOnHover"), ref DrawLabelOnlyOnHover,
+            GetSettingTooltip("DrawLabelOnlyOnHover"), 36f);
+
+        listing.EndSection(section);
+    }
+
+    private static void DoMiscSection(Listing_Standard listing)
+    {
+        var section = listing.BeginSection(MiscSectionHeight)!;
+
+        section.SectionHeader("JobInBar_Settings_Section_Misc");
+
+        section.CheckboxLabeled(GetSettingLabel("EnablePlaySettingToggle"), ref EnablePlaySettingToggle,
+            GetSettingTooltip("EnablePlaySettingToggle"), 36f, 1f);
+
+        section.Gap();
+        section.Label(GetSettingLabel("EnabledButtonLocations"));
 
         var locNamePawn = EnabledButtonLocations.HasFlag(ButtonLocations.NamePawn);
-        miscSection.CheckboxLabeled(GetSettingLabel("ButtonLocation_NamePawn"), ref locNamePawn,
-            GetSettingTooltip("ButtonLocation_NamePawn"), 24f, 0.90f);
+        section.CheckboxLabeled(GetSettingLabel("ButtonLocation_NamePawn"), ref locNamePawn,
+            GetSettingTooltip("ButtonLocation_NamePawn"), 24f, 1f);
         if (locNamePawn)
             EnabledButtonLocations |= ButtonLocations.NamePawn;
         else
             EnabledButtonLocations &= ~ButtonLocations.NamePawn;
 
         var locCharacterCard = EnabledButtonLocations.HasFlag(ButtonLocations.CharacterCard);
-        miscSection.CheckboxLabeled(GetSettingLabel("ButtonLocation_CharacterCard"), ref locCharacterCard,
-            GetSettingTooltip("ButtonLocation_CharacterCard"), 24f, 0.90f);
+        section.CheckboxLabeled(GetSettingLabel("ButtonLocation_CharacterCard"), ref locCharacterCard,
+            GetSettingTooltip("ButtonLocation_CharacterCard"), 24f, 1f);
         if (locCharacterCard)
             EnabledButtonLocations |= ButtonLocations.CharacterCard;
         else
             EnabledButtonLocations &= ~ButtonLocations.CharacterCard;
 
-        _miscSectionHeight = miscSection.MaxColumnHeightSeen;
-        listing.EndSection(miscSection);
-
-        listing.NewColumn();
-
-        // Current task
-        var sectionRect = listing.GetRect(0f);
-
-        listing.CheckboxLabeled(GetSettingLabel("DrawCurrentTask"), ref DrawCurrentTask,
-            GetSettingTooltip("DrawCurrentTask"), 36f);
-
-        if (DrawCurrentTask)
-        {
-            listing.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawCurrentTaskBackground,
-                GetSettingTooltip("DrawBackground"), 36f);
-
-            var labelRect = listing.SubLabel("JobInBar_Settings_CurrentJobNote".Translate(), 1f);
-
-            var colorPickerRect = listing.GetRect(200f);
-            CustomWidgets.LabelColorPicker(colorPickerRect, ref CurrentTaskLabelColor,
-                DrawCurrentTaskBackground, "JobInBar_Settings_CurrentTaskLabelColor".Translate(),
-                defaultButton: true, defaultColor: DefaultSettings["CurrentTaskLabelColor"] as Color?);
-            // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
-            // listing.GetRect(colorPickerRect.yMax - labelRect.yMax);
-        }
-
-        _lastMainTabHeight = listing.MaxColumnHeightSeen;
-        listing.End();
-        Widgets.EndScrollView();
+        listing.EndSection(section);
     }
 
-    private static void DoTabDisplay(Rect inRect)
+
+    private static bool _draggingJobTitleColorPicker = false;
+
+    private static void DoJobTitleSection(Listing_Standard listing)
+    {
+        var section = listing.BeginSection(JobTitleSectionHeight)!;
+
+        section.SectionHeader("JobInBar_Settings_Section_JobTitle");
+
+        section.CheckboxLabeled(GetSettingLabel("DrawJobTitle"), ref DrawJobTitle,
+            GetSettingTooltip("DrawJobTitle"), 36f, 1f);
+
+        section.SubLabel("JobInBar_Settings_JobTitleNote".Translate(), 1f);
+
+        section.CheckboxLabeled(GetSettingLabel("OnlyDrawCustomJobTitles"), ref OnlyDrawCustomJobTitles, !DrawJobTitle,
+            GetSettingTooltip("OnlyDrawCustomJobTitles"), 36f);
+
+        CustomWidgets.LabelColorPicker(
+            section.GetRect(ColorPickersHeight),
+            ref DefaultJobLabelColor,
+            DrawJobTitleBackground,
+            "JobInBar_Settings_DefaultJobLabelColor".Translate(),
+            ref _draggingJobTitleColorPicker,
+            defaultButton: true,
+            defaultColor: DefaultSettings["DefaultJobLabelColor"] as Color?,
+            disabled: !DrawJobTitle);
+
+        section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawJobTitleBackground, !DrawJobTitle,
+            GetSettingTooltip("DrawBackground"), 36f, 1f);
+
+        listing.EndSection(section);
+    }
+
+
+    private static bool _draggingCurrentTaskColorPicker = false;
+
+    private static void DoCurrentTaskSection(Listing_Standard listing)
+    {
+        var section = listing.BeginSection(CurrentTaskSectionHeight)!;
+
+        section.SectionHeader("JobInBar_Settings_Section_CurrentTask");
+
+        section.CheckboxLabeled(GetSettingLabel("DrawCurrentTask"), ref DrawCurrentTask,
+            GetSettingTooltip("DrawCurrentTask"), 36f);
+
+        section.SubLabel("JobInBar_Settings_CurrentJobNote".Translate(), 1f);
+
+        CustomWidgets.LabelColorPicker(
+            section.GetRect(ColorPickersHeight),
+            ref CurrentTaskLabelColor,
+            DrawCurrentTaskBackground,
+            "JobInBar_Settings_CurrentTaskLabelColor".Translate(),
+            ref _draggingCurrentTaskColorPicker,
+            defaultButton: true,
+            defaultColor: DefaultSettings["CurrentTaskLabelColor"] as Color?,
+            disabled: !DrawCurrentTask);
+
+        section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawCurrentTaskBackground, !DrawCurrentTask,
+            GetSettingTooltip("DrawBackground"), 36f);
+
+        listing.EndSection(section);
+    }
+
+
+    private static void DoIdeologySection(Listing_Standard listing)
+    {
+        if (!ModsConfig.IdeologyActive) return;
+
+        var section = listing.BeginSection(IdeologySectionHeight)!;
+
+        section.SectionHeader("JobInBar_Settings_Section_Ideology");
+
+        section.CheckboxLabeled(GetSettingLabel("DrawIdeoRoles"), ref DrawIdeoRoles,
+            GetSettingTooltip("DrawIdeoRoles"), 36f, 1f);
+
+
+        section.CheckboxLabeled(GetSettingLabel("UseIdeoColorForRole"), ref UseIdeoColorForRole, !DrawIdeoRoles,
+            GetSettingTooltip("UseIdeoColorForRole"), 36f, 1f);
+
+        section.CheckboxLabeled(GetSettingLabel("RoleColorAbility"), ref RoleColorOnlyIfAbilityAvailable,
+            (!DrawIdeoRoles || !UseIdeoColorForRole),
+            GetSettingTooltip("RoleColorAbility"), 36f, 1f);
+
+        section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawIdeoRoleBackground, !DrawIdeoRoles,
+            GetSettingTooltip("DrawBackground"), 36f, 1f);
+
+        listing.EndSection(section);
+    }
+
+    private static void DoDisplaySection(Listing_Standard listing)
     {
         _bufferJobLabelVerticalOffset = JobLabelVerticalOffset.ToString();
         _bufferOffsetEquippedExtra = OffsetEquippedExtra.ToString();
-        var listing = new Listing_Standard();
-        listing.Begin(inRect.MiddlePart(0.75f, 1f));
 
-        listing.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawJobTitleBackground,
-            GetSettingTooltip("DrawBackground"), 36f, 0.50f);
+        var section = listing.BeginSection(DisplaySectionHeight)!;
 
-        listing.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
-            GetSettingTooltip("TruncateLongLabels"), 36f, 0.50f);
+        section.SectionHeader("JobInBar_Settings_Section_Display");
 
-        listing.GapLine();
+        section.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
+            GetSettingTooltip("TruncateLongLabels"), 36f, 1f);
 
-        listing.Label("JobInBar_Settings_Positioning".Translate());
+        section.GapLine();
 
-        listing.IntSetting(ref JobLabelVerticalOffset,
+        section.Label("JobInBar_Settings_Positioning".Translate());
+
+        section.IntSetting(ref JobLabelVerticalOffset,
             "JobLabelVerticalOffset", ref _bufferJobLabelVerticalOffset, null, 2, -150, 150);
 
-        listing.Gap(24f);
+        section.GapLine();
 
-        listing.Label("JobInBar_Settings_Equipped".Translate());
-        listing.SubLabel("JobInBar_Settings_EquippedSubLabel".Translate(), 0.7f);
+        section.Label("JobInBar_Settings_Equipped".Translate());
+        section.SubLabel("JobInBar_Settings_EquippedSubLabel".Translate(), 1f);
 
-        listing.CheckboxLabeled(GetSettingLabel("OffsetEquippedByLabels"), ref OffsetEquippedByLabels,
-            GetSettingTooltip("OffsetEquippedByLabels"), labelPct: 0.50f);
+        section.CheckboxLabeled(GetSettingLabel("OffsetEquippedByLabels"), ref OffsetEquippedByLabels,
+            GetSettingTooltip("OffsetEquippedByLabels"), labelPct: 1f);
 
-        if (DrawCurrentTask)
-            listing.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"),
-                ref MoveWeaponBelowCurrentTask,
-                GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f, 0.50f);
+        section.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"), ref MoveWeaponBelowCurrentTask,
+            !DrawCurrentTask, GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f, 1f);
 
-        listing.IntSetting(ref OffsetEquippedExtra,
+        section.IntSetting(ref OffsetEquippedExtra,
             "OffsetEquippedExtra", ref _bufferOffsetEquippedExtra, null, 2, -150, 150);
 
-        listing.GapLine();
-
-
-        listing.End();
+        listing.EndSection(section);
     }
 
-    private static void DoTabJob(Rect inRect)
+    private static bool _draggingRoyalTitleColorPicker = false;
+
+    private static void DoRoyaltySection(Listing_Standard listing)
     {
-        var listing = new Listing_Standard();
-        listing.Begin(inRect.MiddlePart(0.75f, 1f));
+        if (!ModsConfig.RoyaltyActive) return;
 
-        var sectionRect = listing.GetRect(0f);
+        var section = listing.BeginSection(RoyaltySectionHeight)!;
 
-        listing.CheckboxLabeled(GetSettingLabel("DrawJobTitle"), ref DrawJobTitle,
-            GetSettingTooltip("DrawJobTitle"), 36f, 0.40f);
+        section.SectionHeader("JobInBar_Settings_Section_Royalty");
 
-        var labelRect = listing.SubLabel("JobInBar_Settings_JobTitleNote".Translate(), 0.36f);
+        section.CheckboxLabeled(GetSettingLabel("DrawRoyalTitles"), ref DrawRoyalTitles,
+            GetSettingTooltip("DrawRoyalTitles"), 36f, 1f);
+        section.Gap();
 
-        listing.Gap();
+        section.SubLabel("JobInBar_Settings_RoyalTitleNote".Translate(), 1f);
 
-#if v1_4 || v1_5 || v1_6
-        if (DrawJobTitle)
-        {
-            var colorPickerWidth = listing.ColumnWidth * 0.5f - 32f;
-            var colorPickerRect = new Rect(listing.ColumnWidth - colorPickerWidth - 16f,
-                sectionRect.yMin + 4f, colorPickerWidth, 200f);
-            CustomWidgets.LabelColorPicker(colorPickerRect, ref DefaultJobLabelColor,
-                DrawJobTitleBackground,
-                "JobInBar_Settings_DefaultJobLabelColor".Translate(),
-                defaultButton: true, defaultColor: DefaultSettings["DefaultJobLabelColor"] as Color?);
-            // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
-            listing.GetRect(colorPickerRect.yMax - sectionRect.yMax);
-        }
-#endif
+        CustomWidgets.LabelColorPicker(
+            section.GetRect(ColorPickersHeight),
+            ref RoyalTitleColorDefault,
+            DrawRoyalTitleBackground,
+            "JobInBar_Settings_RoyalTitleColor".Translate(),
+            ref _draggingRoyalTitleColorPicker,
+            defaultButton: true,
+            defaultColor: DefaultSettings["RoyalTitleColorDefault"] as Color?,
+            disabled: !DrawRoyalTitles
+        );
 
+        section.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawRoyalTitleBackground, !DrawRoyalTitles,
+            GetSettingTooltip("DrawBackground"), 36f, 1f);
 
-        listing.End();
-    }
-
-    private static void DoTabIdeology(Rect inRect)
-    {
-        var listing = new Listing_Standard();
-        listing.Begin(inRect.MiddlePart(0.75f, 1f));
-
-        listing.CheckboxLabeled(GetSettingLabel("DrawIdeoRoles"), ref DrawIdeoRoles,
-            GetSettingTooltip("DrawIdeoRoles"), 36f, 0.40f);
-
-        var sectionRect = listing.GetRect(0f);
-
-        if (!DrawIdeoRoles)
-        {
-            listing.End();
-            return;
-        }
-
-        listing.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawIdeoRoleBackground,
-            GetSettingTooltip("DrawBackground"), 36f, 0.40f);
-
-        listing.CheckboxLabeled(GetSettingLabel("UseIdeoColorForRole"), ref UseIdeoColorForRole,
-            GetSettingTooltip("UseIdeoColorForRole"), 36f, 0.40f);
-
-        if (!UseIdeoColorForRole)
-        {
-            var colorPickerWidth = listing.ColumnWidth * 0.5f - 32f;
-            var colorPickerRect = new Rect(listing.ColumnWidth - colorPickerWidth - 16f,
-                sectionRect.yMin + 4f, colorPickerWidth, 200f);
-            CustomWidgets.LabelColorPicker(colorPickerRect, ref IdeoRoleColorOverride,
-                DrawIdeoRoleBackground, "JobInBar_Settings_IdeoRoleColorOverride".Translate(),
-                defaultButton: true, defaultColor: DefaultSettings["IdeoRoleColorOverride"] as Color?);
-
-            // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
-            listing.GetRect(colorPickerRect.yMax - sectionRect.yMax);
-        }
-        else
-        {
-            listing.Indent();
-            if (UseIdeoColorForRole)
-            {
-                listing.Indent();
-                listing.CheckboxLabeled(GetSettingLabel("RoleColorAbility"),
-                    ref RoleColorOnlyIfAbilityAvailable,
-                    GetSettingTooltip("RoleColorAbility"), 36f, 0.40f);
-                listing.Outdent();
-            }
-
-            listing.Outdent();
-
-            listing.Gap();
-        }
-
-
-        listing.End();
-    }
-
-    private static void DoTabRoyalty(Rect inRect)
-    {
-        var listing = new Listing_Standard();
-        listing.Begin(inRect.MiddlePart(0.75f, 1f));
-
-        var sectionRect = listing.GetRect(0f);
-
-        listing.CheckboxLabeled(GetSettingLabel("DrawRoyalTitles"), ref DrawRoyalTitles,
-            GetSettingTooltip("DrawRoyalTitles"), 36f, 0.40f);
-        listing.Gap();
-
-        var labelRect = listing.SubLabel("JobInBar_Settings_RoyalTitleNote".Translate(), 0.36f);
-
-        if (DrawRoyalTitles)
-        {
-            listing.CheckboxLabeled(GetSettingLabel("DrawBackground"), ref DrawRoyalTitleBackground,
-                GetSettingTooltip("DrawBackground"), 36f, 0.40f);
-
-            var colorPickerWidth = listing.ColumnWidth * 0.5f - 32f;
-            var colorPickerRect = new Rect(listing.ColumnWidth - colorPickerWidth - 16f,
-                sectionRect.yMin + 4f, colorPickerWidth, 200f);
-            CustomWidgets.LabelColorPicker(colorPickerRect, ref RoyalTitleColor, DrawRoyalTitleBackground,
-                "JobInBar_Settings_RoyalTitleColor".Translate(),
-                defaultButton: true, defaultColor: DefaultSettings["RoyalTitleColor"] as Color?);
-            // Add extra space to the listing standard based on how much larger this section was than the bottom of the last label
-            listing.GetRect(colorPickerRect.yMax - labelRect.yMax);
-        }
-
-        listing.End();
+        listing.EndSection(section);
     }
 
     private static void DoTabCache(Rect inRect)
@@ -555,10 +481,9 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref DrawIdeoRoles, "DrawIdeoRoles", true);
         Scribe_Values.Look(ref UseIdeoColorForRole, "UseIdeoColorForRole", true);
         Scribe_Values.Look(ref RoleColorOnlyIfAbilityAvailable, "RoleColorOnlyIfAbilityAvailable");
-        Scribe_Values.Look(ref IdeoRoleColorOverride, "IdeoRoleColorOverride", Color.white);
 
         Scribe_Values.Look(ref DrawRoyalTitles, "DrawRoyalTitles", true);
-        Scribe_Values.Look(ref RoyalTitleColor, "RoyalTitleColor", new Color(0.85f, 0.85f, 0.75f));
+        Scribe_Values.Look(ref RoyalTitleColorDefault, "RoyalTitleColor", new Color(0.85f, 0.85f, 0.75f));
 
         Scribe_Values.Look(ref DrawCurrentTask, "DrawCurrentTask", true);
         Scribe_Values.Look(ref MoveWeaponBelowCurrentTask, "MoveWeaponBelowCurrentTask", true);
@@ -576,10 +501,6 @@ internal class Settings : ModSettings
     private enum SettingsTab
     {
         Main,
-        Royalty,
-        Ideology,
-        Job,
-        Display,
         Cache
     }
 
@@ -604,8 +525,7 @@ internal class Settings : ModSettings
     [Setting] internal static bool DrawJobTitleBackground = true;
     [Setting] internal static bool OnlyDrawCustomJobTitles = false;
 
-    [Setting] internal static Color DefaultJobLabelColor =
-        GenMapUI.DefaultThingLabelColor.ClampToValueRange(new FloatRange(0f, 0.7f));
+    [Setting] internal static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor;
 
 
     [Setting] internal static int ExtraOffsetPerLine = -4; // Legacy setting that I don't think anyone used
@@ -621,11 +541,10 @@ internal class Settings : ModSettings
     [Setting] internal static bool DrawIdeoRoleBackground = true;
     [Setting] internal static bool UseIdeoColorForRole = true;
     [Setting] internal static bool RoleColorOnlyIfAbilityAvailable = false;
-    [Setting] internal static Color IdeoRoleColorOverride = Color.white;
 
     [Setting] internal static bool DrawRoyalTitles = true;
     [Setting] internal static bool DrawRoyalTitleBackground = true;
-    [Setting] internal static Color RoyalTitleColor = new(0.85f, 0.85f, 0.75f);
+    [Setting] internal static Color RoyalTitleColorDefault = new(0.85f, 0.85f, 0.75f);
 
     [Setting] internal static ButtonLocations EnabledButtonLocations = ButtonLocations.All;
     // ReSharper restore RedundantDefaultMemberInitializer

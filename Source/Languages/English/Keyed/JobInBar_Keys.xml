@@ -34,10 +34,16 @@
     <JobInBar_Settings_Tab_Ideology>Ideology</JobInBar_Settings_Tab_Ideology>
     <JobInBar_Settings_Tab_Cache>Cache</JobInBar_Settings_Tab_Cache>
     <JobInBar_Settings_Section_Misc>Misc settings</JobInBar_Settings_Section_Misc>
+    <JobInBar_Settings_Section_Ideology>Ideology role label settings</JobInBar_Settings_Section_Ideology>
+    <JobInBar_Settings_Section_CurrentTask>Current task settings</JobInBar_Settings_Section_CurrentTask>
+    <JobInBar_Settings_Section_JobTitle>Job Title/Backstory label settings</JobInBar_Settings_Section_JobTitle>
+    <JobInBar_Settings_Section_Royalty>Royalty label settings</JobInBar_Settings_Section_Royalty>
+    <JobInBar_Settings_Section_Display>Label display settings</JobInBar_Settings_Section_Display>
     <JobInBar_Settings_DefaultSuffix>
 
 Default: {0}</JobInBar_Settings_DefaultSuffix>
     <JobInBar_Settings_Default>Default</JobInBar_Settings_Default>
+    <JobInBar_Settings_DefaultJobLabelColorHeader>Default Job Title color</JobInBar_Settings_DefaultJobLabelColorHeader>
 
     <!-- Main settings -->
     <JobInBar_Settings_ModEnabled>Mod Enabled</JobInBar_Settings_ModEnabled>
@@ -90,7 +96,7 @@ This technically incurs a tiny performance cost every frame, but it should be ne
     <JobInBar_Settings_DrawIdeoRoles>Ideology specialist roles (If available)</JobInBar_Settings_DrawIdeoRoles>
     <JobInBar_Settings_DrawIdeoRoles_Desc>If Ideology is installed, draws the specialist roles in the color of their ideology below the job label.</JobInBar_Settings_DrawIdeoRoles_Desc>
     <JobInBar_Settings_UseIdeoColorForRole>Use Ideology color for roles</JobInBar_Settings_UseIdeoColorForRole>
-    <JobInBar_Settings_UseIdeoColorForRole_Desc>Automatically detect the color of an ideological role based on the color of the ideology itself. Otherwise, a specific color.</JobInBar_Settings_UseIdeoColorForRole_Desc>
+    <JobInBar_Settings_UseIdeoColorForRole_Desc>Automatically detect the color of an ideological role based on the color of the ideology itself. Otherwise, the default vanilla Thing color.</JobInBar_Settings_UseIdeoColorForRole_Desc>
     <JobInBar_Settings_IdeoRoleColorOverride>Ideology Role color</JobInBar_Settings_IdeoRoleColorOverride>
     <JobInBar_Settings_IdeoRoleColorOverride_Desc>If the "Use Ideology color for roles" setting is disabled, this color will be used for all ideological roles instead.</JobInBar_Settings_IdeoRoleColorOverride_Desc>
     <JobInBar_Settings_RoleColorAbility>Only use role color if ability cooldown is ready</JobInBar_Settings_RoleColorAbility>

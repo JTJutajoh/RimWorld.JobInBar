@@ -10,9 +10,6 @@ namespace JobInBar.Utils;
 /// </summary>
 internal static class CustomWidgets
 {
-#if !(v1_1 || v1_2 || v1_3) // HSVColorWheel was added in RW 1.4+
-    private static bool _currentlyDraggingHSVWheel;
-#endif
     /// <summary>
     ///     Helper function to draw a full color picker with example pawn labels exactly how they appear in the Colonist Bar
     ///     (literally calls the same function in <see cref="LabelDrawer" />).<br />
@@ -32,11 +29,13 @@ internal static class CustomWidgets
         ref Color color,
         bool labelBackgrounds,
         string exampleText,
+        ref bool currentlyDraggingColorPicker,
         bool doBackground = true,
         bool defaultButton = false,
         Action? onDefault = null,
         Color? defaultColor = null,
-        string? header = null
+        string? header = null,
+        bool disabled = false
     )
     {
         if (doBackground)
@@ -76,24 +75,27 @@ internal static class CustomWidgets
         if (defaultButton) colorPickerHeight -= 32f + 4f;
 
         var colorPickerRect = new Rect(rect.xMin, curY, rect.width, colorPickerHeight);
-        ColorPicker(colorPickerRect, ref color, false);
+        ColorPicker(colorPickerRect, ref color, disabled, ref currentlyDraggingColorPicker,false);
 
 
         if (!defaultButton) return;
 
         var defaultButtonRect = new Rect(rect.xMin, colorPickerRect.yMax + 2f, rect.width, 32f);
-        if (Widgets.ButtonText(defaultButtonRect, "JobInBar_Settings_Default".Translate()))
+        if (Widgets.ButtonText(defaultButtonRect, "JobInBar_Settings_Default".Translate(), active: !disabled))
         {
             color = defaultColor ?? color;
             onDefault?.Invoke();
         }
+
+        if (disabled)
+            Widgets.DrawBoxSolid(rect, Widgets.InactiveColor);
     }
 
     /// <summary>
     ///     Creates an HSV color picker along with HSVA sliders.<br />
     ///     Uses the HSV color wheel widget added in RW 1.4. If using an older version, the wheel will simply be skipped.
     /// </summary>
-    internal static void ColorPicker(Rect rect, ref Color color, bool windowBackground = true)
+    internal static void ColorPicker(Rect rect, ref Color color, bool disabled, ref bool currentlyDraggingColorPicker, bool windowBackground = true)
     {
         if (windowBackground)
         {
@@ -123,7 +125,10 @@ internal static class CustomWidgets
         }
 
 #if !(v1_1 || v1_2 || v1_3) // HSVColorWheel was added in RW 1.4+
-        Widgets.HSVColorWheel(hsvRect, ref color, ref _currentlyDraggingHSVWheel);
+        var newColor = color;
+        Widgets.HSVColorWheel(hsvRect, ref newColor, ref currentlyDraggingColorPicker);
+        if (!disabled)
+            color = newColor;
 #else
         // For legacy RW versions: Just draw a box with the color. The sliders still work to actually adjust it.
         Widgets.DrawBoxSolidWithOutline(hsvRect, color, Widgets.SeparatorLineColor);
@@ -150,12 +155,17 @@ internal static class CustomWidgets
         curY += 24f + 2f;
 
         var oldAlpha = color.a;
-        color = Color.HSVToRGB(hue, saturation, value);
+        if (!disabled)
+            color = Color.HSVToRGB(hue, saturation, value);
         color.a = oldAlpha;
 
-        color.a =
+        var newAlpha =
             Widgets.HorizontalSlider(new Rect(slidersRect.xMin, curY, slidersRect.width, 24f), color.a, 0f, 1f,
                 true, "JobInBar_Alpha".Translate());
+        if (!disabled)
+            color.a = newAlpha;
+
+        //TODO: Add a hex color text field
 #pragma warning restore CS0612 // Type or member is obsolete
     }
 
@@ -277,5 +287,39 @@ internal static class CustomWidgets
         listing.Label(sectionKey.Translate());
         Text.Anchor = TextAnchor.UpperLeft;
         listing.GapLine(8f);
+    }
+
+    internal static void CheckboxLabeled(
+        this Listing_Standard _this,
+        string label,
+        ref bool checkOn,
+        bool disabled,
+        string? tooltip = null,
+        float height = 0.0f,
+        float labelPct = 1f)
+    {
+        Rect rect = _this.GetRect((double)height != 0.0 ? height : Text.CalcHeight(label, _this.ColumnWidth * labelPct),
+            labelPct);
+        rect.width = Math.Min(rect.width + 24f, _this.ColumnWidth);
+        Rect? boundingRectCached = _this.BoundingRectCached;
+        if (boundingRectCached.HasValue)
+        {
+            ref Rect local = ref rect;
+            boundingRectCached = _this.BoundingRectCached!;
+            Rect other = boundingRectCached.Value;
+            if (!local.Overlaps(other))
+                goto label_7;
+        }
+
+        if (!tooltip!.NullOrEmpty())
+        {
+            if (Mouse.IsOver(rect))
+                Widgets.DrawHighlight(rect);
+            TooltipHandler.TipRegion(rect, (TipSignal)tooltip);
+        }
+
+        Widgets.CheckboxLabeled(rect, label, ref checkOn, disabled: disabled);
+        label_7:
+        _this.Gap(_this.verticalSpacing);
     }
 }

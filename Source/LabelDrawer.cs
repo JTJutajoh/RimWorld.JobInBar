@@ -55,6 +55,7 @@ public static class LabelDrawer
         pos = new Vector2(pos.x, pos.y);
         if (colonist.DrawAnyPermanentLabels(rect))
         {
+            //TODO: Come up with a way of letting the user customize label order
             try
             {
                 if (colonist.ShouldDrawJobLabel())
@@ -73,7 +74,7 @@ public static class LabelDrawer
             {
                 if (colonist.ShouldDrawRoyaltyLabel())
                 {
-                    DrawCustomLabel(pos, colonist.RoyaltyLabel(), Settings.RoyalTitleColor, truncateToWidth,
+                    DrawCustomLabel(pos, colonist.RoyaltyLabel(), colonist.RoyalTitleColor(), truncateToWidth,
                         drawBg: Settings.DrawRoyalTitleBackground);
                     pos += lineOffset;
                 }

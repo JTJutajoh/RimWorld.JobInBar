@@ -22,6 +22,7 @@ internal class Dialog_LabelSettings : Window
 
     private readonly string? _oldTitle;
 
+    private static bool _draggingColorPicker = false;
 
     private readonly Pawn _pawn;
     private readonly Color DefaultBackstoryTitleColor = Settings.DefaultJobLabelColor;
@@ -114,7 +115,7 @@ internal class Dialog_LabelSettings : Window
             ref curY,
             "JobInBar_NameColor".Translate(),
             false,
-            CurLabelData.NameColor,
+            CurLabelData.NameColor ?? GenMapUI.DefaultThingLabelColor,
             LabelType.Name,
             0.2f
         );
@@ -138,7 +139,7 @@ internal class Dialog_LabelSettings : Window
                 "JobInBar_ShowRoyaltyLabelFor".Translate(),
                 ref CurLabelData.ShowRoyalTitle,
                 !_pawn.HasRoyalTitle(),
-                CurLabelData.RoyalTitleColor,
+                CurLabelData.RoyalTitleColor ?? Settings.RoyalTitleColorDefault,
                 LabelType.RoyalTitle,
                 0.1f
             );
@@ -151,7 +152,7 @@ internal class Dialog_LabelSettings : Window
                 "JobInBar_ShowIdeoLabelFor".Translate(),
                 ref CurLabelData.ShowIdeoRole,
                 !_pawn.HasIdeoRole(),
-                CurLabelData.IdeoRoleColor,
+                CurLabelData.IdeoRoleColor ?? GenMapUI.DefaultThingLabelColor,
                 LabelType.IdeoRole,
                 0.2f
             );
@@ -245,22 +246,22 @@ internal class Dialog_LabelSettings : Window
             case LabelType.Name:
                 colorPickerHeader = "JobInBar_PawnName".Translate();
                 exampleText = _pawn.Name!.ToStringFull!;
-                prevColor = CurLabelData.NameColor;
+                prevColor = CurLabelData.NameColor ?? GenMapUI.DefaultThingLabelColor;
                 defaultColor = GenMapUI.DefaultThingLabelColor;
                 drawBackground = true;
                 break;
             case LabelType.RoyalTitle:
                 colorPickerHeader = "JobInBar_RoyaltyTitle".Translate();
                 exampleText = _pawn.royalty?.MainTitle()?.GetLabelCapFor(_pawn) ?? "JobInBar_RoyalTitle".Translate();
-                prevColor = CurLabelData.RoyalTitleColor;
-                defaultColor = Settings.RoyalTitleColor;
+                prevColor = CurLabelData.RoyalTitleColor ?? Settings.RoyalTitleColorDefault;
+                defaultColor = Settings.RoyalTitleColorDefault;
                 drawBackground = Settings.DrawRoyalTitleBackground;
                 break;
             case LabelType.IdeoRole:
                 colorPickerHeader = "JobInBar_IdeoRole".Translate();
                 exampleText = _pawn.ideo?.Ideo?.GetRole(_pawn)?.LabelForPawn(_pawn) ?? "JobInBar_IdeoRole".Translate();
-                prevColor = CurLabelData.IdeoRoleColor;
-                defaultColor = Settings.IdeoRoleColorOverride;
+                prevColor = CurLabelData.IdeoRoleColor ?? GenMapUI.DefaultThingLabelColor;
+                defaultColor = GenMapUI.DefaultThingLabelColor;
                 drawBackground = Settings.DrawIdeoRoleBackground;
                 break;
         }
@@ -274,6 +275,7 @@ internal class Dialog_LabelSettings : Window
                 ref newColor,
                 drawBackground,
                 exampleText,
+                ref _draggingColorPicker,
                 true,
                 true,
                 defaultColor: defaultColor,
