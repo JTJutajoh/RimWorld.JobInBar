@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace JobInBar.HarmonyPatches;
 
@@ -58,5 +60,34 @@ internal static class Patch_Dialog_NamePawn_NameContext_TitleRowButton
         var rect = divider.NewCol(buttonSize);
 
         CustomWidgets.LabelSettingsButton(pawn, rect);
+    }
+}
+
+[HarmonyPatch]
+[HarmonyPatchCategory("NamePawn")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "ArrangeTypeMemberModifiers")]
+internal static class Patch_Dialog_NamePawn_Legacy_AddButton
+{
+    [UsedImplicitly]
+    static bool Prepare(MethodBase original)
+    {
+        var doPatch = LegacySupport.CurrentRWVersion <= RWVersion.v1_3;
+        if (doPatch && original is not null)
+            Log.Message(
+                $"Doing {nameof(Patch_Dialog_NamePawn_Legacy_AddButton)} patch for legacy RimWorld version...");
+        return doPatch;
+    }
+
+    [HarmonyPatch(typeof(Dialog_NamePawn), nameof(Dialog_NamePawn.DoWindowContents))]
+    [HarmonyPostfix]
+    [UsedImplicitly]
+    static void AddButton(Dialog_NamePawn __instance, Pawn ___pawn, Rect inRect)
+    {
+        if (!Settings.ModEnabled || !Settings.EnabledButtonLocations.HasFlag(Settings.ButtonLocations.NamePawn)) return;
+
+        var rect = inRect.BottomPartPixels(32f).LeftPartPixels(32f);
+
+        CustomWidgets.LabelSettingsButton(___pawn, rect);
     }
 }
