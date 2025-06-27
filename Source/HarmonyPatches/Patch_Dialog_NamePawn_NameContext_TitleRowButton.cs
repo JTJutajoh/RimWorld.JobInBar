@@ -6,8 +6,6 @@ using UnityEngine;
 
 namespace JobInBar.HarmonyPatches;
 
-//BUG: Need an alternate patch for legacy versions before the new NamePawn dialog
-
 /// <summary>
 ///     Patch that adds a button next to the "Title" textbox in the pawn rename dialog. Clicking the button opens
 ///     <see cref="Dialog_LabelSettings" />
