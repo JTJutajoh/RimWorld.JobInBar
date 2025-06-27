@@ -22,6 +22,7 @@ internal static class CustomWidgets
     /// <param name="labelBackgrounds">Add the background to the label examples</param>
     /// <param name="exampleText">Used for the label example text</param>
     /// <param name="currentlyDraggingColorPicker">Unique bool ref for each color picker instance.</param>
+    /// <param name="hexStringBuffer">Ref string needed for the hex code text field</param>
     /// <param name="doBackground">If true, adds a background around the whole element</param>
     /// <param name="defaultButton">Include a "Default" button to reset to the harvested default value</param>
     /// <param name="onDefault">Invoked whenever the Default button is clicked</param>

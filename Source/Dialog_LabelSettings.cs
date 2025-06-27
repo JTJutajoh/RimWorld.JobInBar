@@ -23,7 +23,7 @@ internal class Dialog_LabelSettings : Window
     private readonly string? _oldTitle;
 
     private static bool _draggingColorPicker;
-    private string? _hexStringBuffer = null;
+    private string? _hexStringBuffer;
 
     private readonly Pawn _pawn;
     private readonly Color DefaultBackstoryTitleColor = Settings.DefaultJobLabelColor;
