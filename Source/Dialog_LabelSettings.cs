@@ -8,10 +8,10 @@ namespace JobInBar;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal class Dialog_LabelSettings : Window
 {
-    private const float ButtonHeight = 32f;
-    private const float ButtonWidth = 80f;
+    private const float ButtonHeight = 48f;
+    private const float ButtonWidth = 128f;
     private const float BottomButtonsMargin = 12f;
-    private const float ColorPickerSectionWidth = 300f;
+    private const float ColorPickerSectionWidth = 340f;
 
     private readonly LabelsTracker_WorldComponent _labelsComp;
 
@@ -23,6 +23,7 @@ internal class Dialog_LabelSettings : Window
     private readonly string? _oldTitle;
 
     private static bool _draggingColorPicker;
+    private string? _hexStringBuffer = null;
 
     private readonly Pawn _pawn;
     private readonly Color DefaultBackstoryTitleColor = Settings.DefaultJobLabelColor;
@@ -76,7 +77,7 @@ internal class Dialog_LabelSettings : Window
         }
     }
 
-    public override Vector2 InitialSize => new(700f, 300f);
+    public override Vector2 InitialSize => new(700f, 350f);
 
     public override void DoWindowContents(Rect inRect)
     {
@@ -177,7 +178,10 @@ internal class Dialog_LabelSettings : Window
             if (Widgets.ButtonImage(new Rect(rowRect.xMax - lineHeight * 2f, curY, lineHeight, lineHeight),
                     Icons.PaletteIcon, labelColor.WithAlpha(_curLabelType == labelType ? 0.9f : 0.7f),
                     labelColor.WithAlpha(1)))
+            {
                 _curLabelType = labelType;
+                _hexStringBuffer = null;
+            }
 
         curY += 2f + lineHeight;
     }
@@ -219,7 +223,10 @@ internal class Dialog_LabelSettings : Window
             if (Widgets.ButtonImage(new Rect(rowRect.xMax - lineHeight * 2f, curY, lineHeight, lineHeight),
                     Icons.PaletteIcon, labelColor.WithAlpha(_curLabelType == labelType ? 0.9f : 0.7f),
                     labelColor.WithAlpha(1)))
+            {
                 _curLabelType = labelType;
+                _hexStringBuffer = null;
+            }
 
         Widgets.Checkbox(rowRect.xMax - lineHeight, curY, ref checkOn, lineHeight, disabled, true);
 
@@ -276,6 +283,7 @@ internal class Dialog_LabelSettings : Window
                 drawBackground,
                 exampleText,
                 ref _draggingColorPicker,
+                ref _hexStringBuffer,
                 true,
                 true,
                 defaultColor: defaultColor,

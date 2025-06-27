@@ -57,6 +57,15 @@ internal static class LogPrefixed
         Verse.Log.Warning(PrefixedMessage(text));
     }
 
+    internal static void CompatibilityWarning(string text, bool warn = true)
+    {
+        var message = $"<color=orange>[COMPAT]</color> {text}";
+        if (warn)
+            Warning(message);
+        else
+            Message(message);
+    }
+
     /// <summary>
     ///     Logs a formatted exception after it has been caught.
     /// </summary>

@@ -54,6 +54,7 @@ internal static class PatchManager
     private static int _loadedPatches;
     private static int _failedPatches;
     private static int _skippedPatches;
+    private static List<string> _allEnabledSuccessfulPatches = new();
 
     static PatchManager()
     {
@@ -80,38 +81,6 @@ internal static class PatchManager
                 $"{_failedPatches}/{totalPatches} Harmony patches failed! The mod/game might behave in undesirable ways.");
     }
 
-    internal static bool CheckForMod(string modIdentifier, out ModMetaData? otherMod)
-    {
-        otherMod = ModLister.GetActiveModWithIdentifier(modIdentifier);
-        return otherMod != null;
-    }
-
-    internal static bool TryGetModAssembly(string packageId, out List<Assembly>? assemblies)
-    {
-        var mod = LoadedModManager.RunningModsListForReading?.FirstOrDefault(m =>
-            m.PackageId!.ToLower() == packageId.ToLower());
-        assemblies = mod?.assemblies?.loadedAssemblies;
-        return assemblies != null;
-    }
-
-    internal static bool HasExistingPatches(this MethodInfo method, bool warn = true)
-    {
-        var patches = Harmony.GetPatchInfo(method);
-        if (patches is null) return false;
-
-        var hasPatches = patches.Prefixes?.Count > 0 || patches.Postfixes?.Count > 0 || patches.Transpilers?.Count > 0;
-
-        if (warn && hasPatches)
-        {
-            Log.Warning(
-                $"Found existing Harmony patches for {method.DeclaringType?.FullName}.{method.Name}. If you encounter compatibility issues, please report it on the Workshop page or GitHub issues.\nYou can safely ignore this warning if nothing seems broken.");
-            foreach (var patch in patches.Prefixes!.Union(patches.Postfixes!).Union(patches.Transpilers!))
-                Log.Message($"Patch: {patch.PatchMethod!.Module.Assembly.FullName}::{patch.PatchMethod.Name}");
-        }
-
-        return hasPatches;
-    }
-
     private static void PatchAll()
     {
         PatchCategory("AddLabels");
@@ -121,6 +90,21 @@ internal static class PatchManager
         PatchCategory("OffsetEquippedWeapon");
         PatchCategory("PlaySettings");
         PatchCategory("StopTracking");
+    }
+
+    internal static void RepatchAll()
+    {
+        Log.Warning("Attempting to unpatch and re-patch selected Harmony patches...");
+        foreach (var patch in Settings.DisabledPatchCategories)
+        {
+            UnpatchCategory(patch);
+        }
+
+        foreach (var patch in Settings.EnabledPatchCategories)
+        {
+            PatchCategory(patch);
+        }
+        Log.Warning("Re-patching complete. Game restart is still recommended, especially if there were any warnings or errors.");
     }
 
     /// <summary>
@@ -133,6 +117,9 @@ internal static class PatchManager
     /// </param>
     private static void PatchCategory(string category)
     {
+        if (_allEnabledSuccessfulPatches.Contains(category))
+            return;
+
         var patchTypes = Assembly.GetExecutingAssembly()
             .GetTypes()
             .Where(t => t.GetCustomAttributes(typeof(HarmonyPatchCategory), true)
@@ -144,6 +131,13 @@ internal static class PatchManager
         var numMethods = patchTypes.SelectMany(t =>
                 t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             .Count(m => m.GetCustomAttributes(typeof(HarmonyPatch), true).Length > 0);
+
+        if (Settings.EnabledPatchCategories.Contains(category) == false)
+        {
+            Log.Message($"Patch category \"{category}\" disabled in mod settings. Skipping.");
+            _skippedPatches += numMethods;
+            return;
+        }
 
         // Find any [HarmonyPatchCondition] attributes on all the types in the category
         var conditions = patchTypes
@@ -181,6 +175,31 @@ internal static class PatchManager
             return;
         }
 
+        _allEnabledSuccessfulPatches.Add(category);
         _loadedPatches += numMethods;
+    }
+
+    internal static void UnpatchCategory(string category)
+    {
+        if (_allEnabledSuccessfulPatches.Contains(category) == false)
+            return;
+        var patchTypes = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .Where(t => t.GetCustomAttributes(typeof(HarmonyPatchCategory), true)
+                .Cast<HarmonyPatchCategory>()
+                .Any(attr => attr.info?.category == category))
+            .ToList();
+
+        // Find any classes in the assembly with a [HarmonyPatchCategory] attribute that matches the category
+        var numMethods = patchTypes.SelectMany(t =>
+                t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            .Count(m => m.GetCustomAttributes(typeof(HarmonyPatch), true).Length > 0);
+
+        Log.Message($"Unpatching category {category} ({numMethods} methods)");
+        Harmony.UnpatchCategory(category);
+
+        _allEnabledSuccessfulPatches.Remove(category);
+        _skippedPatches += numMethods;
+        _loadedPatches -= numMethods;
     }
 }

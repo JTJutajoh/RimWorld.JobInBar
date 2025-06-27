@@ -195,12 +195,13 @@
                 SkipUnchangedFiles="true"/>
 
         <ItemGroup>
-            <News Include="$(ProjectDir)\News\**\*.xml"/>
+            <News Include="$(ProjectDir)\News\*.xml"/>
+            <News Include="$(ProjectDir)\News\*.png"/>
         </ItemGroup>
 
         <Copy
                 SourceFiles="@(News)"
-                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\News\%(RecursiveDir)"
+                DestinationFolder="$(RimWorldDir)\Mods\$(ProjectName)\News\"
                 SkipUnchangedFiles="true"/>
     </Target>
     <PropertyGroup>

@@ -28,11 +28,8 @@
     <JobInBar_Settings_Button>Open Job In Bar mod settings</JobInBar_Settings_Button>
 
     <JobInBar_Settings_Tab_Main>Main</JobInBar_Settings_Tab_Main>
-    <JobInBar_Settings_Tab_Display>Display</JobInBar_Settings_Tab_Display>
-    <JobInBar_Settings_Tab_Job>Job</JobInBar_Settings_Tab_Job>
-    <JobInBar_Settings_Tab_Royalty>Royalty</JobInBar_Settings_Tab_Royalty>
-    <JobInBar_Settings_Tab_Ideology>Ideology</JobInBar_Settings_Tab_Ideology>
     <JobInBar_Settings_Tab_Cache>Cache</JobInBar_Settings_Tab_Cache>
+    <JobInBar_Settings_Tab_Patches>Patches</JobInBar_Settings_Tab_Patches>
     <JobInBar_Settings_Section_Misc>Misc settings</JobInBar_Settings_Section_Misc>
     <JobInBar_Settings_Section_Ideology>Ideology role label settings</JobInBar_Settings_Section_Ideology>
     <JobInBar_Settings_Section_CurrentTask>Current task settings</JobInBar_Settings_Section_CurrentTask>
@@ -44,6 +41,26 @@
 Default: {0}</JobInBar_Settings_DefaultSuffix>
     <JobInBar_Settings_Default>Default</JobInBar_Settings_Default>
     <JobInBar_Settings_DefaultJobLabelColorHeader>Default Job Title color</JobInBar_Settings_DefaultJobLabelColorHeader>
+
+    <!-- Patch categories -->
+    <JobInBar_Settings_Patches_Label>Enable/disable Harmony patches</JobInBar_Settings_Patches_Label>
+    <JobInBar_Settings_Patches_Note>For advanced users:
+Use this tab to enable or disable specific Harmony patches in this mod if something isn't working or if you simply know you don't want certain patches.
+WARNING: The mod may behave incorrectly if you disable patches. Use these settings with care.</JobInBar_Settings_Patches_Note>
+    <JobInBar_Settings_Patches_Enabled>Enabled patches:</JobInBar_Settings_Patches_Enabled>
+    <JobInBar_Settings_Patches_Disabled>Disabled patches:</JobInBar_Settings_Patches_Disabled>
+    <JobInBar_Settings_RequiresRestart>(Most likely requires game restart for changes to take effect)</JobInBar_Settings_RequiresRestart>
+    <JobInBar_Settings_RefreshPatches>Apply</JobInBar_Settings_RefreshPatches>
+    <JobInBar_Settings_RefreshPatches_Desc>Attempt(!) to patch/unpatch the selected patches without restarting.
+
+Only recommended for troubleshooting! May cause errors!</JobInBar_Settings_RefreshPatches_Desc>
+    <JobInBar_Settings_PatchCategory_AddLabels>Add labels to colonist bar (main patch)</JobInBar_Settings_PatchCategory_AddLabels>
+    <JobInBar_Settings_PatchCategory_ColorName>Change pawn name colors (everywhere)</JobInBar_Settings_PatchCategory_ColorName>
+    <JobInBar_Settings_PatchCategory_NamePawn>Add button to "Rename Pawn" dialog to open label settings</JobInBar_Settings_PatchCategory_NamePawn>
+    <JobInBar_Settings_PatchCategory_BioTabButton>Add button to pawn's Bio tab to open label settings</JobInBar_Settings_PatchCategory_BioTabButton>
+    <JobInBar_Settings_PatchCategory_OffsetEquippedWeapon>Move the vanilla icon for the currently-equipped weapon out of the way of labels</JobInBar_Settings_PatchCategory_OffsetEquippedWeapon>
+    <JobInBar_Settings_PatchCategory_PlaySettings>Add global label toggle button to Play Settings (bottom right buttons)</JobInBar_Settings_PatchCategory_PlaySettings>
+    <JobInBar_Settings_PatchCategory_StopTracking>Remove pawn from the cache when deleted/discarded from the game</JobInBar_Settings_PatchCategory_StopTracking>
 
     <!-- Main settings -->
     <JobInBar_Settings_ModEnabled>Mod Enabled</JobInBar_Settings_ModEnabled>

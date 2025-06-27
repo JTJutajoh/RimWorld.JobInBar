@@ -44,7 +44,7 @@ public static class LegacySupport
 #elif v1_2
                 return RWVersion.v1_2;
 #elif v1_3
-                return RWVersion.v1_3;
+            return RWVersion.v1_3;
 #elif v1_4
                 return RWVersion.v1_4;
 #elif v1_5
@@ -155,10 +155,10 @@ public static class LegacySupport
     /// <summary>
     /// Stub version of CheckboxLabeled that just ignores the 2 float params
     /// </summary>
-    public static void CheckboxLabeled(this Listing_Standard listingStandard, string label, ref bool val,
+    public static void CheckboxLabeled(this Listing_Standard listingStandard, string label, ref bool checkOn,
         string? tooltip = null, float height = 0f, float labelPct = 1f)
     {
-        listingStandard.CheckboxLabeled(label, ref val, tooltip);
+        listingStandard.CheckboxLabeled(label, ref checkOn, tooltip);
     }
 #endif
 
@@ -176,6 +176,18 @@ public static class LegacySupport
         Text.Font = GameFont.Small;
         listingStandard.Gap(listingStandard.verticalSpacing);
         return rect;
+    }
+
+    public static bool ButtonText(this Listing_Standard listingStandard, string label, string? hightlightTag = null,
+        float widthPct = 1f)
+    {
+        return listingStandard.ButtonText(label, hightlightTag!);
+    }
+
+    public static void CheckboxLabeled(this Listing_Standard listingStandard, string label, ref bool checkOn,
+        float widthPct = 1f)
+    {
+        listingStandard.CheckboxLabeled(label, ref checkOn);
     }
 #endif
 

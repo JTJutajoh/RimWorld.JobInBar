@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ internal class Settings : ModSettings
     private const float IdeologySectionHeight = 184f + 8f;
     private const float RoyaltySectionHeight = 394f;
     private const float DisplaySectionHeight = 428f + 8f;
-    private const float ColorPickersHeight = 200f;
+    private const float ColorPickersHeight = 240f;
 
     internal static Dictionary<string, object> DefaultSettings = new();
 
@@ -32,6 +33,9 @@ internal class Settings : ModSettings
     private static float? _lastMainTabHeight;
 
     private SettingsTab _currentTab = SettingsTab.Main;
+    private static string? _royalTitleHexStringBuffer = null;
+    private static string? _currentTaskHexStringBuffer = null;
+    private static string? _jobTitleHexStringBuffer = null;
 
     public Settings()
     {
@@ -93,7 +97,9 @@ internal class Settings : ModSettings
         var tabs = new List<TabRecord>
         {
             new("JobInBar_Settings_Tab_Main".Translate(), () => _currentTab = SettingsTab.Main,
-                () => _currentTab == SettingsTab.Main)
+                () => _currentTab == SettingsTab.Main),
+            new("JobInBar_Settings_Tab_Patches".Translate(), () => _currentTab = SettingsTab.Patches,
+                () => _currentTab == SettingsTab.Patches)
         };
 
         if (Prefs.DevMode && LabelsTracker_WorldComponent.Instance != null)
@@ -120,6 +126,18 @@ internal class Settings : ModSettings
                 catch (Exception e)
                 {
                     Log.Exception(e, "Error drawing main settings tab.", true);
+                    throw;
+                }
+
+                break;
+            case SettingsTab.Patches:
+                try
+                {
+                    DoTabPatches(tabRect);
+                }
+                catch (Exception e)
+                {
+                    Log.Exception(e, "Error drawing patches settings tab.", true);
                     throw;
                 }
 
@@ -271,6 +289,7 @@ internal class Settings : ModSettings
             DrawJobTitleBackground,
             "JobInBar_Settings_DefaultJobLabelColor".Translate(),
             ref _draggingJobTitleColorPicker,
+            ref _jobTitleHexStringBuffer,
             defaultButton: true,
             defaultColor: DefaultSettings["DefaultJobLabelColor"] as Color?,
             disabled: !DrawJobTitle);
@@ -301,6 +320,7 @@ internal class Settings : ModSettings
             DrawCurrentTaskBackground,
             "JobInBar_Settings_CurrentTaskLabelColor".Translate(),
             ref _draggingCurrentTaskColorPicker,
+            ref _currentTaskHexStringBuffer,
             defaultButton: true,
             defaultColor: DefaultSettings["CurrentTaskLabelColor"] as Color?,
             disabled: !DrawCurrentTask);
@@ -395,6 +415,7 @@ internal class Settings : ModSettings
             DrawRoyalTitleBackground,
             "JobInBar_Settings_RoyalTitleColor".Translate(),
             ref _draggingRoyalTitleColorPicker,
+            ref _royalTitleHexStringBuffer,
             defaultButton: true,
             defaultColor: DefaultSettings["RoyalTitleColorDefault"] as Color?,
             disabled: !DrawRoyalTitles
@@ -460,6 +481,56 @@ internal class Settings : ModSettings
         Widgets.EndScrollView();
     }
 
+    private static void DoTabPatches(Rect inRect)
+    {
+        var listing = new Listing_Standard();
+        var innerRect = inRect.MiddlePart(0.9f, 1f);
+        listing.Begin(innerRect);
+
+        listing.Label("JobInBar_Settings_Patches_Label".Translate());
+        listing.SubLabel("JobInBar_Settings_Patches_Note".Translate(), 1f);
+        listing.Gap(4f);
+        GUI.color = ColorLibrary.RedReadable;
+        var applyButtonWidthPct = 0.8f;
+        TooltipHandler.TipRegionByKey(new Rect(innerRect.xMin, listing.CurHeight, innerRect.width * applyButtonWidthPct, 40f), "JobInBar_Settings_RefreshPatches_Desc");
+        if (listing.ButtonText("JobInBar_Settings_RefreshPatches".Translate(), null!, 0.3f))
+        {
+            PatchManager.RepatchAll();
+        }
+        listing.SubLabel("JobInBar_Settings_RequiresRestart".Translate(), applyButtonWidthPct);
+        GUI.color = Color.white;
+
+        listing.GapLine();
+        listing.Label("JobInBar_Settings_Patches_Enabled".Translate());
+        foreach (var patch in EnabledPatchCategories)
+        {
+            DisabledPatchCategories.Remove(patch);
+            var enabled = true;
+            listing.CheckboxLabeled($"JobInBar_Settings_PatchCategory_{patch}".Translate(), ref enabled, 80f);
+            if (!enabled)
+            {
+                DisabledPatchCategories.Add(patch);
+            }
+        }
+
+        listing.GapLine();
+        listing.Label("JobInBar_Settings_Patches_Disabled".Translate());
+        foreach (var patch in DisabledPatchCategories)
+        {
+            EnabledPatchCategories.Remove(patch);
+            var enabled = false;
+            listing.CheckboxLabeled($"JobInBar_Settings_PatchCategory_{patch}".Translate(), ref enabled, 80f);
+            if (enabled)
+            {
+                EnabledPatchCategories.Add(patch);
+            }
+        }
+        EnabledPatchCategories.Sort();
+        DisabledPatchCategories.Sort();
+
+        listing.End();
+    }
+
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
     public override void ExposeData()
     {
@@ -494,6 +565,21 @@ internal class Settings : ModSettings
 
         Scribe_Values.Look(ref EnabledButtonLocations, "EnabledButtonLocations", ButtonLocations.All);
 
+        var enabledPatchesTMP = EnabledPatchCategories.ToList();
+        var disabledPatchesTMP = DisabledPatchCategories.ToList();
+
+        Scribe_Collections.Look(ref enabledPatchesTMP, "EnabledPatchCategories", LookMode.Value);
+        Scribe_Collections.Look(ref disabledPatchesTMP, "DisabledPatchCategories", LookMode.Value);
+
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            EnabledPatchCategories = enabledPatchesTMP ?? EnabledPatchCategories.ToList();
+            EnabledPatchCategories.Sort();
+            DisabledPatchCategories = disabledPatchesTMP ?? DisabledPatchCategories.ToList();
+            DisabledPatchCategories.Sort();
+        }
+
+
         base.ExposeData();
     }
 
@@ -505,6 +591,7 @@ internal class Settings : ModSettings
     private enum SettingsTab
     {
         Main,
+        Patches,
         Cache
     }
 
@@ -551,5 +638,18 @@ internal class Settings : ModSettings
     [Setting] internal static Color RoyalTitleColorDefault = new(0.85f, 0.85f, 0.75f);
 
     [Setting] internal static ButtonLocations EnabledButtonLocations = ButtonLocations.All;
+
+    [Setting] internal static List<string> EnabledPatchCategories = new()
+    {
+        "AddLabels",
+        "ColorName",
+        "NamePawn",
+        "BioTabButton",
+        "OffsetEquippedWeapon",
+        "PlaySettings",
+        "StopTracking",
+    };
+
+    [Setting] internal static List<string> DisabledPatchCategories = new();
     // ReSharper restore RedundantDefaultMemberInitializer
 }

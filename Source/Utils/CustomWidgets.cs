@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace JobInBar.Utils;
@@ -33,6 +34,7 @@ internal static class CustomWidgets
         bool labelBackgrounds,
         string exampleText,
         ref bool currentlyDraggingColorPicker,
+        ref string? hexStringBuffer,
         bool doBackground = true,
         bool defaultButton = false,
         Action? onDefault = null,
@@ -78,7 +80,7 @@ internal static class CustomWidgets
         if (defaultButton) colorPickerHeight -= 32f + 4f;
 
         var colorPickerRect = new Rect(rect.xMin, curY, rect.width, colorPickerHeight);
-        ColorPicker(colorPickerRect, ref color, disabled, ref currentlyDraggingColorPicker,false);
+        ColorPicker(colorPickerRect, ref color, disabled, ref currentlyDraggingColorPicker, ref hexStringBuffer, false);
 
 
         if (!defaultButton) return;
@@ -87,6 +89,7 @@ internal static class CustomWidgets
         if (Widgets.ButtonText(defaultButtonRect, "JobInBar_Settings_Default".Translate(), active: !disabled))
         {
             color = defaultColor ?? color;
+            hexStringBuffer = "#" + ColorUtility.ToHtmlStringRGBA(color);
             onDefault?.Invoke();
         }
 
@@ -98,7 +101,14 @@ internal static class CustomWidgets
     ///     Creates an HSV color picker along with HSVA sliders.<br />
     ///     Uses the HSV color wheel widget added in RW 1.4. If using an older version, the wheel will simply be skipped.
     /// </summary>
-    internal static void ColorPicker(Rect rect, ref Color color, bool disabled, ref bool currentlyDraggingColorPicker, bool windowBackground = true)
+    internal static void ColorPicker(
+        Rect rect,
+        ref Color color,
+        bool disabled,
+        ref bool currentlyDraggingColorPicker,
+        ref string? hexStringBuffer,
+        bool windowBackground = true
+    )
     {
         if (windowBackground)
         {
@@ -126,6 +136,8 @@ internal static class CustomWidgets
             curY += hsvRect.height + 4f;
             slidersRect = new Rect(rect.xMin, curY, rect.width, rect.height - hsvRect.height - 4f);
         }
+
+        var prevColor = color;
 
 #if !(v1_1 || v1_2 || v1_3) // HSVColorWheel was added in RW 1.4+
         var newColor = color;
@@ -167,8 +179,27 @@ internal static class CustomWidgets
                 true, "JobInBar_Alpha".Translate());
         if (!disabled)
             color.a = newAlpha;
+        curY += 24f + 2f;
 
-        //TODO: Add a hex color text field
+        curY += 8f;
+        var hexFieldHeight = 24f;
+        var hexFieldWidth = 128f;
+        var hexFieldY = Mathf.Max(curY, rect.yMax - 4f - hexFieldHeight);
+
+        Regex? hexColorRegex = null; //new Regex("^#[0-9A-Fa-f]{8}$");
+        if (!color.IndistinguishableFrom(prevColor) || hexStringBuffer == null)
+        {
+            hexStringBuffer = "#" + ColorUtility.ToHtmlStringRGBA(color);
+        }
+
+        hexStringBuffer = Widgets.TextField(
+            new Rect(slidersRect.xMax - hexFieldWidth, hexFieldY, hexFieldWidth, hexFieldHeight), hexStringBuffer, 9,
+            hexColorRegex!) ?? hexStringBuffer;
+        if (!disabled && ColorUtility.TryParseHtmlString(hexStringBuffer, out var col))
+        {
+            color = col;
+            // hexStringBuffer = "#" + ColorUtility.ToHtmlStringRGBA(color);
+        }
 #pragma warning restore CS0612 // Type or member is obsolete
     }
 
