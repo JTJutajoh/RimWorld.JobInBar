@@ -95,6 +95,11 @@ Overrides global settings and individual pawn settings.</JobInBar_Settings_Enabl
     <JobInBar_Settings_ShowOnlyCustomExceptOnHover>Show only custom labels, unless hovered</JobInBar_Settings_ShowOnlyCustomExceptOnHover>
     <JobInBar_Settings_ShowOnHover>Show only when hovered</JobInBar_Settings_ShowOnHover>
     <JobInBar_Settings_ShowAll>Show all labels (nothing)</JobInBar_Settings_ShowAll>
+    <JobInBar_Settings_IgnoreGuests>Don't show guest labels</JobInBar_Settings_IgnoreGuests>
+    <JobInBar_Settings_IgnoreSlaves>Don't show slave labels</JobInBar_Settings_IgnoreSlaves>
+    <JobInBar_Settings_IgnoreSubhuman>Don't show subhuman (i.e. ghouls) labels</JobInBar_Settings_IgnoreSubhuman>
+    <JobInBar_Settings_OnlyDrafted>Only show labels when drafted</JobInBar_Settings_OnlyDrafted>
+    <JobInBar_Settings_OnlyCurrentMap>Only show labels for pawns on current map</JobInBar_Settings_OnlyCurrentMap>
 
     <!-- Display settings -->
     <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>

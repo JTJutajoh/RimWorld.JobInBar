@@ -33,9 +33,9 @@ internal class Settings : ModSettings
     private static float? _lastMainTabHeight;
 
     private SettingsTab _currentTab = SettingsTab.Main;
-    private static string? _royalTitleHexStringBuffer = null;
-    private static string? _currentTaskHexStringBuffer = null;
-    private static string? _jobTitleHexStringBuffer = null;
+    private static string? _royalTitleHexStringBuffer;
+    private static string? _currentTaskHexStringBuffer;
+    private static string? _jobTitleHexStringBuffer;
 
     public Settings()
     {
@@ -369,11 +369,11 @@ internal class Settings : ModSettings
         section.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
             GetSettingTooltip("TruncateLongLabels"), 36f);
 
-        if (section.ButtonTextLabeled(GetSettingLabel("MinColonistBarScaleBehavior", false),
+        if (section.ButtonTextLabeled(GetSettingLabel("MinColonistBarScaleBehavior"),
                 $"JobInBar_Settings_{MinColonistBarScaleBehavior.ToString()}".Translate()))
         {
             var floatMenuOptions = (from object scaleBehavior in Enum.GetValues(typeof(MinScaleBehavior))
-                select new FloatMenuOption($"JobInBar_Settings_{scaleBehavior.ToString()}".Translate(),
+                select new FloatMenuOption($"JobInBar_Settings_{scaleBehavior}".Translate(),
                     () => { MinColonistBarScaleBehavior = (MinScaleBehavior)scaleBehavior; })).ToList();
 
             Find.WindowStack?.Add(new FloatMenu(floatMenuOptions));
@@ -388,8 +388,26 @@ internal class Settings : ModSettings
         }
         else
         {
-            Widgets.DrawBoxSolid(new Rect(0f, section.CurHeight-32f, section.ColumnWidth, 32f), Widgets.MenuSectionBGFillColor.WithAlpha(0.7f));
+            Widgets.DrawBoxSolid(new Rect(0f, section.CurHeight - 32f, section.ColumnWidth, 32f),
+                Widgets.MenuSectionBGFillColor.WithAlpha(0.7f));
         }
+
+        section.GapLine();
+
+        section.CheckboxLabeled(GetSettingLabel("IgnoreGuests"), ref IgnoreGuests,
+            GetSettingTooltip("IgnoreGuests"));
+
+        section.CheckboxLabeled(GetSettingLabel("IgnoreSlaves"), ref IgnoreSlaves,
+            GetSettingTooltip("IgnoreSlaves"));
+
+        section.CheckboxLabeled(GetSettingLabel("IgnoreSubhuman"), ref IgnoreSubhuman,
+            GetSettingTooltip("IgnoreSubhuman"));
+
+        section.CheckboxLabeled(GetSettingLabel("OnlyDrafted"), ref OnlyDrafted,
+            GetSettingTooltip("OnlyDrafted"));
+
+        section.CheckboxLabeled(GetSettingLabel("OnlyCurrentMap"), ref OnlyCurrentMap,
+            GetSettingTooltip("OnlyCurrentMap"));
 
         section.GapLine();
 
@@ -571,6 +589,11 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref MinColonistBarScale, "MinColonistBarScale", 0.9f);
         Scribe_Values.Look(ref MinColonistBarScaleBehavior, "MinColonistBarScaleBehavior",
             MinScaleBehavior.ShowOnlyCustomExceptOnHover);
+        Scribe_Values.Look(ref IgnoreGuests, "IgnoreGuests", true);
+        Scribe_Values.Look(ref IgnoreSlaves, "IgnoreSlaves", false);
+        Scribe_Values.Look(ref IgnoreSubhuman, "IgnoreSubhuman", true);
+        Scribe_Values.Look(ref OnlyDrafted, "OnlyDrafted", false);
+        Scribe_Values.Look(ref OnlyCurrentMap, "OnlyCurrentMap", true);
 
         Scribe_Values.Look(ref DefaultJobLabelColor, "DefaultJobLabelColor", GenMapUI.DefaultThingLabelColor);
         Scribe_Values.Look(ref CurrentTaskLabelColor, "CurrentTaskLabelColor", new Color(1f, 0.8f, 0.4f, 0.8f));
@@ -662,7 +685,15 @@ internal class Settings : ModSettings
     [Setting] internal static bool OffsetEquippedByLabels = true;
 
     [Setting] internal static float MinColonistBarScale = 0.9f;
-    [Setting] internal static MinScaleBehavior MinColonistBarScaleBehavior = MinScaleBehavior.ShowOnlyCustomExceptOnHover;
+
+    [Setting] internal static MinScaleBehavior MinColonistBarScaleBehavior =
+        MinScaleBehavior.ShowOnlyCustomExceptOnHover;
+
+    [Setting] internal static bool IgnoreGuests = true;
+    [Setting] internal static bool IgnoreSlaves = false;
+    [Setting] internal static bool IgnoreSubhuman = true;
+    [Setting] internal static bool OnlyDrafted = false;
+    [Setting] internal static bool OnlyCurrentMap = true;
 
 
     [Setting] internal static bool DrawCurrentTask = true;

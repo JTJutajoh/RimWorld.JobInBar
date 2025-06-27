@@ -9,12 +9,32 @@ namespace JobInBar;
 
 public static class PawnLabelExtensions
 {
-    public static bool DrawAnyPermanentLabels(this Pawn colonist)
+    public static bool DrawAnyPermanentLabels(this Pawn pawn)
     {
         if (Settings.ModEnabled == false || Patch_PlaySettings_GlobalControl_ToggleLabels.DrawLabels == false)
             return false;
 
-        if (Settings.DrawLabelOnlyOnHover && LabelDrawer.HoveredPawn != colonist)
+        if (Settings.IgnoreGuests && pawn.HomeFaction != Faction.OfPlayer && !pawn.IsSlaveOfColony)
+            return false;
+
+        if (Settings.IgnoreSlaves && pawn.IsSlave)
+            return false;
+
+#if !(v1_1 || v1_2 || v1_3 || v1_4 || v1_5)
+        if (Settings.IgnoreSubhuman && pawn.IsSubhuman)
+            return false;
+#elif v1_5 // 1.5 didn't include the IsSubhuman property, but did include relevant pawn types (ghouls)
+        if (Settings.IgnoreSubhuman && pawn.IsMutant)
+            return false;
+#endif
+
+        if (Settings.OnlyDrafted && !pawn.Drafted)
+            return false;
+
+        if (Settings.OnlyCurrentMap && pawn.Map != Find.CurrentMap)
+            return false;
+
+        if (Settings.DrawLabelOnlyOnHover && LabelDrawer.HoveredPawn != pawn)
             return false;
 
         if (Settings.MinColonistBarScaleBehavior != Settings.MinScaleBehavior.ShowAll &&
@@ -23,7 +43,7 @@ public static class PawnLabelExtensions
             if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.HideAll)
                 return false;
             if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowOnHover)
-                return LabelDrawer.HoveredPawn == colonist;
+                return LabelDrawer.HoveredPawn == pawn;
         }
 
         //TODO: Setting to exclude certain types of pawns from labels (like temporary quest pawns)
@@ -58,8 +78,6 @@ public static class PawnLabelExtensions
 
         // story.title FIELD is the player-set custom one. story.Title PROPERTY defaults to the backstory if no custom is set
         var title = Settings.OnlyDrawCustomJobTitles ? story.title : story.Title;
-
-        //TODO: New setting to automatically switch to "only custom" if there are a lot of pawns in the bar
 
         return title != null;
     }
