@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<packageId>Dark.JobInBar</packageId>
-	<name>Job In Bar</name>
-	<author>Dark</author>
-	<supportedVersions>
-    <li>1.2</li>
-    <li>1.3</li>
-    <li>1.4</li>
-    <li>1.5</li>
-    <li>1.6</li>
-  </supportedVersions>
-  <description>Puts a colonist's job title in the Colonist Bar below their label.
+    <packageId>Dark.JobInBar</packageId>
+    <name>Job In Bar</name>
+    <author>Dark</author>
+    <supportedVersions>
+        <li>1.3</li>
+        <li>1.4</li>
+        <li>1.5</li>
+        <li>1.6</li>
+    </supportedVersions>
+    <description>Puts a colonist's Job title (and more) In the colonist Bar below their name. Extremely useful for organizing your colony and remembering which pawn is good at what at a glance.
+(Yes the name is somewhat confusing, the mod has expanded and improved a lot over the years. This mod does not let your pawns have a job bartending).
 
-Has some options for customizing the look.
-	
-Now updated for 1.6. Should still work fine on 1.2-1.5.</description>
-  <modDependencies>
-    <li>
-      <packageId>brrainz.harmony</packageId>
-      <displayName>Harmony</displayName>
-      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
-      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
-    </li>
-  </modDependencies>
-  <loadAfter>
-    <li>brrainz.harmony</li>
-  </loadAfter>
+Now updated for 1.6. Should still work fine on 1.3-1.5.</description>
+    <modDependencies>
+        <li>
+            <packageId>brrainz.harmony</packageId>
+            <displayName>Harmony</displayName>
+            <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+            <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+        </li>
+    </modDependencies>
+    <loadAfter>
+        <li>brrainz.harmony</li>
+    </loadAfter>
 </ModMetaData>
