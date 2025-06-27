@@ -46,8 +46,6 @@ public static class PawnLabelExtensions
                 return LabelDrawer.HoveredPawn == pawn;
         }
 
-        //TODO: Setting to exclude certain types of pawns from labels (like temporary quest pawns)
-
         return true;
     }
 
