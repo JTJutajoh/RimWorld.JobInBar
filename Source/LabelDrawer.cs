@@ -47,13 +47,17 @@ public static class LabelDrawer
     public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect,
         float truncateToWidth = 9999f)
     {
-        HoveredPawn = null;
+        if (Mouse.IsOver(rect))
+            HoveredPawn = colonist;
+        else if (HoveredPawn == colonist)
+            HoveredPawn = null;
+
         var lineOffset =
             new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
         // Apply position offsets
         pos = new Vector2(pos.x, pos.y);
-        if (colonist.DrawAnyPermanentLabels(rect))
+        if (colonist.DrawAnyPermanentLabels())
         {
             //TODO: Come up with a way of letting the user customize label order
             try
@@ -101,7 +105,7 @@ public static class LabelDrawer
 
         try
         {
-            if (Settings.DrawCurrentTask && Mouse.IsOver(rect))
+            if (Settings.DrawCurrentTask && HoveredPawn == colonist)
             {
 #if !(v1_1 || v1_2 || v1_3) // RW 1.4 introduced the ShowWeaponsUnderPortraitMode pref
                 if (!Settings.MoveWeaponBelowCurrentTask)
@@ -111,7 +115,6 @@ public static class LabelDrawer
                         (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
                         pos.y += 28f + Settings.OffsetEquippedExtra;
 #endif
-                HoveredPawn = colonist;
                 DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentTaskLabelColor, truncate: false,
                     drawBg: Settings.DrawCurrentTaskBackground);
                 // pos += lineOffset;

@@ -9,13 +9,24 @@ namespace JobInBar;
 
 public static class PawnLabelExtensions
 {
-    public static bool DrawAnyPermanentLabels(this Pawn colonist, Rect rect)
+    public static bool DrawAnyPermanentLabels(this Pawn colonist)
     {
         if (Settings.ModEnabled == false || Patch_PlaySettings_GlobalControl_ToggleLabels.DrawLabels == false)
             return false;
 
-        if (Settings.DrawLabelOnlyOnHover && !Mouse.IsOver(rect))
+        if (Settings.DrawLabelOnlyOnHover && LabelDrawer.HoveredPawn != colonist)
             return false;
+
+        if (Settings.MinColonistBarScaleBehavior != Settings.MinScaleBehavior.ShowAll &&
+            Find.ColonistBar?.Scale < Settings.MinColonistBarScale)
+        {
+            if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.HideAll)
+                return false;
+            if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowOnHover)
+                return LabelDrawer.HoveredPawn == colonist;
+        }
+
+        //TODO: Setting to exclude certain types of pawns from labels (like temporary quest pawns)
 
         return true;
     }
@@ -25,22 +36,49 @@ public static class PawnLabelExtensions
         // Global setting
         if (!Settings.DrawJobTitle) return false;
 
+        if (colonist.DrawAnyPermanentLabels() == false) return false;
+
         // Pawn-specific setting
         if (!LabelsTracker_WorldComponent.Instance?[colonist].ShowBackstory ?? false) return false;
 
         // Story tracker null check
         if (colonist.story is not { } story) return false;
 
+        if (Settings.MinColonistBarScaleBehavior != Settings.MinScaleBehavior.ShowAll &&
+            Find.ColonistBar?.Scale < Settings.MinColonistBarScale)
+        {
+            switch (Settings.MinColonistBarScaleBehavior)
+            {
+                case Settings.MinScaleBehavior.ShowOnlyCustomExceptOnHover:
+                    return story.title != null || LabelDrawer.HoveredPawn == colonist;
+                case Settings.MinScaleBehavior.ShowOnlyCustom:
+                    return story.title != null;
+            }
+        }
+
         // story.title FIELD is the player-set custom one. story.Title PROPERTY defaults to the backstory if no custom is set
         var title = Settings.OnlyDrawCustomJobTitles ? story.title : story.Title;
+
+        //TODO: New setting to automatically switch to "only custom" if there are a lot of pawns in the bar
 
         return title != null;
     }
 
     public static bool ShouldDrawRoyaltyLabel(this Pawn pawn)
     {
-        return Settings.DrawRoyalTitles && pawn.HasRoyalTitle() &&
-               (LabelsTracker_WorldComponent.Instance?[pawn].ShowRoyalTitle ?? false);
+        if (ModsConfig.RoyaltyActive == false) return false;
+
+        if (pawn.DrawAnyPermanentLabels() == false) return false;
+        if (!Settings.DrawRoyalTitles || !pawn.HasRoyalTitle() ||
+            !(LabelsTracker_WorldComponent.Instance?[pawn].ShowRoyalTitle ?? false)) return false;
+
+        if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowAll ||
+            !(Find.ColonistBar?.Scale < Settings.MinColonistBarScale)) return true;
+
+        if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowOnlyCustomExceptOnHover)
+            return LabelDrawer.HoveredPawn == pawn;
+
+        return true;
     }
 
     internal static bool HasRoyalTitle(this Pawn pawn)
@@ -57,8 +95,19 @@ public static class PawnLabelExtensions
 #if !(v1_1 || v1_2)
     public static bool ShouldDrawIdeoLabel(this Pawn pawn)
     {
-        return ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && pawn.HasIdeoRole() &&
-               (LabelsTracker_WorldComponent.Instance?[pawn].ShowIdeoRole ?? false);
+        if (ModsConfig.IdeologyActive == false) return false;
+
+        if (pawn.DrawAnyPermanentLabels() == false) return false;
+        if (!Settings.DrawIdeoRoles || !pawn.HasIdeoRole() ||
+            !(LabelsTracker_WorldComponent.Instance?[pawn].ShowIdeoRole ?? false)) return false;
+
+        if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowAll ||
+            !(Find.ColonistBar?.Scale < Settings.MinColonistBarScale)) return true;
+
+        if (Settings.MinColonistBarScaleBehavior == Settings.MinScaleBehavior.ShowOnlyCustomExceptOnHover)
+            return LabelDrawer.HoveredPawn == pawn;
+
+        return true;
     }
 
     internal static bool HasIdeoRole(this Pawn pawn)

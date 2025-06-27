@@ -369,6 +369,28 @@ internal class Settings : ModSettings
         section.CheckboxLabeled(GetSettingLabel("TruncateLongLabels"), ref TruncateLongLabels,
             GetSettingTooltip("TruncateLongLabels"), 36f);
 
+        if (section.ButtonTextLabeled(GetSettingLabel("MinColonistBarScaleBehavior", false),
+                $"JobInBar_Settings_{MinColonistBarScaleBehavior.ToString()}".Translate()))
+        {
+            var floatMenuOptions = (from object scaleBehavior in Enum.GetValues(typeof(MinScaleBehavior))
+                select new FloatMenuOption($"JobInBar_Settings_{scaleBehavior.ToString()}".Translate(),
+                    () => { MinColonistBarScaleBehavior = (MinScaleBehavior)scaleBehavior; })).ToList();
+
+            Find.WindowStack?.Add(new FloatMenu(floatMenuOptions));
+        }
+
+        var newMinScale = section.SliderLabeled(GetSettingLabel("MinColonistBarScale", true), MinColonistBarScale, 0f,
+            1f,
+            tooltip: GetSettingTooltip("MinColonistBarScale"));
+        if (MinColonistBarScaleBehavior != MinScaleBehavior.ShowAll)
+        {
+            MinColonistBarScale = newMinScale - (newMinScale % 0.01f);
+        }
+        else
+        {
+            Widgets.DrawBoxSolid(new Rect(0f, section.CurHeight-32f, section.ColumnWidth, 32f), Widgets.MenuSectionBGFillColor.WithAlpha(0.7f));
+        }
+
         section.GapLine();
 
         section.Label("JobInBar_Settings_Positioning".Translate());
@@ -492,11 +514,14 @@ internal class Settings : ModSettings
         listing.Gap(4f);
         GUI.color = ColorLibrary.RedReadable;
         var applyButtonWidthPct = 0.8f;
-        TooltipHandler.TipRegionByKey(new Rect(innerRect.xMin, listing.CurHeight, innerRect.width * applyButtonWidthPct, 40f), "JobInBar_Settings_RefreshPatches_Desc");
+        TooltipHandler.TipRegionByKey(
+            new Rect(innerRect.xMin, listing.CurHeight, innerRect.width * applyButtonWidthPct, 40f),
+            "JobInBar_Settings_RefreshPatches_Desc");
         if (listing.ButtonText("JobInBar_Settings_RefreshPatches".Translate(), null!, 0.3f))
         {
             PatchManager.RepatchAll();
         }
+
         listing.SubLabel("JobInBar_Settings_RequiresRestart".Translate(), applyButtonWidthPct);
         GUI.color = Color.white;
 
@@ -525,6 +550,7 @@ internal class Settings : ModSettings
                 EnabledPatchCategories.Add(patch);
             }
         }
+
         EnabledPatchCategories.Sort();
         DisabledPatchCategories.Sort();
 
@@ -541,6 +567,10 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
         Scribe_Values.Look(ref OffsetEquippedExtra, "OffsetEquippedExtra");
         Scribe_Values.Look(ref OffsetEquippedByLabels, "OffsetEquippedByLabels", true);
+
+        Scribe_Values.Look(ref MinColonistBarScale, "MinColonistBarScale", 0.9f);
+        Scribe_Values.Look(ref MinColonistBarScaleBehavior, "MinColonistBarScaleBehavior",
+            MinScaleBehavior.ShowOnlyCustomExceptOnHover);
 
         Scribe_Values.Look(ref DefaultJobLabelColor, "DefaultJobLabelColor", GenMapUI.DefaultThingLabelColor);
         Scribe_Values.Look(ref CurrentTaskLabelColor, "CurrentTaskLabelColor", new Color(1f, 0.8f, 0.4f, 0.8f));
@@ -604,6 +634,15 @@ internal class Settings : ModSettings
         All = NamePawn | CharacterCard
     }
 
+    internal enum MinScaleBehavior
+    {
+        HideAll,
+        ShowOnlyCustom,
+        ShowOnlyCustomExceptOnHover,
+        ShowOnHover,
+        ShowAll
+    }
+
 
     // ReSharper disable RedundantDefaultMemberInitializer
     [Setting] internal static bool ModEnabled = true;
@@ -621,6 +660,9 @@ internal class Settings : ModSettings
 
     [Setting] internal static int ExtraOffsetPerLine = -4; // Legacy setting that I don't think anyone used
     [Setting] internal static bool OffsetEquippedByLabels = true;
+
+    [Setting] internal static float MinColonistBarScale = 0.9f;
+    [Setting] internal static MinScaleBehavior MinColonistBarScaleBehavior = MinScaleBehavior.ShowOnlyCustomExceptOnHover;
 
 
     [Setting] internal static bool DrawCurrentTask = true;

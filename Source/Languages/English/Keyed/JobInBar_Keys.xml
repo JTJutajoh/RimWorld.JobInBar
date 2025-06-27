@@ -87,6 +87,14 @@ Set a custom job title in the pawn's Rename dialog (from the Bio tab). Otherwise
     <JobInBar_Settings_EnablePlaySettingToggle>Play setting toggle to disable/enable all labels</JobInBar_Settings_EnablePlaySettingToggle>
     <JobInBar_Settings_EnablePlaySettingToggle_Desc>Adds a new toggle to the global play settings (the little buttons in the bottom right) to toggle ALL labels from this mod on/off at once.
 Overrides global settings and individual pawn settings.</JobInBar_Settings_EnablePlaySettingToggle_Desc>
+    <JobInBar_Settings_MinColonistBarScale>Minimum Colonist Bar scale</JobInBar_Settings_MinColonistBarScale>
+    <JobInBar_Settings_MinColonistBarScale_Desc>When the colonist bar scale decreases (due to having many pawns in it), skip drawing certain labels.</JobInBar_Settings_MinColonistBarScale_Desc>
+    <JobInBar_Settings_MinColonistBarScaleBehavior>Behavior when scale below minimum:</JobInBar_Settings_MinColonistBarScaleBehavior>
+    <JobInBar_Settings_HideAll>Hide ALL labels</JobInBar_Settings_HideAll>
+    <JobInBar_Settings_ShowOnlyCustom>Show only custom labels</JobInBar_Settings_ShowOnlyCustom>
+    <JobInBar_Settings_ShowOnlyCustomExceptOnHover>Show only custom labels, unless hovered</JobInBar_Settings_ShowOnlyCustomExceptOnHover>
+    <JobInBar_Settings_ShowOnHover>Show only when hovered</JobInBar_Settings_ShowOnHover>
+    <JobInBar_Settings_ShowAll>Show all labels (nothing)</JobInBar_Settings_ShowAll>
 
     <!-- Display settings -->
     <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
