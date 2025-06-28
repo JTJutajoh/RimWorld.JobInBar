@@ -202,4 +202,23 @@ internal static class PatchManager
         _skippedPatches += numMethods;
         _loadedPatches -= numMethods;
     }
+
+    internal static void SetPatched(string category, bool patch)
+    {
+        var alreadyPatched = _allEnabledSuccessfulPatches.Contains(category);
+        if (patch && !alreadyPatched)
+        {
+            Settings.EnabledPatchCategories.Add(category);
+            Settings.DisabledPatchCategories.Remove(category);
+            PatchCategory(category);
+        }
+        else if (!patch && alreadyPatched)
+        {
+            Settings.DisabledPatchCategories.Add(category);
+            Settings.EnabledPatchCategories.Remove(category);
+            UnpatchCategory(category);
+        }
+        else
+            Log.Trace($"Patch {category} already set to {patch} state.");
+    }
 }

@@ -16,7 +16,7 @@ internal class Settings : ModSettings
     private const float CurrentTaskSectionHeight = 450f;
     private const float IdeologySectionHeight = 180f;
     private const float RoyaltySectionHeight = 430f;
-    private const float DisplaySectionHeight = 660f;
+    private const float DisplaySectionHeight = 700f;
     private const float ColorPickersHeight = 240f;
 
     internal static Dictionary<string, object> DefaultSettings = new();
@@ -58,6 +58,14 @@ internal class Settings : ModSettings
             settings[field.Name] = field.GetValue(this);
             Log.Trace($"Harvested Setting: '{field.Name}' Default: {settings[field.Name]}");
         }
+    }
+
+    private static void OnSettingsSave()
+    {
+        Log.Trace("Settings saved, applying patch changes.");
+
+        PatchManager.SetPatched("ColorName", AllowNameColors);
+        PatchManager.SetPatched("PlaySettings", EnablePlaySettingToggle);
     }
 
     internal static string GetSettingLabel(string key, bool showValue = false)
@@ -394,6 +402,9 @@ internal class Settings : ModSettings
 
         section.GapLine();
 
+        section.CheckboxLabeled(GetSettingLabel("AllowNameColors"), ref AllowNameColors,
+            GetSettingTooltip("AllowNameColors"));
+
         section.CheckboxLabeled(GetSettingLabel("IgnoreGuests"), ref IgnoreGuests,
             GetSettingTooltip("IgnoreGuests"));
 
@@ -537,6 +548,7 @@ internal class Settings : ModSettings
             "JobInBar_Settings_RefreshPatches_Desc");
         if (listing.ButtonText("JobInBar_Settings_RefreshPatches".Translate(), null!, 0.3f))
         {
+            JobInBarMod.Instance?.GetSettings<Settings>()?.Write();
             PatchManager.RepatchAll();
         }
 
@@ -578,6 +590,8 @@ internal class Settings : ModSettings
     [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
     public override void ExposeData()
     {
+        Log.Trace($"Settings ExposeData(). Mode: {Scribe.mode}");
+
         Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
 
         Scribe_Values.Look(ref DrawJobTitle, "DrawJobTitle", true);
@@ -585,6 +599,8 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
         Scribe_Values.Look(ref OffsetEquippedExtra, "OffsetEquippedExtra");
         Scribe_Values.Look(ref OffsetEquippedByLabels, "OffsetEquippedByLabels", true);
+
+        Scribe_Values.Look(ref AllowNameColors, "AllowNameColors", true);
 
         Scribe_Values.Look(ref MinColonistBarScale, "MinColonistBarScale", 0.9f);
         Scribe_Values.Look(ref MinColonistBarScaleBehavior, "MinColonistBarScaleBehavior",
@@ -618,11 +634,18 @@ internal class Settings : ModSettings
 
         Scribe_Values.Look(ref EnabledButtonLocations, "EnabledButtonLocations", ButtonLocations.All);
 
+        // Do this before saving the patch categories since it modifies them
+        if (Scribe.mode == LoadSaveMode.Saving)
+        {
+            OnSettingsSave();
+        }
+
         var enabledPatchesTMP = EnabledPatchCategories.ToList();
         var disabledPatchesTMP = DisabledPatchCategories.ToList();
 
         Scribe_Collections.Look(ref enabledPatchesTMP, "EnabledPatchCategories", LookMode.Value);
         Scribe_Collections.Look(ref disabledPatchesTMP, "DisabledPatchCategories", LookMode.Value);
+
 
         if (Scribe.mode == LoadSaveMode.LoadingVars)
         {
@@ -670,8 +693,9 @@ internal class Settings : ModSettings
     // ReSharper disable RedundantDefaultMemberInitializer
     [Setting] internal static bool ModEnabled = true;
 
-    [Setting] internal static bool DrawLabelOnlyOnHover = false;
     [Setting] internal static bool EnablePlaySettingToggle = true;
+
+    [Setting] internal static bool DrawLabelOnlyOnHover = false;
     [Setting] internal static bool TruncateLongLabels = true;
 
     [Setting] internal static bool DrawJobTitle = true;
@@ -679,6 +703,9 @@ internal class Settings : ModSettings
     [Setting] internal static bool OnlyDrawCustomJobTitles = false;
 
     [Setting] internal static Color DefaultJobLabelColor = GenMapUI.DefaultThingLabelColor;
+
+
+    [Setting] internal static bool AllowNameColors = true;
 
 
     [Setting] internal static int ExtraOffsetPerLine = -4; // Legacy setting that I don't think anyone used

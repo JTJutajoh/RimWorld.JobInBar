@@ -96,10 +96,17 @@ Overrides global settings and individual pawn settings.</JobInBar_Settings_Enabl
     <JobInBar_Settings_ShowOnHover>Show only when hovered</JobInBar_Settings_ShowOnHover>
     <JobInBar_Settings_ShowAll>Show all labels (nothing)</JobInBar_Settings_ShowAll>
     <JobInBar_Settings_IgnoreGuests>Don't show guest labels</JobInBar_Settings_IgnoreGuests>
+    <JobInBar_Settings_IgnoreGuests_Desc>Temporary pawns like quest joiners or refugees will not have labels drawn for them.</JobInBar_Settings_IgnoreGuests_Desc>
     <JobInBar_Settings_IgnoreSlaves>Don't show slave labels</JobInBar_Settings_IgnoreSlaves>
     <JobInBar_Settings_IgnoreSubhuman>Don't show subhuman (i.e. ghouls) labels</JobInBar_Settings_IgnoreSubhuman>
+    <JobInBar_Settings_IgnoreSubhuman_Desc>Anomaly creatures like ghouls will be ignored and not get labels. Their labels usually aren't relevant to anything anyway since they have one job.</JobInBar_Settings_IgnoreSubhuman_Desc>
     <JobInBar_Settings_OnlyDrafted>Only show labels when drafted</JobInBar_Settings_OnlyDrafted>
     <JobInBar_Settings_OnlyCurrentMap>Only show labels for pawns on current map</JobInBar_Settings_OnlyCurrentMap>
+    <JobInBar_Settings_AllowNameColors>Allow custom colors for pawn names</JobInBar_Settings_AllowNameColors>
+    <JobInBar_Settings_AllowNameColors_Desc>Blanket enables/disables the feature of the mod that lets you reassign name colors for pawns.
+This feature may not be desirable for everyone and it could have more compatibility issues than most of the other features of this mod.
+
+If you don't intend to use this feature, disabling this setting is recommended to reduce the Harmony overhead.</JobInBar_Settings_AllowNameColors_Desc>
 
     <!-- Display settings -->
     <JobInBar_Settings_Positioning>Label positioning</JobInBar_Settings_Positioning>
