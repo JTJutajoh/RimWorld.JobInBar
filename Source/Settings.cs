@@ -12,11 +12,11 @@ internal class Settings : ModSettings
     private const float TabHeight = 32f;
     private const float PerformanceSectionHeight = 206f + 8f;
     private const float MiscSectionHeight = 158f + 8f;
-    private const float JobTitleSectionHeight = 394f;
-    private const float CurrentTaskSectionHeight = 412f + 8f;
-    private const float IdeologySectionHeight = 184f + 8f;
-    private const float RoyaltySectionHeight = 394f;
-    private const float DisplaySectionHeight = 428f + 8f;
+    private const float JobTitleSectionHeight = 430f;
+    private const float CurrentTaskSectionHeight = 450f;
+    private const float IdeologySectionHeight = 180f;
+    private const float RoyaltySectionHeight = 430f;
+    private const float DisplaySectionHeight = 660f;
     private const float ColorPickersHeight = 240f;
 
     internal static Dictionary<string, object> DefaultSettings = new();
