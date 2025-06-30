@@ -11,7 +11,8 @@ namespace JobInBar;
 
 /// <summary>
 ///  Stores all of the relevant information used by the mod for things like determining which labels to draw<br />
-/// Static properties store the actual full cache, which is composed of instances.
+/// Static properties store the actual full cache, which is composed of instances.<para />
+/// This cache implementation is heavily inspired by CM Colored Mood Bar
 /// </summary>
 internal class PawnCache
 {
@@ -34,6 +35,12 @@ internal class PawnCache
         return Get(pawn) ?? new PawnCache(pawn);
     }
 
+    internal static void Clear()
+    {
+        Log.Trace("Clearing cache");
+        Cache.Clear();
+    }
+
     // Instance properties
     internal readonly Pawn? Pawn;
     internal long LastCached = -1;
@@ -44,7 +51,7 @@ internal class PawnCache
     /// a recache will be triggered no matter what.<br />
     /// Always set to false after every <see cref="Recache"/>.
     /// </summary>
-    internal bool Dirty = false;
+    internal bool Dirty;
 
     // ReSharper disable once PossibleLossOfFraction
     internal bool NeedsRecache => Dirty ||

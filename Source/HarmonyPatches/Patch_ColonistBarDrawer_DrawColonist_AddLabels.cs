@@ -13,7 +13,7 @@ namespace JobInBar.HarmonyPatches
     // ReSharper disable once InconsistentNaming
     internal static class Patch_ColonistBarDrawer_DrawColonist_AddLabels
     {
-        [HarmonyPatch(typeof(ColonistBarColonistDrawer),"DrawColonist")]
+        [HarmonyPatch(typeof(ColonistBarColonistDrawer), "DrawColonist")]
         [HarmonyPostfix]
         [UsedImplicitly]
         public static void AddLabels(Rect rect, Pawn colonist, Map pawnMap, bool highlight, bool reordering)
@@ -27,7 +27,7 @@ namespace JobInBar.HarmonyPatches
                 return;
             }
 
-            var barHeight =  4f * bar.Scale; // from Core
+            var barHeight = 4f * bar.Scale; // from Core
 
             var pos = new Vector2(rect.center.x, rect.yMax - barHeight + Settings.JobLabelVerticalOffset + 14f);
 
@@ -39,12 +39,22 @@ namespace JobInBar.HarmonyPatches
                 {
                     cache = cache.Recache();
                 }
-                LabelDrawer.DrawLabels(colonist, cache, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
+
+                LabelDrawer.DrawLabels(colonist, cache, pos, bar, rect,
+                    rect.width + bar.SpaceBetweenColonistsHorizontal);
             }
             catch (Exception e)
             {
                 Log.Exception(e, extraMessage: "Top-level uncaught exception", once: true);
             }
+        }
+
+        [HarmonyPatch(typeof(ColonistBarColonistDrawer), nameof(ColonistBarColonistDrawer.Notify_RecachedEntries))]
+        [HarmonyPostfix]
+        [UsedImplicitly]
+        public static void Notify_RecachedEntries()
+        {
+            PawnCache.Clear();
         }
     }
 }
