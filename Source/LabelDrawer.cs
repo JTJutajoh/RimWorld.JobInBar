@@ -73,7 +73,7 @@ internal static class LabelDrawer
             {
                 if (cache.GetJobLabel(out var jobLabel))
                 {
-                    DrawCustomLabel(pos, jobLabel, colonist.JobLabelColor(), truncateToWidth,
+                    DrawCustomLabel(pos, jobLabel, cache.JobColor, truncateToWidth,
                         drawBg: Settings.DrawJobTitleBackground);
                     pos += lineOffset;
                 }
@@ -87,7 +87,7 @@ internal static class LabelDrawer
             {
                 if (cache.GetRoyalTitle(out var royalTitle))
                 {
-                    DrawCustomLabel(pos, royalTitle, colonist.RoyalTitleColor(), truncateToWidth,
+                    DrawCustomLabel(pos, royalTitle, cache.RoyalTitleColor, truncateToWidth,
                         drawBg: Settings.DrawRoyalTitleBackground);
                     pos += lineOffset;
                 }
@@ -101,7 +101,7 @@ internal static class LabelDrawer
             {
                 if (cache.GetIdeoRole(out var ideoRole))
                 {
-                    DrawCustomLabel(pos, ideoRole, colonist.IdeoLabelColor(), truncateToWidth,
+                    DrawCustomLabel(pos, ideoRole, cache.IdeoRoleColor, truncateToWidth,
                         drawBg: Settings.DrawIdeoRoleBackground);
                     pos += lineOffset;
                 }
@@ -124,7 +124,7 @@ internal static class LabelDrawer
                         (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
                         pos.y += 28f + Settings.OffsetEquippedExtra;
 #endif
-                DrawCustomLabel(pos, cache.CurrentTask, Settings.CurrentTaskLabelColor, truncate: false,
+                DrawCustomLabel(pos, cache.CurrentTask, cache.CurrentTaskColor, truncate: false,
                     drawBg: Settings.DrawCurrentTaskBackground);
                 // pos += lineOffset;
             }

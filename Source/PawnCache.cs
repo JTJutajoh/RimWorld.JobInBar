@@ -20,6 +20,7 @@ internal class PawnCache
     /// Global value if NO non-custom labels should ever be drawn.
     /// </summary>
     internal static bool OnlyDrawCustomJobTitles { get; private set; }
+
     internal static Dictionary<int, PawnCache> Cache = new();
     internal static Pawn? HoveredPawn { get; set; }
 
@@ -37,6 +38,7 @@ internal class PawnCache
     internal readonly Pawn? Pawn;
     internal long LastCached = -1;
     internal int TickOffset { get; private set; }
+
     /// <summary>
     /// If set to true, the next time that <see cref="NeedsRecache"/> is checked, the refresh rate will be overridden and
     /// a recache will be triggered no matter what.<br />
@@ -54,12 +56,17 @@ internal class PawnCache
     /// For example, the pawn is an ignored type (guest, ghoul, etc.) or "only drafted" is turned on in settings.
     /// </summary>
     internal bool DrawAnyPermanentLabels { get; private set; }
+
     internal bool OnlyDrawWhenHovered { get; private set; }
+
     /// <summary>
     /// The job title to be drawn, or null if none should be drawn (such as if only custom labels are enabled and there
     /// is no custom title).
     /// </summary>
     internal bool HasCustomTitle => Pawn?.story?.title != null;
+
+    // Note that pawn name is NOT included because it would just add extra overhead, not less
+
     internal string? Title { get; private set; }
     internal Color JobColor { get; private set; }
     internal bool DrawJobLabel { get; private set; }
@@ -104,7 +111,10 @@ internal class PawnCache
         Log.Trace($"Created new cache entry for pawn {pawn.Name}");
     }
 
-
+    /// <summary>
+    /// Method that performs all of the caching operations at once. Called primarily by <see cref="Patch_ColonistBarDrawer_DrawColonist_AddLabels"/>
+    /// every frame that a pawn is drawn if <see cref="NeedsRecache"/> evaluates to true.
+    /// </summary>
     internal PawnCache? Recache()
     {
         if (Pawn == null)
@@ -144,6 +154,9 @@ internal class PawnCache
 
         DrawJobLabel = GetDrawJobLabel();
 
+        if (DrawJobLabel)
+            JobColor = LabelsTracker_WorldComponent.Instance?[Pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
+
         // Current task
         if (Settings.DrawCurrentTask && IsHovered)
         {
@@ -167,11 +180,16 @@ internal class PawnCache
             CurrentTask = null;
         }
 
+        if (CurrentTask != null) CurrentTaskColor = Settings.CurrentTaskLabelColor;
+
         // Royalty things
         if (ModsConfig.RoyaltyActive)
         {
             RoyalTitle = Pawn.royalty?.MainTitle();
             DrawRoyalTitle = GetDrawRoyalTitle();
+            if (DrawRoyalTitle)
+                RoyalTitleColor = LabelsTracker_WorldComponent.Instance?[Pawn].RoyalTitleColor ??
+                                  Settings.RoyalTitleColorDefault;
         }
         else
         {
@@ -193,6 +211,8 @@ internal class PawnCache
             }
 
             DrawIdeoRole = GetDrawIdeoRole();
+
+            if (DrawIdeoRole) IdeoRoleColor = CalcIdeoRoleColor();
         }
         else
         {
@@ -295,5 +315,24 @@ internal class PawnCache
     {
         label = IdeoRole?.LabelCap ?? "";
         return DrawIdeoRole;
+    }
+
+    private Color CalcIdeoRoleColor()
+    {
+        var fallbackColor = GenMapUI.DefaultThingLabelColor;
+
+        if (Pawn is null || IdeoRole is null) return fallbackColor;
+
+        // If the user has disabled the automatic color assignment, check for any individual color settings and otherwise use the global setting
+        if (!Settings.UseIdeoColorForRole)
+            return LabelsTracker_WorldComponent.Instance?[Pawn].IdeoRoleColor ?? fallbackColor;
+
+        // Get a cached color override (or null if no override has been set)
+        Color? ideoColor = LabelsTracker_WorldComponent.Instance?[Pawn].IdeoRoleColor ?? Color.Lerp(IdeoRole.ideo?.colorDef?.color ?? fallbackColor, Color.white, 0.35f);
+
+        if (Settings.RoleColorOnlyIfAbilityAvailable && !IdeoRoleAbilityIsReady)
+            return fallbackColor;
+
+        return ideoColor.Value;
     }
 }
