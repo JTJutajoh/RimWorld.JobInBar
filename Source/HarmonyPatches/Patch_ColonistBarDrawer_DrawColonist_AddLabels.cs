@@ -33,7 +33,13 @@ namespace JobInBar.HarmonyPatches
 
             try
             {
-                LabelDrawer.DrawLabels(colonist, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
+                var cache = PawnCache.GetOrCache(colonist);
+                // Log.Trace($"Now: {DateTime.UtcNow.Ticks} - {cache.LastCached} / 10000 = {(DateTime.UtcNow.Ticks - cache.LastCached) / 10000} > {Settings.CacheRefreshRate} + {cache.TickOffset}");
+                if (cache.NeedsRecache)
+                {
+                    cache = cache.Recache();
+                }
+                LabelDrawer.DrawLabels(colonist, cache, pos, bar, rect, rect.width + bar.SpaceBetweenColonistsHorizontal);
             }
             catch (Exception e)
             {

@@ -97,6 +97,11 @@ internal class Dialog_LabelSettings : Window
 
     private void DoOptions(Rect inRect)
     {
+        var cache = PawnCache.GetOrCache(_pawn);
+        // Just force a recache every frame while the dialog is open.
+        // The performance impact for doing this with 1 pawn at a time will be basically zero
+        cache.Dirty = true;
+
         Widgets.DrawMenuSection(inRect);
         var innerRect = inRect.ContractedBy(4f);
         var curY = innerRect.yMin + 4f;
@@ -121,38 +126,41 @@ internal class Dialog_LabelSettings : Window
             0.2f
         );
         // Title
-        DoTitleTextfieldRow(innerRect, ref curY, CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor, 0.1f);
-        DoLabelOptionsCheckboxRow(
-            innerRect,
-            ref curY,
-            "JobInBar_ShowJobLabelFor".Translate(),
-            ref CurLabelData.ShowBackstory,
-            !Settings.DrawJobTitle,
-            CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor,
-            LabelType.JobTitle,
-            0.2f
-        );
-        if (ModsConfig.RoyaltyActive)
+        if (Settings.DrawJobTitle)
+        {
+            DoTitleTextfieldRow(innerRect, ref curY, CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor, 0.1f);
+            DoLabelOptionsCheckboxRow(
+                innerRect,
+                ref curY,
+                "JobInBar_ShowJobLabelFor".Translate(),
+                ref CurLabelData.ShowBackstory,
+                !Settings.DrawJobTitle || cache.Title == null,
+                CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor,
+                LabelType.JobTitle,
+                0.2f
+            );
+        }
+        if (ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles)
             // Royal title
             DoLabelOptionsCheckboxRow(
                 innerRect,
                 ref curY,
                 "JobInBar_ShowRoyaltyLabelFor".Translate(),
                 ref CurLabelData.ShowRoyalTitle,
-                !_pawn.HasRoyalTitle(),
+                cache.RoyalTitle == null,
                 CurLabelData.RoyalTitleColor ?? Settings.RoyalTitleColorDefault,
                 LabelType.RoyalTitle,
                 0.1f
             );
 
-        if (ModsConfig.IdeologyActive)
+        if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles)
             // Ideo role
             DoLabelOptionsCheckboxRow(
                 innerRect,
                 ref curY,
                 "JobInBar_ShowIdeoLabelFor".Translate(),
                 ref CurLabelData.ShowIdeoRole,
-                !_pawn.HasIdeoRole(),
+                cache.IdeoRole == null,
                 CurLabelData.IdeoRoleColor ?? GenMapUI.DefaultThingLabelColor,
                 LabelType.IdeoRole,
                 0.2f

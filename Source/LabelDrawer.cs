@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace JobInBar;
 
-public static class LabelDrawer
+internal static class LabelDrawer
 {
-    public static Pawn? HoveredPawn;
-
     /// <summary>
     ///     Draws a custom label at the specified position with the specified text, color, and truncation options.
     /// </summary>
@@ -44,27 +42,38 @@ public static class LabelDrawer
         Text.Font = GameFont.Small;
     }
 
-    public static void DrawLabels(Pawn colonist, Vector2 pos, ColonistBar bar, Rect rect,
+    internal static void DrawLabels(Pawn colonist, PawnCache? cache, Vector2 pos, ColonistBar bar, Rect rect,
         float truncateToWidth = 9999f)
     {
-        if (Mouse.IsOver(rect))
-            HoveredPawn = colonist;
-        else if (HoveredPawn == colonist)
-            HoveredPawn = null;
+        if (cache is null)
+        {
+            cache = PawnCache.GetOrCache(colonist);
+            if (cache is null)
+            {
+                Log.ErrorOnce($"Error caching pawn {(colonist?.Name?.ToString() ?? "null")}",
+                    (colonist?.GetHashCode().ToString() ?? "null pawn"));
+                throw new ArgumentNullException(nameof(cache));
+            }
+        }
+
+        cache.IsHovered = Mouse.IsOver(rect);
+
+        if (cache is { OnlyDrawWhenHovered: true, IsHovered: false })
+            return;
 
         var lineOffset =
             new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
         // Apply position offsets
         pos = new Vector2(pos.x, pos.y);
-        if (colonist.DrawAnyPermanentLabels())
+        if (cache.DrawAnyPermanentLabels)
         {
             //TODO: Come up with a way of letting the user customize label order
             try
             {
-                if (colonist.ShouldDrawJobLabel())
+                if (cache.GetJobLabel(out var jobLabel))
                 {
-                    DrawCustomLabel(pos, colonist.JobLabel(), colonist.JobLabelColor(), truncateToWidth,
+                    DrawCustomLabel(pos, jobLabel, colonist.JobLabelColor(), truncateToWidth,
                         drawBg: Settings.DrawJobTitleBackground);
                     pos += lineOffset;
                 }
@@ -76,9 +85,9 @@ public static class LabelDrawer
 
             try
             {
-                if (colonist.ShouldDrawRoyaltyLabel())
+                if (cache.GetRoyalTitle(out var royalTitle))
                 {
-                    DrawCustomLabel(pos, colonist.RoyaltyLabel(), colonist.RoyalTitleColor(), truncateToWidth,
+                    DrawCustomLabel(pos, royalTitle, colonist.RoyalTitleColor(), truncateToWidth,
                         drawBg: Settings.DrawRoyalTitleBackground);
                     pos += lineOffset;
                 }
@@ -90,9 +99,9 @@ public static class LabelDrawer
 
             try
             {
-                if (colonist.ShouldDrawIdeoLabel())
+                if (cache.GetIdeoRole(out var ideoRole))
                 {
-                    DrawCustomLabel(pos, colonist.IdeoLabel(), colonist.IdeoLabelColor(), truncateToWidth,
+                    DrawCustomLabel(pos, ideoRole, colonist.IdeoLabelColor(), truncateToWidth,
                         drawBg: Settings.DrawIdeoRoleBackground);
                     pos += lineOffset;
                 }
@@ -105,7 +114,7 @@ public static class LabelDrawer
 
         try
         {
-            if (Settings.DrawCurrentTask && HoveredPawn == colonist)
+            if (Settings.DrawCurrentTask && cache is { IsHovered: true, CurrentTask: not null })
             {
 #if !(v1_1 || v1_2 || v1_3) // RW 1.4 introduced the ShowWeaponsUnderPortraitMode pref
                 if (!Settings.MoveWeaponBelowCurrentTask)
@@ -115,7 +124,7 @@ public static class LabelDrawer
                         (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
                         pos.y += 28f + Settings.OffsetEquippedExtra;
 #endif
-                DrawCustomLabel(pos, colonist.CurrentTaskDesc(), Settings.CurrentTaskLabelColor, truncate: false,
+                DrawCustomLabel(pos, cache.CurrentTask, Settings.CurrentTaskLabelColor, truncate: false,
                     drawBg: Settings.DrawCurrentTaskBackground);
                 // pos += lineOffset;
             }

@@ -62,7 +62,6 @@ Only recommended for troubleshooting! May cause errors!</JobInBar_Settings_Refre
     <JobInBar_Settings_PatchCategory_PlaySettings>Add global label toggle button to Play Settings (bottom right buttons)</JobInBar_Settings_PatchCategory_PlaySettings>
     <JobInBar_Settings_PatchCategory_StopTracking>Remove pawn from the cache when deleted/discarded from the game</JobInBar_Settings_PatchCategory_StopTracking>
 
-    <!-- Main settings -->
     <JobInBar_Settings_ModEnabled>Mod Enabled</JobInBar_Settings_ModEnabled>
     <JobInBar_Settings_ModEnabled_Desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_ModEnabled_Desc>
     <JobInBar_Settings_PerformanceWarningHeader>Performance</JobInBar_Settings_PerformanceWarningHeader>
@@ -72,6 +71,13 @@ Use settings in this section to help reduce the number of labels being drawn eve
     <JobInBar_Settings_DrawLabelOnlyOnHover_Desc>Only draws labels for pawns the mouse is currently hovering over in the colonist bar.
 
 Recommended if you're having performance problems or if you have a colony with a large number of pawns.</JobInBar_Settings_DrawLabelOnlyOnHover_Desc>
+    <JobInBar_Settings_CacheRefreshRate>Cache refresh rate (ms)</JobInBar_Settings_CacheRefreshRate>
+    <JobInBar_Settings_CacheRefreshRate_Desc>How often the pawn cache is updated, in milliseconds.
+Lower values will make labels stay up to date better but could negatively impact performance (FPS, not TPS).
+
+Mostly noticeable with the "Current Task" label, as the other labels don't change very often.</JobInBar_Settings_CacheRefreshRate_Desc>
+
+    <!-- Main settings -->
     <JobInBar_Settings_CurrentJobNote>Note that the current task is only shown when the mouse is hovered, for performance reasons.
 Fetching the current task of a pawn is a relatively expensive operation and it would quickly tank performance to do it multiple times a frame for multiple pawns.</JobInBar_Settings_CurrentJobNote>
     <JobInBar_Settings_DrawCurrentTask>Label for pawn's current task</JobInBar_Settings_DrawCurrentTask>

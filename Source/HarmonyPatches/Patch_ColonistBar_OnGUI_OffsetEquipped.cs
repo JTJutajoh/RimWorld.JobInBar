@@ -68,19 +68,22 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
     {
         if (!Settings.ModEnabled) return 0f;
         if (!Settings.OffsetEquippedByLabels) return Settings.OffsetEquippedExtra;
-        if (Settings.DrawLabelOnlyOnHover && LabelDrawer.HoveredPawn != pawn) return 0f;
+        if (Settings.DrawLabelOnlyOnHover && PawnCache.HoveredPawn != pawn) return 0f;
+
+        var cache = PawnCache.GetOrCache(pawn);
+
         var offset = 0f;
 
         offset += Settings.JobLabelVerticalOffset;
 
-        if (pawn.ShouldDrawJobLabel())
+        if (cache.DrawJobLabel)
             offset += OffsetPerLabel;
-        if (pawn.ShouldDrawIdeoLabel())
+        if (cache.DrawIdeoRole)
             offset += OffsetPerLabel;
-        if (pawn.ShouldDrawRoyaltyLabel())
+        if (cache.DrawRoyalTitle)
             offset += OffsetPerLabel;
 
-        if (Settings.MoveWeaponBelowCurrentTask && LabelDrawer.HoveredPawn == pawn)
+        if (Settings.MoveWeaponBelowCurrentTask && cache is { IsHovered: true, CurrentTask: not null })
             offset += OffsetPerLabel;
 
 

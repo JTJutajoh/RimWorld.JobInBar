@@ -97,6 +97,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="PawnCache.cs" />
         <Compile Include="Dialog_LabelSettings.cs"/>
         <Compile Include="GlobalUsings.cs"/>
         <Compile Include="HarmonyPatches\Patch_CharacterCardUtility_DrawCharacterCard_AddButton.cs"/>

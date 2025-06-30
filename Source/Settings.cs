@@ -10,7 +10,7 @@ namespace JobInBar;
 internal class Settings : ModSettings
 {
     private const float TabHeight = 32f;
-    private const float PerformanceSectionHeight = 206f + 8f;
+    private const float PerformanceSectionHeight = 320f;
     private const float MiscSectionHeight = 158f + 8f;
     private const float JobTitleSectionHeight = 430f;
     private const float CurrentTaskSectionHeight = 450f;
@@ -236,6 +236,17 @@ internal class Settings : ModSettings
 
         section.SectionHeader("JobInBar_Settings_PerformanceWarningHeader");
         section.SubLabel("JobInBar_Settings_PerformanceWarning".Translate(), 1f);
+
+        CacheRefreshRate = section.SliderLabeled(GetSettingLabel("CacheRefreshRate", true), CacheRefreshRate, 50f,
+            10000f,
+            labelPct: 0.7f, tooltip: GetSettingTooltip("CacheRefreshRate"));
+        CacheRefreshRate -= (CacheRefreshRate % 50f);
+        if (section.ButtonText("Default".Translate()))
+        {
+            CacheRefreshRate = DefaultSettings["CacheRefreshRate"] as float? ?? 250f;
+        }
+
+        section.Gap(24f);
 
         section.CheckboxLabeled(GetSettingLabel("DrawLabelOnlyOnHover"), ref DrawLabelOnlyOnHover,
             GetSettingTooltip("DrawLabelOnlyOnHover"), 36f);
@@ -594,6 +605,8 @@ internal class Settings : ModSettings
 
         Scribe_Values.Look(ref ModEnabled, "ModEnabled", true);
 
+        Scribe_Values.Look(ref CacheRefreshRate, "CacheRefreshRate", 250f);
+
         Scribe_Values.Look(ref DrawJobTitle, "DrawJobTitle", true);
         Scribe_Values.Look(ref OnlyDrawCustomJobTitles, "OnlyDrawCustomJobTitles", false);
         Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
@@ -692,6 +705,9 @@ internal class Settings : ModSettings
 
     // ReSharper disable RedundantDefaultMemberInitializer
     [Setting] internal static bool ModEnabled = true;
+
+    // milliseconds
+    [Setting] internal static float CacheRefreshRate = 250f;
 
     [Setting] internal static bool EnablePlaySettingToggle = true;
 
