@@ -25,6 +25,22 @@ internal class PawnCache
     internal static Dictionary<int, PawnCache> Cache = new();
     internal static Pawn? HoveredPawn { get; set; }
 
+    /// <summary>
+    /// The current width that every label should be truncated to, set by the <see cref="Patch_ColonistBarDrawer_DrawColonist_AddLabels"/>
+    /// patch. Used to determine if the most recently cached string needs to be recalculated based on the last truncated width.
+    /// </summary>
+    internal static float CurLabelWidth { get; set; }
+
+    private static string TruncateLabel(string labelString, float truncateToWidth, GameFont font)
+    {
+        var oldFont = Text.Font;
+        Text.Font = font;
+        labelString = labelString.Truncate(truncateToWidth)!;
+        Text.Font = oldFont;
+
+        return labelString;
+    }
+
     internal static PawnCache? Get(Pawn pawn)
     {
         return Cache.TryGetValue(pawn.GetHashCode(), out var cache) ? cache : null;
@@ -56,7 +72,14 @@ internal class PawnCache
     // ReSharper disable once PossibleLossOfFraction
     internal bool NeedsRecache => Dirty ||
                                   ((((DateTime.UtcNow.Ticks) - LastCached) / 10000) >
-                                   Settings.CacheRefreshRate + TickOffset);
+                                   Settings.CacheRefreshRate + TickOffset) ||
+                                  !Mathf.Approximately(CurrentTruncatedWidth, CurLabelWidth);
+
+    /// <summary>
+    /// The width that was used to cache the truncated label most recently. If this is not equal to the current
+    /// truncation width (<see cref="CurLabelWidth"/>), a recache will be triggered to calculate a new truncated string
+    /// </summary>
+    internal float CurrentTruncatedWidth { get; private set; }
 
     /// <summary>
     /// If false, then NONE of the permanent labels (all labels other than Current Task for now) should be drawn.<br />
@@ -75,17 +98,25 @@ internal class PawnCache
     // Note that pawn name is NOT included because it would just add extra overhead, not less
 
     internal string? Title { get; private set; }
+    internal float TitleLabelWidth { get; private set; }
     internal Color JobColor { get; private set; }
     internal bool DrawJobLabel { get; private set; }
     internal RoyalTitleDef? RoyalTitle { get; private set; }
+    internal float RoyaltyLabelWidth { get; private set; }
+    internal string? RoyalTitleString { get; private set; }
     internal Color RoyalTitleColor { get; private set; }
     internal bool DrawRoyalTitle { get; private set; }
     internal Precept_Role? IdeoRole { get; private set; }
+    internal float IdeoRoleLabelWidth { get; private set; }
+    internal string? IdeoRoleString { get; private set; }
     internal Color IdeoRoleColor { get; private set; }
     internal bool DrawIdeoRole { get; private set; }
     internal bool IdeoRoleAbilityIsReady { get; private set; }
     internal string? CurrentTask { get; private set; }
+    internal float CurrentTaskLabelWidth { get; private set; }
     internal Color CurrentTaskColor { get; private set; }
+
+    internal List<LabelType> LabelOrder { get; private set; }
 
     internal bool IsGuest { get; private set; }
     internal bool IsSlave { get; private set; }
@@ -96,10 +127,11 @@ internal class PawnCache
         get => HoveredPawn == Pawn;
         set
         {
+            if (value != IsHovered)
+                Dirty = true;
             if (value)
             {
                 // Trigger a recache whenever a pawn is first hovered
-                Dirty = HoveredPawn != Pawn;
                 HoveredPawn = Pawn;
             }
             // Clear the hovered pawn only if this pawn was the hovered pawn
@@ -113,6 +145,7 @@ internal class PawnCache
         Pawn = pawn;
         var rand = new Random(Pawn.GetHashCode());
         TickOffset = rand.Next(0, 60);
+        LabelOrder = new List<LabelType> { LabelType.JobTitle, LabelType.RoyalTitle, LabelType.IdeoRole };
         Recache();
         Cache[pawn.GetHashCode()] = this;
         Log.Trace($"Created new cache entry for pawn {pawn.Name}");
@@ -149,85 +182,21 @@ internal class PawnCache
                                    !HasCustomTitle);
         }
 
-        // Title/backstory
-        if (OnlyDrawCustomJobTitles)
-        {
-            Title = Pawn.story?.title;
-        }
-        else
-        {
-            Title = Pawn.story?.title ?? Pawn.story?.TitleShortCap;
-        }
+        LabelOrder = LabelsTracker_WorldComponent.Instance?[Pawn].LabelOrder!;
 
-        DrawJobLabel = GetDrawJobLabel();
+        CalcJobLabel();
+        CalcRoyaltyLabel();
+        CalcIdeoLabel();
+        CalcCurrentTaskLabel();
 
-        if (DrawJobLabel)
-            JobColor = LabelsTracker_WorldComponent.Instance?[Pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
+        CurrentTruncatedWidth = CurLabelWidth;
 
-        // Current task
-        if (Settings.DrawCurrentTask && IsHovered)
-        {
-            if (Pawn.ParentHolder is Caravan caravan)
-            {
-                CurrentTask = caravan.LabelCap + ": " + caravan.GetInspectString();
-                if (CurrentTask.Contains('\n'))
-                    CurrentTask = CurrentTask.Substring(0, CurrentTask.IndexOf('\n')).CapitalizeFirst();
-            }
-            else if (Pawn.jobs?.curDriver?.GetReport() is { } report)
-            {
-                CurrentTask = report.CapitalizeFirst();
-            }
-            else
-            {
-                CurrentTask = null;
-            }
-        }
-        else
-        {
-            CurrentTask = null;
-        }
-
-        if (CurrentTask != null) CurrentTaskColor = Settings.CurrentTaskLabelColor;
-
-        // Royalty things
-        if (ModsConfig.RoyaltyActive)
-        {
-            RoyalTitle = Pawn.royalty?.MainTitle();
-            DrawRoyalTitle = GetDrawRoyalTitle();
-            if (DrawRoyalTitle)
-                RoyalTitleColor = LabelsTracker_WorldComponent.Instance?[Pawn].RoyalTitleColor ??
-                                  Settings.RoyalTitleColorDefault;
-        }
-        else
-        {
-            DrawRoyalTitle = false;
-        }
-
-        // Ideology things
-#if !(v1_2)
+#if !v1_2
         IsGuest = (Pawn.HomeFaction != Faction.OfPlayer) && !(Pawn.IsSlaveOfColony);
-
-        if (ModsConfig.IdeologyActive)
-        {
-            IsSlave = Pawn.IsSlave;
-
-            IdeoRole = Pawn.ideo?.Ideo?.GetRole(Pawn);
-            if (IdeoRole != null)
-            {
-                IdeoRoleAbilityIsReady = IdeoRole?.AbilitiesFor(Pawn)?.FirstOrDefault()?.CanCast ?? false;
-            }
-
-            DrawIdeoRole = GetDrawIdeoRole();
-
-            if (DrawIdeoRole) IdeoRoleColor = CalcIdeoRoleColor();
-        }
-        else
-        {
-            IsSlave = false;
-            DrawIdeoRole = false;
-        }
+        IsSlave = ModsConfig.IdeologyActive && Pawn.IsSlave;
 #else
         IsGuest = Pawn.HomeFaction != Faction.OfPlayer;
+        IsSlave = false;
 #endif
 
         // Anomaly things
@@ -290,10 +259,41 @@ internal class PawnCache
         return Title != null;
     }
 
+    private void CalcJobLabel()
+    {
+        if (Pawn == null)
+        {
+            Title = null;
+            return;
+        }
+
+        if (OnlyDrawCustomJobTitles)
+        {
+            Title = Pawn.story?.title;
+        }
+        else
+        {
+            Title = Pawn.story?.title ?? Pawn.story?.TitleShortCap;
+        }
+
+        DrawJobLabel = GetDrawJobLabel();
+        if (!DrawJobLabel || Title == null) return;
+
+        if (Settings.TruncateLongLabels)
+        {
+            Title = TruncateLabel(Title, CurLabelWidth, Text.Font);
+        }
+
+        TitleLabelWidth = Text.CalcSize(Title).x;
+
+        JobColor = LabelsTracker_WorldComponent.Instance?[Pawn].BackstoryColor ?? Settings.DefaultJobLabelColor;
+    }
+
     internal bool GetJobLabel(out string label)
     {
         label = Title ?? Pawn?.story?.title ?? "";
-        return DrawJobLabel;
+
+        return DrawJobLabel && label != "";
     }
 
     private bool GetDrawRoyalTitle()
@@ -301,13 +301,50 @@ internal class PawnCache
         if (Pawn == null || !Settings.DrawRoyalTitles || !DrawAnyPermanentLabels || !ModsConfig.RoyaltyActive)
             return false;
 
+        if (!LabelsTracker_WorldComponent.Instance?[Pawn].ShowRoyalTitle ?? false)
+            return false;
+
         return RoyalTitle != null;
+    }
+
+    private void CalcRoyaltyLabel()
+    {
+        if (Pawn == null)
+        {
+            RoyalTitle = null;
+            RoyalTitleString = null;
+            return;
+        }
+
+        if (ModsConfig.RoyaltyActive)
+        {
+            RoyalTitle = Pawn.royalty?.MainTitle();
+            RoyalTitleString = RoyalTitle?.GetLabelCapFor(Pawn);
+
+            DrawRoyalTitle = GetDrawRoyalTitle();
+            if (!DrawRoyalTitle || RoyalTitleString == null) return;
+
+            if (Settings.TruncateLongLabels)
+            {
+                RoyalTitleString = TruncateLabel(RoyalTitleString, CurLabelWidth, Text.Font);
+            }
+
+            RoyaltyLabelWidth = Text.CalcSize(RoyalTitleString).x;
+
+            RoyalTitleColor = LabelsTracker_WorldComponent.Instance?[Pawn].RoyalTitleColor ??
+                              Settings.RoyalTitleColorDefault;
+        }
+        else
+        {
+            DrawRoyalTitle = false;
+        }
     }
 
     internal bool GetRoyalTitle(out string label)
     {
-        label = RoyalTitle?.LabelCap ?? "";
-        return DrawRoyalTitle;
+        label = RoyalTitleString ?? "";
+
+        return DrawRoyalTitle && RoyalTitleString != null;
     }
 
     private bool GetDrawIdeoRole()
@@ -315,13 +352,59 @@ internal class PawnCache
         if (Pawn == null || !Settings.DrawIdeoRoles || !DrawAnyPermanentLabels || !ModsConfig.IdeologyActive)
             return false;
 
+        if (!LabelsTracker_WorldComponent.Instance?[Pawn].ShowIdeoRole ?? false)
+            return false;
+
         return IdeoRole != null;
+    }
+
+    private void CalcIdeoLabel()
+    {
+        if (Pawn == null)
+        {
+            IdeoRole = null;
+            IdeoRoleString = null;
+            DrawIdeoRole = false;
+            return;
+        }
+#if !v1_2
+        if (ModsConfig.IdeologyActive)
+        {
+            IdeoRole = Pawn.ideo?.Ideo?.GetRole(Pawn);
+            IdeoRoleString = IdeoRole?.LabelCap;
+
+            DrawIdeoRole = GetDrawIdeoRole();
+            if (!DrawIdeoRole || IdeoRoleString == null) return;
+
+            if (Settings.TruncateLongLabels)
+            {
+                IdeoRoleString = TruncateLabel(IdeoRoleString, CurLabelWidth, Text.Font);
+                CurrentTruncatedWidth = CurLabelWidth;
+            }
+
+            IdeoRoleLabelWidth = Text.CalcSize(IdeoRoleString).x;
+
+            IdeoRoleAbilityIsReady = IdeoRole?.AbilitiesFor(Pawn)?.FirstOrDefault()?.CanCast ?? false;
+            IdeoRoleColor = CalcIdeoRoleColor();
+        }
+        else
+        {
+            DrawIdeoRole = false;
+        }
+#else
+        IdeoRole = null;
+        IdeoRoleString = null;
+        DrawIdeoRole = false;
+        IdeoRoleAbilityIsReady = false;
+        IdeoRoleColor = null;
+#endif
     }
 
     internal bool GetIdeoRole(out string label)
     {
-        label = IdeoRole?.LabelCap ?? "";
-        return DrawIdeoRole;
+        label = IdeoRoleString ?? "";
+
+        return DrawIdeoRole && IdeoRoleString != null;
     }
 
     private Color CalcIdeoRoleColor()
@@ -335,11 +418,49 @@ internal class PawnCache
             return LabelsTracker_WorldComponent.Instance?[Pawn].IdeoRoleColor ?? fallbackColor;
 
         // Get a cached color override (or null if no override has been set)
-        Color? ideoColor = LabelsTracker_WorldComponent.Instance?[Pawn].IdeoRoleColor ?? Color.Lerp(IdeoRole.ideo?.colorDef?.color ?? fallbackColor, Color.white, 0.35f);
+        Color? ideoColor = LabelsTracker_WorldComponent.Instance?[Pawn].IdeoRoleColor ??
+                           Color.Lerp(IdeoRole.ideo?.colorDef?.color ?? fallbackColor, Color.white, 0.35f);
 
         if (Settings.RoleColorOnlyIfAbilityAvailable && !IdeoRoleAbilityIsReady)
             return fallbackColor;
 
         return ideoColor.Value;
+    }
+
+    private void CalcCurrentTaskLabel()
+    {
+        if (Pawn == null)
+        {
+            CurrentTask = null;
+            return;
+        }
+
+        if (Settings.DrawCurrentTask && IsHovered)
+        {
+            if (Pawn.ParentHolder is Caravan caravan)
+            {
+                CurrentTask = caravan.LabelCap + ": " + caravan.GetInspectString();
+                if (CurrentTask.Contains('\n'))
+                    CurrentTask = CurrentTask.Substring(0, CurrentTask.IndexOf('\n')).CapitalizeFirst();
+            }
+            else if (Pawn.jobs?.curDriver?.GetReport() is { } report)
+            {
+                CurrentTask = report.CapitalizeFirst();
+            }
+            else
+            {
+                CurrentTask = null;
+            }
+        }
+        else
+        {
+            CurrentTask = null;
+        }
+
+        if (CurrentTask == null) return;
+
+        CurrentTaskLabelWidth = Text.CalcSize(CurrentTask).x;
+
+        CurrentTaskColor = Settings.CurrentTaskLabelColor;
     }
 }

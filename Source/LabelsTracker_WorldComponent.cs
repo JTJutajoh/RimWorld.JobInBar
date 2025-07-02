@@ -50,6 +50,9 @@ public class LabelData : IExposable
 
     public bool ShowRoyalTitle = true;
 
+    internal List<LabelType> LabelOrder = new() { LabelType.JobTitle, LabelType.RoyalTitle, LabelType.IdeoRole };
+
+
     public LabelData()
     {
         Log.Trace("Creating new empty label data");
@@ -78,6 +81,8 @@ public class LabelData : IExposable
 
         ShowIdeoRole = other.ShowIdeoRole;
         IdeoRoleColor = other.IdeoRoleColor;
+
+        LabelOrder = other.LabelOrder.ListFullCopy()!;
     }
 
     internal void SetColor(LabelType type, Color? color)
@@ -100,6 +105,16 @@ public class LabelData : IExposable
         }
     }
 
+    internal void ShiftLabelOrder(LabelType type, int shift)
+    {
+        var index = LabelOrder.IndexOf(type);
+        if (index == -1) return;
+
+        var newIndex = (index + shift + LabelOrder.Count) % LabelOrder.Count;
+        LabelOrder.RemoveAt(index);
+        LabelOrder.Insert(newIndex, type);
+    }
+
     public void ExposeData()
     {
         Scribe_References.Look(ref Pawn, "pawn");
@@ -111,6 +126,12 @@ public class LabelData : IExposable
         Scribe_Values.Look(ref _ideoRoleColor, "IdeoRoleColor");
         Scribe_Values.Look(ref ShowRoyalTitle, "ShowRoyalTitle", true);
         Scribe_Values.Look(ref ShowIdeoRole, "ShowIdeoRole", true);
+
+        Scribe_Collections.Look(ref LabelOrder, "LabelOrder", LookMode.Value);
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            LabelOrder ??= new List<LabelType> { LabelType.JobTitle, LabelType.RoyalTitle, LabelType.IdeoRole };
+        }
     }
 }
 

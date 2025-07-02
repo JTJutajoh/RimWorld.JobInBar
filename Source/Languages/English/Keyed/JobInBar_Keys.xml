@@ -4,6 +4,9 @@
     <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
     <JobInBar_JobLabelColor>Label Color</JobInBar_JobLabelColor>
     <JobInBar_ShowJobLabelFor>Show job title in colonist bar</JobInBar_ShowJobLabelFor>
+    <JobInBar_TitleOptionsRow>Job Title</JobInBar_TitleOptionsRow>
+    <JobInBar_RoyaltyOptionsRow>Royal Title</JobInBar_RoyaltyOptionsRow>
+    <JobInBar_IdeoRoleOptionsRow>Ideology Role</JobInBar_IdeoRoleOptionsRow>
     <JobInBar_BackstoryJobTitle>Job Title/Backstory</JobInBar_BackstoryJobTitle>
     <JobInBar_ShowRoyaltyLabelFor>Show Royalty Title Label</JobInBar_ShowRoyaltyLabelFor>
     <JobInBar_RoyaltyTitle>Royal title</JobInBar_RoyaltyTitle>
