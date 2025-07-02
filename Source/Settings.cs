@@ -14,7 +14,7 @@ internal class Settings : ModSettings
     private const float MiscSectionHeight = 158f + 8f;
     private const float JobTitleSectionHeight = 430f;
     private const float CurrentTaskSectionHeight = 450f;
-    private const float IdeologySectionHeight = 180f;
+    private const float IdeologySectionHeight = 200f;
     private const float RoyaltySectionHeight = 430f;
     private const float DisplaySectionHeight = 700f;
     private const float ColorPickersHeight = 240f;
@@ -707,7 +707,7 @@ internal class Settings : ModSettings
     [Setting] internal static bool ModEnabled = true;
 
     // milliseconds
-    [Setting] internal static float CacheRefreshRate = 250f;
+    [Setting] internal static float CacheRefreshRate = 1000f;
 
     [Setting] internal static bool EnablePlaySettingToggle = true;
 
@@ -727,7 +727,7 @@ internal class Settings : ModSettings
     [Setting] internal static int ExtraOffsetPerLine = -4; // Legacy setting that I don't think anyone used
     [Setting] internal static bool OffsetEquippedByLabels = true;
 
-    [Setting] internal static float MinColonistBarScale = 0.9f;
+    [Setting] internal static float MinColonistBarScale = 0.8f;
 
     [Setting] internal static MinScaleBehavior MinColonistBarScaleBehavior =
         MinScaleBehavior.ShowOnlyCustomExceptOnHover;
