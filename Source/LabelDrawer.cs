@@ -11,40 +11,32 @@ internal static class LabelDrawer
     /// </summary>
     /// <param name="pos">The position at which to draw the label.</param>
     /// <param name="labelToDraw">The text of the label to draw.</param>
+    /// <param name="width"></param>
     /// <param name="labelColor">The color of the label to draw.</param>
-    /// <param name="truncateToWidth">The maximum width, in pixels, of the label after truncation.</param>
-    /// <param name="truncate">A value indicating whether to truncate the label if it exceeds the specified width.</param>
+    /// <param name="anchor"></param>
     /// <param name="drawBg"></param>
-    internal static void DrawCustomLabel(Vector2 pos, string labelToDraw, Color labelColor,
-        float truncateToWidth = 9999f, bool truncate = true, bool drawBg = true)
+    /// <param name="extraHeight"></param>
+    internal static void DrawCustomLabel(Vector2 pos, string labelToDraw, float width, Color labelColor,
+        TextAnchor anchor, bool drawBg = true, float extraHeight = 0f)
     {
-        // Save the current font and restore it after drawing the label
-        Text.Font = GameFont.Tiny;
-
-        if (truncate && Settings.TruncateLongLabels)
-            labelToDraw = LabelUtils.TruncateLabel(labelToDraw, truncateToWidth, Text.Font);
-
-        var pawnLabelNameWidth = Text.CalcSize(labelToDraw).x;
-
-        var rect = LabelUtils.GetLabelRect(pos, pawnLabelNameWidth);
-        var bgRect = LabelUtils.LabelBGRect(pos, pawnLabelNameWidth);
-
         if (drawBg)
-            GUI.DrawTexture(bgRect, TexUI.GrayTextBG!); //BUG: If Tiny font is disabled, the bg doesn't adjust
+        {
+            var labelBgRect = new Rect(pos.x - (width / 2f), pos.y, width, 12f);
+            GUI.DrawTexture(labelBgRect, TexUI.GrayTextBG!); //BUG: If Tiny font is disabled, the bg doesn't adjust
+        }
 
         GUI.color = labelColor;
-        Text.Font = GameFont.Tiny; //TODO: Dynamically calculate font size instead of just hard coding the rect sizes
-        Widgets.Label(rect, labelToDraw);
-
-        // Reset the GUI color to white
-        GUI.color = Color.white;
+        Text.Anchor = anchor;
+        var labelRect = new Rect(pos.x - width / 2f, pos.y - 2f, width, 16f + extraHeight);
+        Widgets.Label(labelRect, labelToDraw);
         Text.Anchor = TextAnchor.UpperLeft;
-        Text.Font = GameFont.Small;
+        GUI.color = Color.white;
     }
 
-    internal static void DrawLabels(Pawn colonist, PawnCache? cache, Vector2 pos, ColonistBar bar, Rect rect,
-        float truncateToWidth = 9999f)
+    internal static void DrawLabels(Pawn colonist, PawnCache? cache, Vector2 pos, ColonistBar bar, Rect rect)
     {
+        if (Event.current.type != EventType.Repaint) return;
+
         if (cache is null)
         {
             cache = PawnCache.GetOrCache(colonist);
@@ -58,9 +50,6 @@ internal static class LabelDrawer
 
         cache.IsHovered = Mouse.IsOver(rect);
 
-        if (cache is { OnlyDrawWhenHovered: true, IsHovered: false })
-            return;
-
         var lineOffset =
             new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
@@ -68,47 +57,76 @@ internal static class LabelDrawer
         pos = new Vector2(pos.x, pos.y);
         if (cache.DrawAnyPermanentLabels)
         {
-            //TODO: Come up with a way of letting the user customize label order
-            try
+            Text.Font = GameFont.Tiny;
+            foreach (var label in cache.LabelOrder)
             {
-                if (cache.GetJobLabel(out var jobLabel))
+                var labelDrawn = false;
+                switch (label)
                 {
-                    DrawCustomLabel(pos, jobLabel, cache.JobColor, truncateToWidth,
-                        drawBg: Settings.DrawJobTitleBackground);
-                    pos += lineOffset;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e, "Job label", true);
-            }
+                    case LabelType.JobTitle:
+                        try
+                        {
+                            if (cache.GetJobLabel(out var jobLabel))
+                            {
+                                DrawCustomLabel(pos,
+                                    jobLabel,
+                                    cache.TitleLabelWidth,
+                                    cache.JobColor,
+                                    TextAnchor.MiddleCenter,
+                                    drawBg: Settings.DrawJobTitleBackground);
+                                labelDrawn = true;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Exception(e, "Job label", true);
+                        }
 
-            try
-            {
-                if (cache.GetRoyalTitle(out var royalTitle))
-                {
-                    DrawCustomLabel(pos, royalTitle, cache.RoyalTitleColor, truncateToWidth,
-                        drawBg: Settings.DrawRoyalTitleBackground);
-                    pos += lineOffset;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e, "Royalty label", true);
-            }
+                        break;
+                    case LabelType.RoyalTitle:
+                        try
+                        {
+                            if (cache.GetRoyalTitle(out var royalTitle))
+                            {
+                                DrawCustomLabel(pos,
+                                    royalTitle,
+                                    cache.RoyaltyLabelWidth,
+                                    cache.RoyalTitleColor,
+                                    TextAnchor.MiddleCenter,
+                                    drawBg: Settings.DrawRoyalTitleBackground);
+                                labelDrawn = true;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Exception(e, "Royalty label", true);
+                        }
 
-            try
-            {
-                if (cache.GetIdeoRole(out var ideoRole))
-                {
-                    DrawCustomLabel(pos, ideoRole, cache.IdeoRoleColor, truncateToWidth,
-                        drawBg: Settings.DrawIdeoRoleBackground);
-                    pos += lineOffset;
+                        break;
+                    case LabelType.IdeoRole:
+                        try
+                        {
+                            if (cache.GetIdeoRole(out var ideoRole))
+                            {
+                                DrawCustomLabel(pos,
+                                    ideoRole,
+                                    cache.IdeoRoleLabelWidth,
+                                    cache.IdeoRoleColor,
+                                    TextAnchor.MiddleCenter,
+                                    drawBg: Settings.DrawIdeoRoleBackground);
+                                labelDrawn = true;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Exception(e, "Ideology role label", true);
+                        }
+
+                        break;
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e, "Ideology role label", true);
+
+                if (labelDrawn)
+                    pos += lineOffset;
             }
         }
 
@@ -124,8 +142,13 @@ internal static class LabelDrawer
                         (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
                         pos.y += 28f + Settings.OffsetEquippedExtra;
 #endif
-                DrawCustomLabel(pos, cache.CurrentTask, cache.CurrentTaskColor, truncate: false,
-                    drawBg: Settings.DrawCurrentTaskBackground);
+                DrawCustomLabel(pos,
+                    cache.CurrentTask,
+                    cache.CurrentTaskLabelWidth,
+                    cache.CurrentTaskColor,
+                    TextAnchor.UpperCenter,
+                    drawBg: Settings.DrawCurrentTaskBackground,
+                    extraHeight: 48f);
                 // pos += lineOffset;
             }
         }
@@ -133,5 +156,6 @@ internal static class LabelDrawer
         {
             Log.Exception(e, "Current job label", true);
         }
+        Text.Font = GameFont.Small;
     }
 }

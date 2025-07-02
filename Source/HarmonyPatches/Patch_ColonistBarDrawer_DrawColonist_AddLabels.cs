@@ -20,6 +20,8 @@ namespace JobInBar.HarmonyPatches
         {
             if (!Settings.ModEnabled) return;
 
+            if (Event.current.type != EventType.Repaint) return;
+
             var bar = Find.ColonistBar;
             if (bar is null)
             {
@@ -33,6 +35,7 @@ namespace JobInBar.HarmonyPatches
 
             try
             {
+                PawnCache.CurLabelWidth = rect.width + bar.SpaceBetweenColonistsHorizontal;
                 var cache = PawnCache.GetOrCache(colonist);
                 // Log.Trace($"Now: {DateTime.UtcNow.Ticks} - {cache.LastCached} / 10000 = {(DateTime.UtcNow.Ticks - cache.LastCached) / 10000} > {Settings.CacheRefreshRate} + {cache.TickOffset}");
                 if (cache.NeedsRecache)
@@ -40,8 +43,7 @@ namespace JobInBar.HarmonyPatches
                     cache = cache.Recache();
                 }
 
-                LabelDrawer.DrawLabels(colonist, cache, pos, bar, rect,
-                    rect.width + bar.SpaceBetweenColonistsHorizontal);
+                LabelDrawer.DrawLabels(colonist, cache, pos, bar, rect);
             }
             catch (Exception e)
             {

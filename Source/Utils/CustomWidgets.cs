@@ -67,13 +67,13 @@ internal static class CustomWidgets
         var colorLabel = exampleText;
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2f, settingsRect.width, 16f),
             ColorLibrary.DarkBrown);
-        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, color,
+        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x, color, TextAnchor.MiddleCenter,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
 
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2, settingsRect.width, 16f),
             ColorLibrary.Beige);
-        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, color,
+        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x, color, TextAnchor.MiddleCenter,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
 
@@ -364,5 +364,13 @@ internal static class CustomWidgets
         if (Widgets.ButtonImage(rect, Icons.LabelSettingsIcon))
             Find.WindowStack?.Add(new Dialog_LabelSettings(pawn));
         TooltipHandler.TipRegionByKey(rect, "JobInBar_NamePawn_GearButton");
+    }
+
+    internal static void DrawSeparatorLine(float x, ref float curY, float width)
+    {
+        GUI.color = Widgets.SeparatorLineColor;
+        Widgets.DrawLineHorizontal(x, curY, width);
+        GUI.color = Color.white;
+        curY += 3f;
     }
 }

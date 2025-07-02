@@ -9,6 +9,9 @@
   <PropertyGroup Condition="'$(Configuration)' == '1.5'">
     <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld 1.5</RimWorldDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == '1.5 Debug'">
+    <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld 1.5</RimWorldDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == '1.4'">
     <RimWorldDir>D:\Games\Steam\steamapps\common\RimWorld 1.4</RimWorldDir>
   </PropertyGroup>

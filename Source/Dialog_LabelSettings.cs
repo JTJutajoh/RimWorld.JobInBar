@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using RimWorld;
 using UnityEngine;
@@ -8,10 +9,12 @@ namespace JobInBar;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal class Dialog_LabelSettings : Window
 {
+    private const float RowHeight = 48f;
     private const float ButtonHeight = 48f;
     private const float ButtonWidth = 128f;
     private const float BottomButtonsMargin = 12f;
     private const float ColorPickerSectionWidth = 340f;
+    private const float ColorPickerSectionHeight = 254f;
 
     private readonly LabelsTracker_WorldComponent _labelsComp;
 
@@ -77,7 +80,7 @@ internal class Dialog_LabelSettings : Window
         }
     }
 
-    public override Vector2 InitialSize => new(700f, 350f);
+    public override Vector2 InitialSize => new(700f, 400f);
 
     public override void DoWindowContents(Rect inRect)
     {
@@ -88,7 +91,7 @@ internal class Dialog_LabelSettings : Window
         DoOptions(optionsRect);
 
         var colorPickerRect = innerRect.RightPartPixels(ColorPickerSectionWidth)
-            .MiddlePartPixels(ColorPickerSectionWidth, innerRect.height);
+            .MiddlePartPixels(ColorPickerSectionWidth, ColorPickerSectionHeight);
         DoColorPickerSection(colorPickerRect);
 
         var buttonRowRect = inRect.BottomPartPixels(ButtonHeight);
@@ -115,130 +118,235 @@ internal class Dialog_LabelSettings : Window
         curY += 3f;
         GUI.color = Color.white;
 
-        // Name
-        DoLabelOptionsPaletteRow(
-            innerRect,
-            ref curY,
-            "JobInBar_NameColor".Translate(),
-            false,
-            CurLabelData.NameColor ?? GenMapUI.DefaultThingLabelColor,
-            LabelType.Name,
-            0.2f
-        );
-        // Title
-        if (Settings.DrawJobTitle)
+        if (Settings.AllowNameColors)
         {
-            DoTitleTextfieldRow(innerRect, ref curY, CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor, 0.1f);
-            DoLabelOptionsCheckboxRow(
+            // Name
+            DoLabelOptionsPaletteRow(
                 innerRect,
                 ref curY,
-                "JobInBar_ShowJobLabelFor".Translate(),
-                ref CurLabelData.ShowBackstory,
-                !Settings.DrawJobTitle || cache.Title == null,
-                CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor,
-                LabelType.JobTitle,
-                0.2f
+                "JobInBar_NameColor".Translate(),
+                false,
+                CurLabelData.NameColor ?? GenMapUI.DefaultThingLabelColor,
+                LabelType.Name
             );
+            CustomWidgets.DrawSeparatorLine(innerRect.xMin, ref curY, innerRect.width);
         }
-        if (ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles)
-            // Royal title
-            DoLabelOptionsCheckboxRow(
-                innerRect,
-                ref curY,
-                "JobInBar_ShowRoyaltyLabelFor".Translate(),
-                ref CurLabelData.ShowRoyalTitle,
-                cache.RoyalTitle == null,
-                CurLabelData.RoyalTitleColor ?? Settings.RoyalTitleColorDefault,
-                LabelType.RoyalTitle,
-                0.1f
-            );
 
-        if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles)
-            // Ideo role
-            DoLabelOptionsCheckboxRow(
-                innerRect,
-                ref curY,
-                "JobInBar_ShowIdeoLabelFor".Translate(),
-                ref CurLabelData.ShowIdeoRole,
-                cache.IdeoRole == null,
-                CurLabelData.IdeoRoleColor ?? GenMapUI.DefaultThingLabelColor,
-                LabelType.IdeoRole,
-                0.2f
-            );
+        var enabledLabels = new List<LabelType>();
+        foreach (var label in _labelsComp[_pawn].LabelOrder)
+        {
+            switch (label)
+            {
+                case LabelType.JobTitle when
+                    !Settings.DrawJobTitle:
+                case LabelType.RoyalTitle when
+                    !(ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && cache.RoyalTitle != null):
+                case LabelType.IdeoRole when
+                    !(ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && cache.IdeoRole != null):
+                case LabelType.Name:
+                    break;
+                default:
+                    enabledLabels.Add(label);
+                    break;
+            }
+        }
+
+        var labelOrderCount = enabledLabels.Count;
+        for (var i = 0; i < labelOrderCount; i++)
+        {
+            var label = enabledLabels[i];
+            switch (label)
+            {
+                case LabelType.JobTitle:
+                    if (Settings.DrawJobTitle)
+                    {
+                        DoTitleRow(innerRect, ref curY, CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor,
+                            cache, i, labelOrderCount);
+                    }
+
+                    break;
+                case LabelType.RoyalTitle:
+                    if (ModsConfig.RoyaltyActive && Settings.DrawRoyalTitles && cache.RoyalTitle != null)
+                    {
+                        // Royal title
+                        DoLabelOptionsCheckboxRow(
+                            innerRect,
+                            ref curY,
+                            RowHeight,
+                            "JobInBar_RoyaltyOptionsRow".Translate(),
+                            ref CurLabelData.ShowRoyalTitle,
+                            cache.RoyalTitle == null,
+                            CurLabelData.RoyalTitleColor ?? Settings.RoyalTitleColorDefault,
+                            LabelType.RoyalTitle,
+                            i,
+                            labelOrderCount
+                        );
+                    }
+
+                    break;
+                case LabelType.IdeoRole:
+                    if (ModsConfig.IdeologyActive && Settings.DrawIdeoRoles && cache.IdeoRole != null)
+                    {
+                        // Ideo role
+                        DoLabelOptionsCheckboxRow(
+                            innerRect,
+                            ref curY,
+                            RowHeight,
+                            "JobInBar_IdeoRoleOptionsRow".Translate(),
+                            ref CurLabelData.ShowIdeoRole,
+                            cache.IdeoRole == null,
+                            CurLabelData.IdeoRoleColor ?? GenMapUI.DefaultThingLabelColor,
+                            LabelType.IdeoRole,
+                            i,
+                            labelOrderCount
+                        );
+                    }
+
+                    break;
+            }
+
+            if (i < labelOrderCount - 1)
+                CustomWidgets.DrawSeparatorLine(innerRect.xMin, ref curY, innerRect.width);
+        }
     }
 
     private void DoLabelOptionsPaletteRow(Rect inRect, ref float curY, string label, bool disabled, Color labelColor,
-        LabelType labelType, float bgAlpha = 0f)
+        LabelType labelType)
     {
-        var lineHeight = Text.LineHeightOf(GameFont.Small);
-        var rowRect = new Rect(inRect.xMin, curY, inRect.width, lineHeight);
-        var color = ColorLibrary.Grey.WithAlpha(bgAlpha);
-        Widgets.DrawBoxSolid(rowRect, color);
+        var rowRect = new Rect(inRect.xMin, curY, inRect.width, RowHeight);
+
+        if (!disabled && Widgets.ButtonInvisible(rowRect, false))
+        {
+            _curLabelType = labelType;
+            _hexStringBuffer = null;
+        }
+
         if (_curLabelType == labelType)
             Widgets.DrawHighlight(rowRect);
+
         GUI.color = disabled ? Widgets.InactiveColor : labelColor;
         Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(rowRect with { xMax = rowRect.xMax - lineHeight }, label);
+        Widgets.Label(rowRect with { xMin = rowRect.xMin + 32f }, label);
         Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
 
-        if (!disabled)
-            if (Widgets.ButtonImage(new Rect(rowRect.xMax - lineHeight * 2f, curY, lineHeight, lineHeight),
-                    Icons.PaletteIcon, labelColor.WithAlpha(_curLabelType == labelType ? 0.9f : 0.7f),
-                    labelColor.WithAlpha(1)))
-            {
-                _curLabelType = labelType;
-                _hexStringBuffer = null;
-            }
-
-        curY += 2f + lineHeight;
+        curY += 2f + RowHeight;
     }
 
-    private void DoTitleTextfieldRow(Rect inRect, ref float curY, Color labelColor, float bgAlpha)
+    private void DoTitleRow(Rect inRect, ref float curY, Color labelColor, PawnCache cache, int i, int labelOrderCount)
     {
-        var lineHeight = Text.LineHeightOf(GameFont.Small);
-        var rowRect = new Rect(inRect.xMin, curY, inRect.width, lineHeight);
-        Widgets.DrawBoxSolid(rowRect, ColorLibrary.Grey.WithAlpha(bgAlpha));
+        const float height = RowHeight + 8f;
+        if (_curLabelType == LabelType.JobTitle)
+            Widgets.DrawHighlight(inRect with { yMin = curY, height = height });
+
+        if (Widgets.ButtonInvisible(
+                inRect with
+                {
+                    xMin = inRect.xMin + 4f + (height / 2f) + 4f,
+                    xMax = inRect.xMax - (inRect.width * 0.4f) - 4f,
+                    yMin = curY,
+                    height = height
+                }, false))
+        {
+            _curLabelType = LabelType.JobTitle;
+            _hexStringBuffer = null;
+        }
+
+        var reorderButtonsRect = (inRect with { xMin = inRect.xMin + 4f, yMin = curY, height = height });
+        reorderButtonsRect = reorderButtonsRect.LeftPartPixels(RowHeight / 2f)
+            .MiddlePartPixels(RowHeight / 2f, RowHeight);
+        DoLabelOptionsCheckboxRow(
+            inRect,
+            ref curY,
+            RowHeight / 2f,
+            "JobInBar_TitleOptionsRow".Translate(),
+            ref CurLabelData.ShowBackstory,
+            !Settings.DrawJobTitle || cache.Title == null,
+            CurLabelData.BackstoryColor ?? DefaultBackstoryTitleColor,
+            LabelType.JobTitle,
+            i,
+            labelOrderCount,
+            false,
+            reorderButtonsRect
+        );
+        const float bottomHeight = RowHeight / 2f;
+        var rowRect = new Rect(inRect.xMin, curY, inRect.width, bottomHeight);
 
         GUI.color = labelColor;
         Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(rowRect.LeftPart(0.5f), "JobInBar_CustomJobTitle".Translate());
+        Widgets.Label(rowRect with { xMin = rowRect.xMin + 32f, xMax = rowRect.xMax - 48f - 8f - 4f },
+            "JobInBar_CustomJobTitle".Translate());
         Text.Anchor = TextAnchor.UpperLeft;
+
         GUI.color = Color.white;
-        CharacterCardUtility.DoNameInputRect(rowRect.RightPart(0.4f), ref _pawn.story!.title, 12);
+        var textFieldRect = rowRect.RightPart(0.4f);
+        textFieldRect = textFieldRect.MiddlePartPixels(textFieldRect.width, 24f);
+        CharacterCardUtility.DoNameInputRect(textFieldRect, ref _pawn.story!.title, 12);
         if (_pawn.story!.title?.Length == 0)
             _pawn.story!.title = null!;
 
-        curY += 2f + lineHeight;
+        curY += 2f + bottomHeight + 8f;
     }
 
-    private void DoLabelOptionsCheckboxRow(Rect inRect, ref float curY, string label, ref bool checkOn, bool disabled,
-        Color labelColor, LabelType labelType, float bgAlpha = 0f)
+    private void DoLabelOptionsCheckboxRow(
+        Rect inRect,
+        ref float curY,
+        float height,
+        string label,
+        ref bool checkOn,
+        bool disabled,
+        Color labelColor,
+        LabelType labelType,
+        int index,
+        int count,
+        bool highlight = true,
+        Rect? reorderButtonsRect = null
+    )
     {
-        var lineHeight = Text.LineHeightOf(GameFont.Small);
-        var rowRect = new Rect(inRect.xMin, curY, inRect.width, lineHeight);
-        var color = ColorLibrary.Grey.WithAlpha(bgAlpha);
-        if (_curLabelType == labelType)
+        var rowRect = new Rect(inRect.xMin, curY, inRect.width, height);
+
+        if (!disabled && Widgets.ButtonInvisible(
+                rowRect with { xMin = rowRect.xMin + 4f + (height / 2f) + 4f, xMax = rowRect.xMax - 24f - 4f },
+                false))
+        {
+            _curLabelType = labelType;
+            _hexStringBuffer = null;
+        }
+
+        reorderButtonsRect ??= (rowRect with { xMin = rowRect.xMin + 4f }).LeftPartPixels(height / 2f)
+            .MiddlePartPixels(height / 2f, height);
+        if (!disabled && checkOn && index > 0 && Widgets.ButtonImage(reorderButtonsRect.Value.TopHalf(), TexButton.ReorderUp!, Color.white))
+        {
+            CurLabelData.ShiftLabelOrder(labelType, -1);
+        }
+
+        if (!disabled && checkOn && index < count - 1 &&
+            Widgets.ButtonImage(reorderButtonsRect.Value.BottomHalf(), TexButton.ReorderDown!, Color.white))
+        {
+            CurLabelData.ShiftLabelOrder(labelType, +1);
+        }
+
+        if (highlight && _curLabelType == labelType)
             Widgets.DrawHighlight(rowRect);
-        Widgets.DrawBoxSolid(rowRect, color);
+
         GUI.color = disabled ? Widgets.InactiveColor : labelColor;
         Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(rowRect with { xMax = rowRect.xMax - lineHeight }, label);
+        Widgets.Label(rowRect with { xMin = rowRect.xMin + 32f, xMax = rowRect.xMax - 48f - 8f - 4f }, label);
         Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
 
-        if (!disabled)
-            if (Widgets.ButtonImage(new Rect(rowRect.xMax - lineHeight * 2f, curY, lineHeight, lineHeight),
-                    Icons.PaletteIcon, labelColor.WithAlpha(_curLabelType == labelType ? 0.9f : 0.7f),
-                    labelColor.WithAlpha(1)))
-            {
-                _curLabelType = labelType;
-                _hexStringBuffer = null;
-            }
+        var buttonsRect = rowRect.RightPartPixels(48f + 8f).MiddlePartPixels(48f + 8f, 24f);
+        // if (!disabled)
+        //     if (Widgets.ButtonImage(buttonsRect.LeftPartPixels(24f), Icons.PaletteIcon,
+        //             labelColor.WithAlpha(_curLabelType == labelType ? 0.9f : 0.7f), labelColor.WithAlpha(1)))
+        //     {
+        //         _curLabelType = labelType;
+        //         _hexStringBuffer = null;
+        //     }
 
-        Widgets.Checkbox(rowRect.xMax - lineHeight, curY, ref checkOn, lineHeight, disabled, true);
+        Widgets.Checkbox(buttonsRect.xMax - 24f, buttonsRect.yMin, ref checkOn, 24f, disabled, true);
 
-        curY += 2f + lineHeight;
+        curY += 2f + height;
     }
 
     private void DoColorPickerSection(Rect inRect)
@@ -367,7 +475,8 @@ internal class Dialog_LabelSettings : Window
 
     private void OnCancel()
     {
-        CurLabelData = _oldLabelData;
+        // CurLabelData = _oldLabelData;
+        _labelsComp[_pawn] = _oldLabelData;
         _pawn.story!.title = _oldTitle!;
     }
 
