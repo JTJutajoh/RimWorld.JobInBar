@@ -50,11 +50,17 @@
         <OutputPath>..\1.6\Assemblies\</OutputPath>
         <DefineConstants>v1_6</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '1.6 Debug|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.6 Debug|AnyCPU'">
         <OutputPath>..\1.6\Assemblies\</OutputPath>
         <DefineConstants>v1_6;DEBUG</DefineConstants>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '1.5 Debug|AnyCPU' ">
+      <OutputPath>..\1.5\Assemblies\</OutputPath>
+      <DefineConstants>v1_5;DEBUG</DefineConstants>
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>pdbonly</DebugType>
     </PropertyGroup>
     <ItemGroup Label="Dependencies">
         <Reference Include="System">
@@ -116,7 +122,6 @@
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Settings.cs"/>
         <Compile Include="Utils\CustomWidgets.cs"/>
-        <Compile Include="Utils\LabelUtils.cs"/>
         <Compile Include="Utils\LegacySupport.cs"/>
         <Compile Include="Utils\LogPrefixed.cs"/>
     </ItemGroup>
