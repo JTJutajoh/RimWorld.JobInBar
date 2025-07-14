@@ -53,11 +53,11 @@ internal static class LabelDrawer
         var lineOffset =
             new Vector2(0, Text.LineHeightOf(GameFont.Tiny) + Settings.ExtraOffsetPerLine); // 1.3+ only
 
+        Text.Font = GameFont.Tiny;
         // Apply position offsets
         pos = new Vector2(pos.x, pos.y);
         if (cache.DrawAnyPermanentLabels)
         {
-            Text.Font = GameFont.Tiny;
             foreach (var label in cache.LabelOrder)
             {
                 var labelDrawn = false;
@@ -156,6 +156,7 @@ internal static class LabelDrawer
         {
             Log.Exception(e, "Current job label", true);
         }
+
         Text.Font = GameFont.Small;
     }
 }
