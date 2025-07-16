@@ -19,7 +19,8 @@ internal static class Patch_PawnNameColorUtility_PawnNameColorOf
     {
         if (!Settings.ModEnabled || !Settings.AllowNameColors) return;
         // Skip pawns that don't have LabelData cached
-        if (LabelsTracker_WorldComponent.Instance?.GetExistingLabelData(pawn) is not { } labelData) return;
+        if (!pawn.TryGetLabelData(out var labelData) || labelData?.NameColor == null)
+            return;
         // Mostly copied from vanilla version of the same method.
         // Ignore pawns that should have specific label colors
         if (pawn.MentalStateDef != null

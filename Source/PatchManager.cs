@@ -8,41 +8,6 @@ using JetBrains.Annotations;
 namespace JobInBar;
 
 /// <summary>
-///     Classes with this attribute are checked against the supplied condition(s) before patching
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-internal class HarmonyPatchLegacySupportAttribute : Attribute
-{
-    /// <summary>
-    ///     If this patch is skipped due to wrong RW version, this optional string will be included in the warning.
-    /// </summary>
-    internal readonly string? UnsupportedVersionString;
-
-    internal HarmonyPatchLegacySupportAttribute(
-        RWVersion supportedVersion = RWVersion.All,
-        RWVersion unsupportedVersion = RWVersion.None,
-        string? unsupportedVersionString = null
-    )
-    {
-        SupportedVersion = supportedVersion & ~unsupportedVersion;
-        UnsupportedVersionString = unsupportedVersionString;
-    }
-
-    internal RWVersion SupportedVersion { get; }
-
-    internal bool IsSupportedVersion => (LegacySupport.CurrentRWVersion & SupportedVersion) != 0;
-
-    internal bool ConditionResult => IsSupportedVersion;
-}
-
-/// <summary>
-///     Patch classes with this attribute will have Harmony.DEBUG enabled for patching
-/// </summary>
-internal class HarmonyDebugAttribute : Attribute
-{
-} //TODO: Implement this
-
-/// <summary>
 ///     Helper class for all Harmony patching functionality.
 /// </summary>
 [StaticConstructorOnStartup]
@@ -50,6 +15,8 @@ internal class HarmonyDebugAttribute : Attribute
 internal static class PatchManager
 {
     internal static readonly Harmony Harmony;
+
+    internal static List<string> AllPatchCategories = new();
 
     private static int _loadedPatches;
     private static int _failedPatches;
@@ -83,13 +50,19 @@ internal static class PatchManager
 
     private static void PatchAll()
     {
-        PatchCategory("AddLabels");
-        PatchCategory("ColorName");
-        PatchCategory("NamePawn");
-        PatchCategory("BioTabButton");
-        PatchCategory("OffsetEquippedWeapon");
-        PatchCategory("PlaySettings");
-        PatchCategory("StopTracking");
+        AllPatchCategories = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .SelectMany(t => t.GetCustomAttributes(typeof(HarmonyPatchCategory), true)
+                .Cast<HarmonyPatchCategory>()
+                .Select(attr => attr.info?.category))
+            .Where(category => !string.IsNullOrEmpty(category!))
+            .Distinct()
+            .ToList()!;
+
+        foreach (var category in AllPatchCategories)
+        {
+            PatchCategory(category!);
+        }
     }
 
     internal static void RepatchAll()
@@ -100,11 +73,13 @@ internal static class PatchManager
             UnpatchCategory(patch);
         }
 
-        foreach (var patch in Settings.EnabledPatchCategories)
+        foreach (var patch in AllPatchCategories)
         {
             PatchCategory(patch);
         }
-        Log.Warning("Re-patching complete. Game restart is still recommended, especially if there were any warnings or errors.");
+
+        Log.Warning(
+            "Re-patching complete. Game restart is still recommended, especially if there were any warnings or errors.");
     }
 
     /// <summary>
@@ -132,34 +107,10 @@ internal static class PatchManager
                 t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             .Count(m => m.GetCustomAttributes(typeof(HarmonyPatch), true).Length > 0);
 
-        if (Settings.EnabledPatchCategories.Contains(category) == false)
+        if (Settings.DisabledPatchCategories.Contains(category))
         {
             Log.Message($"Patch category \"{category}\" disabled in mod settings. Skipping.");
             _skippedPatches += numMethods;
-            return;
-        }
-
-        // Find any [HarmonyPatchCondition] attributes on all the types in the category
-        var conditions = patchTypes
-            .SelectMany(t => t.GetCustomAttributes(typeof(HarmonyPatchLegacySupportAttribute), true)
-                .Cast<HarmonyPatchLegacySupportAttribute>())
-            .ToList();
-
-        // bitwise AND all of their supportedVersion
-        var supportedVersions = conditions.Aggregate(RWVersion.All,
-            (current, condition) => current & condition.SupportedVersion);
-
-        // If the result is not a supported version, fail
-        if ((supportedVersions & LegacySupport.CurrentRWVersion) == 0)
-        {
-            Log.Warning(
-                $"Patch category \"{category}\" ({numMethods} methods) skipped.\nOnly supported on RimWorld versions: {supportedVersions.ToString().Replace("_", ".").Replace("v", "")}.");
-            _skippedPatches += numMethods;
-
-            foreach (var condition in conditions)
-                if (condition.UnsupportedVersionString != null)
-                    Log.Message(condition.UnsupportedVersionString);
-
             return;
         }
 
@@ -208,17 +159,17 @@ internal static class PatchManager
         var alreadyPatched = _allEnabledSuccessfulPatches.Contains(category);
         if (patch && !alreadyPatched)
         {
-            Settings.EnabledPatchCategories.Add(category);
             Settings.DisabledPatchCategories.Remove(category);
             PatchCategory(category);
         }
         else if (!patch && alreadyPatched)
         {
             Settings.DisabledPatchCategories.Add(category);
-            Settings.EnabledPatchCategories.Remove(category);
             UnpatchCategory(category);
         }
         else
+        {
             Log.Trace($"Patch {category} already set to {patch} state.");
+        }
     }
 }

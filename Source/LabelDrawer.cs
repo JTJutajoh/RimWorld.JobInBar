@@ -35,7 +35,7 @@ internal static class LabelDrawer
 
     internal static void DrawLabels(Pawn colonist, PawnCache? cache, Vector2 pos, ColonistBar bar, Rect rect)
     {
-        if (Event.current.type != EventType.Repaint) return;
+        if (Event.current!.type != EventType.Repaint) return;
 
         if (cache is null)
         {

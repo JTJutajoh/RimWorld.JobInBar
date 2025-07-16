@@ -568,31 +568,16 @@ internal class Settings : ModSettings
 
         listing.GapLine();
         listing.Label("JobInBar_Settings_Patches_Enabled".Translate());
-        foreach (var patch in EnabledPatchCategories)
+        foreach (var patch in PatchManager.AllPatchCategories)
         {
-            DisabledPatchCategories.Remove(patch);
-            var enabled = true;
-            listing.CheckboxLabeled($"JobInBar_Settings_PatchCategory_{patch}".Translate(), ref enabled, 80f);
-            if (!enabled)
-            {
-                DisabledPatchCategories.Add(patch);
-            }
-        }
-
-        listing.GapLine();
-        listing.Label("JobInBar_Settings_Patches_Disabled".Translate());
-        foreach (var patch in DisabledPatchCategories)
-        {
-            EnabledPatchCategories.Remove(patch);
-            var enabled = false;
+            var enabled = !DisabledPatchCategories.Contains(patch);
             listing.CheckboxLabeled($"JobInBar_Settings_PatchCategory_{patch}".Translate(), ref enabled, 80f);
             if (enabled)
-            {
-                EnabledPatchCategories.Add(patch);
-            }
+                DisabledPatchCategories.Remove(patch);
+            else
+                DisabledPatchCategories.AddDistinct(patch);
         }
 
-        EnabledPatchCategories.Sort();
         DisabledPatchCategories.Sort();
 
         listing.End();
@@ -653,17 +638,13 @@ internal class Settings : ModSettings
             OnSettingsSave();
         }
 
-        var enabledPatchesTMP = EnabledPatchCategories.ToList();
         var disabledPatchesTMP = DisabledPatchCategories.ToList();
 
-        Scribe_Collections.Look(ref enabledPatchesTMP, "EnabledPatchCategories", LookMode.Value);
         Scribe_Collections.Look(ref disabledPatchesTMP, "DisabledPatchCategories", LookMode.Value);
 
 
         if (Scribe.mode == LoadSaveMode.LoadingVars)
         {
-            EnabledPatchCategories = enabledPatchesTMP ?? EnabledPatchCategories.ToList();
-            EnabledPatchCategories.Sort();
             DisabledPatchCategories = disabledPatchesTMP ?? DisabledPatchCategories.ToList();
             DisabledPatchCategories.Sort();
         }
@@ -754,17 +735,6 @@ internal class Settings : ModSettings
     [Setting] internal static Color RoyalTitleColorDefault = new(0.85f, 0.85f, 0.75f);
 
     [Setting] internal static ButtonLocations EnabledButtonLocations = ButtonLocations.All;
-
-    [Setting] internal static List<string> EnabledPatchCategories = new()
-    {
-        "AddLabels",
-        "ColorName",
-        "NamePawn",
-        "BioTabButton",
-        "OffsetEquippedWeapon",
-        "PlaySettings",
-        "StopTracking",
-    };
 
     [Setting] internal static List<string> DisabledPatchCategories = new();
     // ReSharper restore RedundantDefaultMemberInitializer

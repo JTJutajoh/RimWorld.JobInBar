@@ -41,14 +41,22 @@ internal class PawnCache
         return labelString;
     }
 
+    [Obsolete("Use TryGet instead")]
     internal static PawnCache? Get(Pawn pawn)
     {
-        return Cache.TryGetValue(pawn.GetHashCode(), out var cache) ? cache : null;
+        TryGet(pawn, out var cache);
+
+        return cache;
+    }
+
+    internal static bool TryGet(Pawn pawn, out PawnCache? cache)
+    {
+        return Cache.TryGetValue(pawn.GetHashCode(), out cache);
     }
 
     internal static PawnCache GetOrCache(Pawn pawn)
     {
-        return Get(pawn) ?? new PawnCache(pawn);
+        return (TryGet(pawn, out var cache) ? cache! : new PawnCache(pawn));
     }
 
     internal static void Clear()
@@ -171,8 +179,23 @@ internal class PawnCache
             OnlyDrawCustomJobTitles = scaleBehavior == Settings.MinScaleBehavior.ShowOnlyCustom;
         }
 
+#if !v1_2
+        IsGuest = (Pawn.HomeFaction != Faction.OfPlayer) && !(Pawn.IsSlaveOfColony);
+        IsSlave = ModsConfig.IdeologyActive && Pawn.IsSlave;
+#else
+        IsGuest = Pawn.HomeFaction != Faction.OfPlayer;
+        IsSlave = false;
+#endif
+
+        // Anomaly things
+#if !(v1_1 || v1_2 || v1_3 || v1_4 || v1_5)
+        IsSubhuman = Pawn.IsSubhuman;
+#elif v1_5 // 1.5 didn't include the IsSubhuman property, but did include relevant pawn types (ghouls)
+        IsSubhuman = Pawn.IsMutant;
+#endif
+
         // Overall rules
-        DrawAnyPermanentLabels = GetDrawAnyPermanentLabels();
+        CalcDrawAnyPermanentLabels();
 
         OnlyDrawWhenHovered = Settings.DrawLabelOnlyOnHover;
         if (!OnlyDrawWhenHovered && Find.ColonistBar?.Scale < Settings.MinColonistBarScale)
@@ -191,21 +214,6 @@ internal class PawnCache
 
         CurrentTruncatedWidth = CurLabelWidth;
 
-#if !v1_2
-        IsGuest = (Pawn.HomeFaction != Faction.OfPlayer) && !(Pawn.IsSlaveOfColony);
-        IsSlave = ModsConfig.IdeologyActive && Pawn.IsSlave;
-#else
-        IsGuest = Pawn.HomeFaction != Faction.OfPlayer;
-        IsSlave = false;
-#endif
-
-        // Anomaly things
-#if !(v1_1 || v1_2 || v1_3 || v1_4 || v1_5)
-        IsSubhuman = Pawn.IsSubhuman;
-#elif v1_5 // 1.5 didn't include the IsSubhuman property, but did include relevant pawn types (ghouls)
-        IsSubhuman = Pawn.IsMutant;
-#endif
-
         LastCached = DateTime.UtcNow.Ticks;
         Dirty = false;
 
@@ -213,29 +221,31 @@ internal class PawnCache
     }
 
     // Cache updating methods
-    private bool GetDrawAnyPermanentLabels()
+    private void CalcDrawAnyPermanentLabels()
     {
+        DrawAnyPermanentLabels = false;
+
         if (Settings.ModEnabled == false || Patch_PlaySettings_GlobalControl_ToggleLabels.DrawLabels == false)
-            return false;
+            return;
 
         if (Settings.IgnoreGuests && IsGuest)
-            return false;
+            return;
 
         if (Settings.IgnoreSlaves && IsSlave)
-            return false;
+            return;
 
 #if !(v1_1 || v1_2 || v1_3 || v1_4)
         if (Settings.IgnoreSubhuman && IsSubhuman)
-            return false;
+            return;
 #endif
 
         if (Settings.OnlyDrafted && !(Pawn?.Drafted ?? false))
-            return false;
+            return;
 
         if (Settings.OnlyCurrentMap && Pawn?.Map != Find.CurrentMap)
-            return false;
+            return;
 
-        return true;
+        DrawAnyPermanentLabels = true;
     }
 
     private bool GetDrawJobLabel()

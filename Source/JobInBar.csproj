@@ -103,6 +103,8 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="HarmonyPatches\Patch_Pawn_ExposeData.cs" />
+        <Compile Include="LabelData.cs" />
         <Compile Include="PawnCache.cs" />
         <Compile Include="Dialog_LabelSettings.cs"/>
         <Compile Include="GlobalUsings.cs"/>
@@ -110,7 +112,6 @@
         <Compile Include="HarmonyPatches\Patch_ColonistBar_OnGUI_OffsetEquipped.cs"/>
         <Compile Include="HarmonyPatches\Patch_Dialog_NamePawn_NameContext_TitleRowButton.cs"/>
         <Compile Include="HarmonyPatches\Patch_PawnNameColorUtility_PawnNameColorOf.cs"/>
-        <Compile Include="HarmonyPatches\Patch_Pawn_Destroy_StopTracking.cs"/>
         <Compile Include="HarmonyPatches\Patch_ColonistBarDrawer_DrawColonist_AddLabels.cs"/>
         <Compile Include="Icons.cs"/>
         <Compile Include="JobInBarMod.cs"/>
@@ -119,6 +120,7 @@
         <Compile Include="LabelsTracker_WorldComponent.cs"/>
         <Compile Include="ModCompatibility.cs"/>
         <Compile Include="PatchManager.cs"/>
+        <Compile Include="PawnLabelExtensions.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Settings.cs"/>
         <Compile Include="Utils\CustomWidgets.cs"/>
