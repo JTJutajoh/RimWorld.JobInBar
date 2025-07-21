@@ -83,7 +83,7 @@ internal static class Patch_ColonistBar_OnGUI_OffsetEquipped
         if (cache.DrawRoyalTitle)
             offset += OffsetPerLabel;
 
-        if (Settings.MoveWeaponBelowCurrentTask && cache is { IsHovered: true, CurrentTask: not null })
+        if ((Settings.MoveWeaponBelowCurrentTask && !Settings.CurrentTaskUseAbsolutePosition) && cache is { IsHovered: true, CurrentTask: not null })
             offset += OffsetPerLabel;
 
 

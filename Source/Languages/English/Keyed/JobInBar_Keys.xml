@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <LanguageData>
-    <JobInBar_NameColorButton>Name Color</JobInBar_NameColorButton>
-    <JobInBar_JobLabelColor>Label Color</JobInBar_JobLabelColor>
-    <JobInBar_ShowJobLabelFor>Show job title in colonist bar</JobInBar_ShowJobLabelFor>
     <JobInBar_TitleOptionsRow>Job Title</JobInBar_TitleOptionsRow>
     <JobInBar_RoyaltyOptionsRow>Royal Title</JobInBar_RoyaltyOptionsRow>
     <JobInBar_IdeoRoleOptionsRow>Ideology Role</JobInBar_IdeoRoleOptionsRow>
     <JobInBar_BackstoryJobTitle>Job Title/Backstory</JobInBar_BackstoryJobTitle>
-    <JobInBar_ShowRoyaltyLabelFor>Show Royalty Title Label</JobInBar_ShowRoyaltyLabelFor>
     <JobInBar_RoyaltyTitle>Royal title</JobInBar_RoyaltyTitle>
-    <JobInBar_ShowIdeoLabelFor>Show Ideology Role Label</JobInBar_ShowIdeoLabelFor>
     <JobInBar_IdeoRole>Ideology role</JobInBar_IdeoRole>
     <JobInBar_PawnName>Name</JobInBar_PawnName>
     <JobInBar_NameColor>Name color</JobInBar_NameColor>
@@ -22,9 +17,6 @@
     <JobInBar_Alpha>Alpha</JobInBar_Alpha>
 
     <JobInBar_PlaySettingsToggle>Show/hide job labels in the colonist bar. Using it to disable all labels can potentially help with performance in very large colonies.</JobInBar_PlaySettingsToggle>
-    <JobInBar_ShowAnyLabels>Show/hide all</JobInBar_ShowAnyLabels>
-    <JobInBar_Change>Change</JobInBar_Change>
-    <JobInBar_LabelColorPickerHeading>Choose a label color</JobInBar_LabelColorPickerHeading>
 
     <JobInBar_SettingsCategory>Job Label In Colonist Bar</JobInBar_SettingsCategory>
 
@@ -43,7 +35,6 @@
 
 Default: {0}</JobInBar_Settings_DefaultSuffix>
     <JobInBar_Settings_Default>Default</JobInBar_Settings_Default>
-    <JobInBar_Settings_DefaultJobLabelColorHeader>Default Job Title color</JobInBar_Settings_DefaultJobLabelColorHeader>
 
     <!-- Patch categories -->
     <JobInBar_Settings_Patches_Label>Enable/disable Harmony patches</JobInBar_Settings_Patches_Label>
@@ -63,7 +54,7 @@ Only recommended for troubleshooting! May cause errors!</JobInBar_Settings_Refre
     <JobInBar_Settings_PatchCategory_BioTabButton>Add button to pawn's Bio tab to open label settings</JobInBar_Settings_PatchCategory_BioTabButton>
     <JobInBar_Settings_PatchCategory_OffsetEquippedWeapon>Move the vanilla icon for the currently-equipped weapon out of the way of labels</JobInBar_Settings_PatchCategory_OffsetEquippedWeapon>
     <JobInBar_Settings_PatchCategory_PlaySettings>Add global label toggle button to Play Settings (bottom right buttons)</JobInBar_Settings_PatchCategory_PlaySettings>
-    <JobInBar_Settings_PatchCategory_StopTracking>Remove pawn from the cache when deleted/discarded from the game</JobInBar_Settings_PatchCategory_StopTracking>
+    <JobInBar_Settings_PatchCategory_ExposeData>Include label data into save file (Labels will not save if you disable this patch)</JobInBar_Settings_PatchCategory_ExposeData>
 
     <JobInBar_Settings_ModEnabled>Mod Enabled</JobInBar_Settings_ModEnabled>
     <JobInBar_Settings_ModEnabled_Desc>Use this to disable the mod entirely if things are behaving strangely.</JobInBar_Settings_ModEnabled_Desc>
@@ -178,6 +169,9 @@ Can be disabled on an individual basis in the pawn's label settings dialog.</Job
     <JobInBar_Settings_ButtonLocation_CharacterCard>Bio tab</JobInBar_Settings_ButtonLocation_CharacterCard>
     <JobInBar_Settings_ButtonLocation_CharacterCard_Desc>Add a button next to the vanilla button that opens the rename dialog. Recommended option, but the Bio tab may become cluttered with too many UI mods.</JobInBar_Settings_ButtonLocation_CharacterCard_Desc>
 
+    <JobInBar_Settings_CurrentTaskUseAbsolutePosition>Use absolute position</JobInBar_Settings_CurrentTaskUseAbsolutePosition>
+    <JobInBar_Settings_CurrentTaskUseAbsolutePosition_Desc>Instead of drawing in the next row below all the other labels, enabling this setting will draw the current task at a specific absolute Y offset regardless of the other labels.</JobInBar_Settings_CurrentTaskUseAbsolutePosition_Desc>
+    <JobInBar_Settings_CurrentTaskAbsoluteY>Current absolute Y position</JobInBar_Settings_CurrentTaskAbsoluteY>
 
     <JobInBar_Reset>Reset</JobInBar_Reset>
     <JobInBar_JobTitle>Job Title</JobInBar_JobTitle>

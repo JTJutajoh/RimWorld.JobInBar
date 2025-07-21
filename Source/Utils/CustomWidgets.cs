@@ -67,13 +67,15 @@ internal static class CustomWidgets
         var colorLabel = exampleText;
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2f, settingsRect.width, 16f),
             ColorLibrary.DarkBrown);
-        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x, color, TextAnchor.MiddleCenter,
+        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x,
+            color, TextAnchor.MiddleCenter,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
 
         Widgets.DrawBoxSolid(new Rect(settingsRect.xMin, curY - 2, settingsRect.width, 16f),
             ColorLibrary.Beige);
-        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x, color, TextAnchor.MiddleCenter,
+        LabelDrawer.DrawCustomLabel(new Vector2(settingsRect.center.x, curY), colorLabel, Text.CalcSize(colorLabel).x,
+            color, TextAnchor.MiddleCenter,
             drawBg: labelBackgrounds);
         curY += 12f + 4f;
 
@@ -226,7 +228,8 @@ internal static class CustomWidgets
         int multiplier = 1,
         int min = 0,
         int max = 999999,
-        bool doDefaultButton = true)
+        bool doDefaultButton = true,
+        bool disabled = false)
     {
         if (label != null) listingStandard.Label(label);
         var labelRect = listingStandard.Label(Settings.GetSettingLabel(settingName,
@@ -246,7 +249,8 @@ internal static class CustomWidgets
             (int)Settings.DefaultSettings[settingName],
             multiplier,
             min,
-            max);
+            max,
+            disabled);
     }
 
     /// <summary>
@@ -269,16 +273,23 @@ internal static class CustomWidgets
         int defaultValue,
         int multiplier = 1,
         int min = 0,
-        int max = 999999)
+        int max = 999999,
+        bool disabled = false)
     {
+        var newValue = value;
+        var startingRect = listingStandard.GetRect(0);
 #if !(v1_2 || v1_3 || v1_4 || v1_5) // RW 1.6 fixed a bug with IntEntry that forced the value to be a positive number
-        listingStandard.IntEntry(ref value, ref editBuffer, multiplier, min);
+        listingStandard.IntEntry(ref newValue, ref editBuffer, multiplier, min);
 #else
-        listingStandard.IntEntryWithNegative(ref value, ref editBuffer, multiplier, min);
+        listingStandard.IntEntryWithNegative(ref newValue, ref editBuffer, multiplier, min);
 #endif
-        listingStandard.IntSetter(ref value, defaultValue, "JobInBar_Settings_Default".Translate());
 
-        value = Mathf.Clamp(value, min, max);
+        listingStandard.IntSetter(ref newValue, defaultValue, "JobInBar_Settings_Default".Translate());
+
+        if (!disabled)
+            value = Mathf.Clamp(newValue, min, max);
+        else
+            Widgets.DrawBoxSolid(new Rect(startingRect.x, startingRect.yMin, startingRect.width, listingStandard.CurHeight - startingRect.yMin), Widgets.InactiveColor);;
     }
 
     // // Half-baked implementation of color preset selection. Currently replaced with the color wheel.

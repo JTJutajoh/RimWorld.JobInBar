@@ -13,7 +13,7 @@ internal class Settings : ModSettings
     private const float PerformanceSectionHeight = 320f;
     private const float MiscSectionHeight = 158f + 8f;
     private const float JobTitleSectionHeight = 430f;
-    private const float CurrentTaskSectionHeight = 450f;
+    private const float CurrentTaskSectionHeight = 600f;
     private const float IdeologySectionHeight = 200f;
     private const float RoyaltySectionHeight = 430f;
     private const float DisplaySectionHeight = 700f;
@@ -25,6 +25,10 @@ internal class Settings : ModSettings
     private static string _bufferJobLabelVerticalOffset = JobLabelVerticalOffset.ToString();
     [Setting] public static int OffsetEquippedExtra = -6;
     private static string _bufferOffsetEquippedExtra = OffsetEquippedExtra.ToString();
+
+    [Setting] public static bool CurrentTaskUseAbsolutePosition = false;
+    [Setting] public static int CurrentTaskAbsoluteY = 0;
+    private static string _bufferCurrentTaskAbsoluteY = CurrentTaskAbsoluteY.ToString();
 
     private static Vector2 _scrollPositionCache = Vector2.zero;
 
@@ -333,6 +337,17 @@ internal class Settings : ModSettings
 
         section.SubLabel("JobInBar_Settings_CurrentJobNote".Translate(), 1f);
 
+        section.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"), ref MoveWeaponBelowCurrentTask,
+            !DrawCurrentTask || CurrentTaskUseAbsolutePosition, GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f);
+
+        section.CheckboxLabeled(GetSettingLabel("CurrentTaskUseAbsolutePosition"), ref CurrentTaskUseAbsolutePosition,
+            !DrawCurrentTask, GetSettingTooltip("CurrentTaskUseAbsolutePosition"), 36f);
+
+        section.IntSetting(ref CurrentTaskAbsoluteY, "CurrentTaskAbsoluteY", ref _bufferCurrentTaskAbsoluteY, null, 2,
+            -64, 64, true, !DrawCurrentTask || !CurrentTaskUseAbsolutePosition);
+
+        section.Gap();
+
         CustomWidgets.LabelColorPicker(
             section.GetRect(ColorPickersHeight),
             ref CurrentTaskLabelColor,
@@ -445,9 +460,6 @@ internal class Settings : ModSettings
 
         section.CheckboxLabeled(GetSettingLabel("OffsetEquippedByLabels"), ref OffsetEquippedByLabels,
             GetSettingTooltip("OffsetEquippedByLabels"), labelPct: 1f);
-
-        section.CheckboxLabeled(GetSettingLabel("MoveWeaponBelowCurrentTask"), ref MoveWeaponBelowCurrentTask,
-            !DrawCurrentTask, GetSettingTooltip("MoveWeaponBelowCurrentTask"), 36f);
 
         section.IntSetting(ref OffsetEquippedExtra,
             "OffsetEquippedExtra", ref _bufferOffsetEquippedExtra, null, 2, -150, 150);
@@ -597,6 +609,9 @@ internal class Settings : ModSettings
         Scribe_Values.Look(ref JobLabelVerticalOffset, "JobLabelVerticalOffset", 14);
         Scribe_Values.Look(ref OffsetEquippedExtra, "OffsetEquippedExtra");
         Scribe_Values.Look(ref OffsetEquippedByLabels, "OffsetEquippedByLabels", true);
+
+        Scribe_Values.Look(ref CurrentTaskUseAbsolutePosition, "CurrentTaskUseAbsolutePosition", false);
+        Scribe_Values.Look(ref CurrentTaskAbsoluteY, "CurrentTaskAbsoluteY", 0);
 
         Scribe_Values.Look(ref AllowNameColors, "AllowNameColors", true);
 

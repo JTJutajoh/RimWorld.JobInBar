@@ -133,6 +133,7 @@
         <Content Include="About\ModIcon.psd"/>
         <Content Include="About\Preview.png"/>
         <Content Include="About\Preview.psd"/>
+        <Content Include="AnalyzeTranslationKeys.ps1" />
         <Content Include="C:\Users\darkf\Desktop\harmony.log.txt">
             <Link>harmony.log.txt</Link>
         </Content>

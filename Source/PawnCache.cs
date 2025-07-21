@@ -114,7 +114,9 @@ internal class PawnCache
     internal string? RoyalTitleString { get; private set; }
     internal Color RoyalTitleColor { get; private set; }
     internal bool DrawRoyalTitle { get; private set; }
+#if !(v1_1 || v1_2)
     internal Precept_Role? IdeoRole { get; private set; }
+#endif
     internal float IdeoRoleLabelWidth { get; private set; }
     internal string? IdeoRoleString { get; private set; }
     internal Color IdeoRoleColor { get; private set; }
@@ -183,7 +185,7 @@ internal class PawnCache
         IsGuest = (Pawn.HomeFaction != Faction.OfPlayer) && !(Pawn.IsSlaveOfColony);
         IsSlave = ModsConfig.IdeologyActive && Pawn.IsSlave;
 #else
-        IsGuest = Pawn.HomeFaction != Faction.OfPlayer;
+        IsGuest = Pawn.FactionOrExtraMiniOrHomeFaction != Faction.OfPlayer;
         IsSlave = false;
 #endif
 
@@ -359,6 +361,7 @@ internal class PawnCache
 
     private bool GetDrawIdeoRole()
     {
+#if !(v1_1 || v1_2)
         if (Pawn == null || !Settings.DrawIdeoRoles || !DrawAnyPermanentLabels || !ModsConfig.IdeologyActive)
             return false;
 
@@ -366,10 +369,14 @@ internal class PawnCache
             return false;
 
         return IdeoRole != null;
+#else
+        return false;
+#endif
     }
 
     private void CalcIdeoLabel()
     {
+#if !(v1_1 || v1_2)
         if (Pawn == null)
         {
             IdeoRole = null;
@@ -377,7 +384,6 @@ internal class PawnCache
             DrawIdeoRole = false;
             return;
         }
-#if !v1_2
         if (ModsConfig.IdeologyActive)
         {
             IdeoRole = Pawn.ideo?.Ideo?.GetRole(Pawn);
@@ -402,11 +408,9 @@ internal class PawnCache
             DrawIdeoRole = false;
         }
 #else
-        IdeoRole = null;
         IdeoRoleString = null;
         DrawIdeoRole = false;
         IdeoRoleAbilityIsReady = false;
-        IdeoRoleColor = null;
 #endif
     }
 
@@ -419,6 +423,7 @@ internal class PawnCache
 
     private Color CalcIdeoRoleColor()
     {
+#if !(v1_1 || v1_2)
         var fallbackColor = GenMapUI.DefaultThingLabelColor;
 
         if (Pawn is null || IdeoRole is null) return fallbackColor;
@@ -435,6 +440,9 @@ internal class PawnCache
             return fallbackColor;
 
         return ideoColor.Value;
+#else
+        return Color.white;
+#endif
     }
 
     private void CalcCurrentTaskLabel()

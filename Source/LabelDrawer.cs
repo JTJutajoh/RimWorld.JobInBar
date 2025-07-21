@@ -55,7 +55,7 @@ internal static class LabelDrawer
 
         Text.Font = GameFont.Tiny;
         // Apply position offsets
-        pos = new Vector2(pos.x, pos.y);
+        var rowPos = new Vector2(pos.x, pos.y);
         if (cache.DrawAnyPermanentLabels)
         {
             foreach (var label in cache.LabelOrder)
@@ -68,7 +68,7 @@ internal static class LabelDrawer
                         {
                             if (cache.GetJobLabel(out var jobLabel))
                             {
-                                DrawCustomLabel(pos,
+                                DrawCustomLabel(rowPos,
                                     jobLabel,
                                     cache.TitleLabelWidth,
                                     cache.JobColor,
@@ -88,7 +88,7 @@ internal static class LabelDrawer
                         {
                             if (cache.GetRoyalTitle(out var royalTitle))
                             {
-                                DrawCustomLabel(pos,
+                                DrawCustomLabel(rowPos,
                                     royalTitle,
                                     cache.RoyaltyLabelWidth,
                                     cache.RoyalTitleColor,
@@ -108,7 +108,7 @@ internal static class LabelDrawer
                         {
                             if (cache.GetIdeoRole(out var ideoRole))
                             {
-                                DrawCustomLabel(pos,
+                                DrawCustomLabel(rowPos,
                                     ideoRole,
                                     cache.IdeoRoleLabelWidth,
                                     cache.IdeoRoleColor,
@@ -126,7 +126,7 @@ internal static class LabelDrawer
                 }
 
                 if (labelDrawn)
-                    pos += lineOffset;
+                    rowPos += lineOffset;
             }
         }
 
@@ -134,22 +134,25 @@ internal static class LabelDrawer
         {
             if (Settings.DrawCurrentTask && cache is { IsHovered: true, CurrentTask: not null })
             {
+                if (Settings.CurrentTaskUseAbsolutePosition)
+                    rowPos = new Vector2(pos.x, pos.y + Settings.CurrentTaskAbsoluteY + 36f);
+
 #if !(v1_1 || v1_2 || v1_3) // RW 1.4 introduced the ShowWeaponsUnderPortraitMode pref
-                if (!Settings.MoveWeaponBelowCurrentTask)
+                else if (!Settings.MoveWeaponBelowCurrentTask)
                     if ((Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.Always ||
                          (Prefs.ShowWeaponsUnderPortraitMode == ShowWeaponsUnderPortraitMode.WhileDrafted &&
                           colonist.Drafted)) &&
                         (colonist.equipment?.Primary?.def?.IsWeapon ?? false))
-                        pos.y += 28f + Settings.OffsetEquippedExtra;
+                        rowPos.y += 28f + Settings.OffsetEquippedExtra;
 #endif
-                DrawCustomLabel(pos,
+                DrawCustomLabel(rowPos,
                     cache.CurrentTask,
                     cache.CurrentTaskLabelWidth,
                     cache.CurrentTaskColor,
                     TextAnchor.UpperCenter,
                     drawBg: Settings.DrawCurrentTaskBackground,
                     extraHeight: 48f);
-                // pos += lineOffset;
+                // rowPos += lineOffset;
             }
         }
         catch (Exception e)
